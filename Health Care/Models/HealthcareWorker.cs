@@ -12,7 +12,5 @@ namespace Health_Care.Models
         public byte[] identificationImage { get; set; }
         public int specialityId { get; set; }
         public byte[] graduationCertificateImage { get; set; }
-        public string mobileNumber { get; set; }
-        public int ContractId { get; set; }
     }
 }

@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class PlaceToWork
+    public class ProfitFromTheApp
     {
         public int id { get; set; }
-        public string PlaceToWorkName { get; set; }
+        public int userId { get; set; }
+        public int balance { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace Health_Care.Models
     public class HealthcareWorkerService
     {
         public int id { get; set; }
+        public int userId { get; set; }
         public int serviceId { get; set; }
     }
 }

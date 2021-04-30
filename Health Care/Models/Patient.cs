@@ -11,6 +11,7 @@ namespace Health_Care.Models
         public int userId { get; set; }
         public char gender { get; set; }
         public string birthDate { get; set; }
+        public string chronicDiseases { get; set; }
         public int Balance { get; set; }
         public string LastBalanceChargeDate { get; set; }
     }

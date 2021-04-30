@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class HealthcareWorkerPlace
+    public class HealthcareWorkerWorkPlace
     {
         public int id { get; set; }
         public int userId { get; set; }
-        public int workePlaceid { get; set; } // from placetoworktable
+        public string workePlaceName { get; set; } // from placetoworktable
         public char shiftAM_PM { get; set; } // when to work in workplace
         public string startTime { get; set; } // when to work in workplace
         public string endTime { get; set; } // when to work in workplace

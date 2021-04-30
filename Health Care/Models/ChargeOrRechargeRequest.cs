@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class RechargeRequest
+    public class ChargeOrRechargeRequest
     {
         public int id { get; set; }
         public int userId { get; set; }
-        public byte[] BalanceSanad { get; set; } //صورة السند
+        public byte[] BalanceReceipt { get; set; } //صورة السند
         public string rechargeDate { get; set; }
-        public bool ConfirmToAdd { get; set; }
+        public bool ConfirmToAddBalance { get; set; }
     }
 }

@@ -10,9 +10,11 @@ namespace Health_Care.Models
         public int id { get; set; }
         /* ودا يكون شي ثايت في التطبيق يسوي موافقة ولو وافق ينحط الآي دي حق الكونتراكت واذا مافي الآي دي حق الكونتراكت يصير مايتفعل حسابه 
          * عقد عامل صحي ، عقد مستشفى */
-        public string Type { get; set; } 
+        //public string contractFor { get; set; } //عامل صحي ، دكتور، مستشفى ....
+        public int contractFor { get; set; } // حسب الroleid
+
         
-        public string contract { get; set; }
+        public string contractPath { get; set; } // contract document
 
     }
 }

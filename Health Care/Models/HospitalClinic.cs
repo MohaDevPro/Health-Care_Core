@@ -9,9 +9,9 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int hospitalId { get; set; } //from user table
-        public int clinicId { get; set; } //from clinic table
-        public int doctorId { get; set; } //from user table
+        public int clinicId { get; set; } //from clinicType table
         public int appointmentPrice { get; set; }
+        public int numberOfAvailableAppointment { get; set; }
 
     }
 }

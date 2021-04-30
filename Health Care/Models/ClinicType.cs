@@ -8,6 +8,6 @@ namespace Health_Care.Models
     public class ClinicType
     {
         public int id { get; set; }
-        public int ClinicName { get; set; } // clinics inside hospitals
+        public int ClinicTypeName { get; set; }
     }
 }
