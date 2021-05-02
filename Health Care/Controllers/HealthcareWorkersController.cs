@@ -12,48 +12,48 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserContractsController : ControllerBase
+    public class HealthcareWorkersController : ControllerBase
     {
         private readonly Health_CareContext _context;
 
-        public UserContractsController(Health_CareContext context)
+        public HealthcareWorkersController(Health_CareContext context)
         {
             _context = context;
         }
 
-        // GET: api/UserContracts
+        // GET: api/HealthcareWorkers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserContract>>> GetUserContract()
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorker()
         {
-            return await _context.UserContract.ToListAsync();
+            return await _context.HealthcareWorker.ToListAsync();
         }
 
-        // GET: api/UserContracts/5
+        // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserContract>> GetUserContract(int id)
+        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorker(int id)
         {
-            var userContract = await _context.UserContract.FindAsync(id);
+            var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
 
-            if (userContract == null)
+            if (healthcareWorker == null)
             {
                 return NotFound();
             }
 
-            return userContract;
+            return healthcareWorker;
         }
 
-        // PUT: api/UserContracts/5
+        // PUT: api/HealthcareWorkers/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserContract(int id, UserContract userContract)
+        public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareWorker healthcareWorker)
         {
-            if (id != userContract.id)
+            if (id != healthcareWorker.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(userContract).State = EntityState.Modified;
+            _context.Entry(healthcareWorker).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +61,7 @@ namespace Health_Care.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserContractExists(id))
+                if (!HealthcareWorkerExists(id))
                 {
                     return NotFound();
                 }
@@ -74,37 +74,37 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-        // POST: api/UserContracts
+        // POST: api/HealthcareWorkers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<UserContract>> PostUserContract(UserContract userContract)
+        public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
         {
-            _context.UserContract.Add(userContract);
+            _context.HealthcareWorker.Add(healthcareWorker);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserContract", new { id = userContract.id }, userContract);
+            return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
 
-        // DELETE: api/UserContracts/5
+        // DELETE: api/HealthcareWorkers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<UserContract>> DeleteUserContract(int id)
+        public async Task<ActionResult<HealthcareWorker>> DeleteHealthcareWorker(int id)
         {
-            var userContract = await _context.UserContract.FindAsync(id);
-            if (userContract == null)
+            var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
+            if (healthcareWorker == null)
             {
                 return NotFound();
             }
 
-            _context.UserContract.Remove(userContract);
+            _context.HealthcareWorker.Remove(healthcareWorker);
             await _context.SaveChangesAsync();
 
-            return userContract;
+            return healthcareWorker;
         }
 
-        private bool UserContractExists(int id)
+        private bool HealthcareWorkerExists(int id)
         {
-            return _context.UserContract.Any(e => e.id == id);
+            return _context.HealthcareWorker.Any(e => e.id == id);
         }
     }
 }

@@ -10,7 +10,7 @@ using Health_Care.Models;
 
 namespace Health_Care.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ContractsController : ControllerBase
     {
