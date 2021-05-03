@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
+using FirebaseAdmin.Messaging;
 
 namespace Health_Care.Controllers
 {
@@ -25,7 +27,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conversation>>> GetConversation()
         {
-            return await _context.Conversation.ToListAsync();
+            return await _context.Conversation.Where(c=>c.isRecived == false).ToListAsync();
         }
 
         // GET: api/Conversations/5
@@ -41,6 +43,62 @@ namespace Health_Care.Controllers
 
             return conversation;
         }
+        [HttpPost]
+        public async Task<ActionResult> SendMessage(Conversation conversation)
+        {
+            _context.Conversation.Add(conversation);
+            await _context.SaveChangesAsync();
+            var FromUser = _context.User.Where(u => u.id == conversation.userIdFrom).FirstOrDefault();
+            string ToUserFCMToken = _context.FCMTokens.Where(t => t.UserID == conversation.userIdTo).FirstOrDefault().Token;
+
+            var message = new Message()
+            {
+                Notification = new Notification()
+                {
+                    Body = FromUser.nameAR,
+                    Title = conversation.message
+                },
+                Data = new Dictionary<string, string>() {
+                    { "id", conversation.id.ToString() },
+                    { "FromUser", FromUser.nameAR },
+                    { "message", conversation.message }
+                },
+                Android = new AndroidConfig()
+                {
+                    Priority = Priority.High,
+
+                    //TimeToLive = TimeSpan.FromDays(7),
+                    Notification = new AndroidNotification()
+                    {
+                        Icon = "stock_ticker_update",
+                        Color = "#f45342",
+                    },
+                },
+                Apns = new ApnsConfig()
+                {
+                    Aps = new Aps()
+                    {
+                        //Alert = new ApsAlert() { Body = FromUser.name, Title = conversation.message, },
+                        ContentAvailable = true,
+                        Badge = 42,
+                    },
+                    Headers = new Dictionary<string, string>() {
+                        { "apns-priority", "5" }, // Must be `5` when `contentAvailable` is set to true.
+                        { "apns-topic", "io.flutter.plugins.firebase.messaging" } // bundle identifier
+                    },
+                },
+
+                Token = ToUserFCMToken,
+                };
+
+                var response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                // See the BatchResponse reference documentation
+                // for the contents of response.
+                Console.WriteLine($"{response} messages were sent successfully");
+
+            return Ok();
+        }
+
 
         // PUT: api/Conversations/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
