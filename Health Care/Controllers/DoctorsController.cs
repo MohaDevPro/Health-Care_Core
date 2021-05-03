@@ -23,16 +23,55 @@ namespace Health_Care.Controllers
 
         // GET: api/Doctors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctor()
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctor()
         {
-            return await _context.Doctor.ToListAsync();
+            return await (from doctor in _context.Doctor
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                              Picture = doctor.Pictue,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic==true && specialitydoctor.Roleid == 0
+                                                select specialit).ToList(),
+                          }
+
+                          ).ToListAsync();
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id)
+        {
+            return await (from doctor in _context.Doctor join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+                          where Clinicdoctor.Clinicid==id
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                              Picture = doctor.Pictue,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                select specialit).ToList(),
+                          }
+
+                          ).ToListAsync();
         }
 
         // GET: api/Doctors/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Doctor>> GetDoctor(int id)
+        public async Task<ActionResult<object>> GetDoctor(int id)
         {
-            var doctor = await _context.Doctor.FindAsync(id);
+            var Doctor =await _context.Doctor.FindAsync(id);
+            var doctor =new {
+                id = id,
+                Name = Doctor.name,
+                Picture=Doctor.Pictue,
+                specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
+                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                 where specialitydoctor.Doctorid == id && specialitydoctor.Roleid == 0
+                                   select specialit).ToList(),
+                               };
 
             if (doctor == null)
             {

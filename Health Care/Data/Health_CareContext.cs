@@ -65,5 +65,9 @@ namespace Health_Care.Data
         public DbSet<Health_Care.Models.HospitalClinic> HospitalClinic { get; set; }
 
         public DbSet<Health_Care.Models.HealthcareWorker> HealthcareWorker { get; set; }
+        public DbSet<Health_Care.Models.SpeciallyDoctor> SpeciallyDoctors { get; set; }
+        public DbSet<Health_Care.Models.ClinicDoctor> clinicDoctors { get; set; }
+
+
     }
 }

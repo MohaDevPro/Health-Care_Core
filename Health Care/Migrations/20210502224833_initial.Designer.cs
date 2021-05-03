@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210502224833_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,24 +103,6 @@ namespace Health_Care.Migrations
                     b.ToTable("ChargeOrRechargeRequest");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.ClinicDoctor", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Clinicid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Doctorid")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("clinicDoctors");
-                });
-
             modelBuilder.Entity("Health_Care.Models.ClinicType", b =>
                 {
                     b.Property<int>("id")
@@ -189,14 +173,17 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Pictue")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Userid")
                         .HasColumnType("int");
 
+                    b.Property<string>("detailedSpecialityId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("specialityId")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -212,12 +199,6 @@ namespace Health_Care.Migrations
 
                     b.Property<int>("ClinicTypeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("appointmentPrice")
                         .HasColumnType("int");
@@ -527,36 +508,12 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool>("isBasic")
-                        .HasColumnType("bit");
-
                     b.Property<string>("specialityName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
                     b.ToTable("Speciality");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.SpeciallyDoctor", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Doctorid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Roleid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Specialityid")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("SpeciallyDoctors");
                 });
 
             modelBuilder.Entity("Health_Care.Models.User", b =>
