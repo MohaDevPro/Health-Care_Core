@@ -9,8 +9,8 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int userId { get; set; }
-        public byte[] identificationImage { get; set; }
+        public string identificationImage { get; set; }
         public int specialityId { get; set; }
-        public byte[] graduationCertificateImage { get; set; }
+        public string graduationCertificateImage { get; set; }
     }
 }
