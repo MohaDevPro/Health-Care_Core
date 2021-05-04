@@ -63,6 +63,25 @@ namespace Health_Care.Controllers
             return externalClinic;
         }
         [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByHospitalID(int id)
+        {
+            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==id)
+                                        select new
+                                        {
+                                            id = clinic.id,
+                                            Name = clinic.Name,
+                                            Picture = clinic.Picture,
+                                            specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                              join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                              where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
+                                                              select specialit).ToList(),
+                                        }
+
+                          ).ToListAsync();
+
+            return externalClinic;
+        }
+        [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetExternalClinic(int id)
         {
             var clinic = await _context.ExternalClinic.FindAsync(id);
