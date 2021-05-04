@@ -66,5 +66,11 @@ namespace Health_Care.Data
 
         public DbSet<Health_Care.Models.HealthcareWorker> HealthcareWorker { get; set; }
 
+
+        public DbSet<FCM_Tokens> FCMTokens { get; set; }
+        public DbSet<Notifications> Notifications { get; set; }
+        public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Health_Care.Models.SpeciallyDoctor> SpeciallyDoctors { get; set; }
+        public DbSet<Health_Care.Models.ClinicDoctor> clinicDoctors { get; set; }
     }
 }
