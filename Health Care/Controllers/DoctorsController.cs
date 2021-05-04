@@ -57,7 +57,38 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id)
+        {
+            var doctors=(from doctor in _context.Doctor
+                          join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+                          join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
+                          where clinic.userId == id
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                              Picture = doctor.Pictue,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                select specialit).ToList(),
+                          }
 
+                          );
+            List<object> notRepitted = new List<object>();
+            List<int> checkIDS = new List<int>();
+
+            foreach (var i in doctors)
+            {
+                if (!checkIDS.Contains(i.id))
+                {
+                    notRepitted.Add(i);
+                    checkIDS.Add(i.id);
+                }
+            }
+            return notRepitted;
+        }
         // GET: api/Doctors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetDoctor(int id)

@@ -26,18 +26,24 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("day")
+                    b.Property<string>("RealClossTime")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("endTime")
+                    b.Property<string>("RealOpenTime")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("day")
+                        .HasColumnType("int");
+
+                    b.Property<int>("endTime")
+                        .HasColumnType("int");
 
                     b.Property<string>("shiftAM_PM")
                         .IsRequired()
                         .HasColumnType("nvarchar(1)");
 
-                    b.Property<string>("startTime")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("startTime")
+                        .HasColumnType("int");
 
                     b.Property<int>("userId")
                         .HasColumnType("int");
@@ -231,14 +237,8 @@ namespace Health_Care.Migrations
                     b.Property<int>("doctorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("endTime")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("numberOfAvailableAppointment")
                         .HasColumnType("int");
-
-                    b.Property<string>("startTime")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("userId")
                         .HasColumnType("int");
@@ -296,30 +296,6 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("identificationImage")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("specialityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("userId")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("HealthcareWorker");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.HealthcareWorker", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<byte[]>("graduationCertificateImage")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("identificationImage")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<int>("specialityId")
                         .HasColumnType("int");
@@ -408,6 +384,15 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("appointmentPrice")
                         .HasColumnType("int");

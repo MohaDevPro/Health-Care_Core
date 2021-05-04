@@ -10,8 +10,11 @@ namespace Health_Care.Models
         public int id { get; set; }
         public int userId { get; set; }
         public char shiftAM_PM { get; set; }
-        public string day { get; set; }
-        public string startTime { get; set; }
-        public string endTime { get; set; }
+        public int day { get; set; }
+        public int startTime { get; set; }
+        public int endTime { get; set; }
+        public string RealOpenTime { get; set; }
+        public string RealClossTime { get; set; }
+
     }
 }
