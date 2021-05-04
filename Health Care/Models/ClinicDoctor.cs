@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class Speciality
+    public class ClinicDoctor
     {
         public int id { get; set; }
-        public string specialityName { get; set; }
-        public bool isBasic { get; set; }
+        public int Clinicid { get; set; }
+        public int Doctorid { get; set; }
     }
 }
