@@ -23,23 +23,42 @@ namespace Health_Care.Controllers
 
         // GET: api/HealthcareWorkers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorker()
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorker()
         {
-            return await _context.HealthcareWorker.ToListAsync();
+            return await (from HealthWorker in _context.HealthcareWorker
+                          select new
+                          {
+                              id = HealthWorker.id,
+                              Name = HealthWorker.Name,
+                              Picture = HealthWorker.Picture,
+                              Description = HealthWorker.Description
+                          }
+                          ).ToListAsync();
         }
 
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorker(int id)
+        public async Task<ActionResult<object>> GetHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
-
             if (healthcareWorker == null)
             {
                 return NotFound();
             }
+            var doctor = new
+            {
+                id = id,
+                Name = healthcareWorker.Name,
+                Picture = healthcareWorker.Picture,
+                BackGroundPicture = healthcareWorker.BackGroundPicture,
+                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                                  where healthcareWorkerServices.HealthcareWorkerid == id 
+                                  select service).ToList(),
+            };
 
-            return healthcareWorker;
+
+            return doctor;
         }
 
         // PUT: api/HealthcareWorkers/5
@@ -81,6 +100,15 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
         {
             _context.HealthcareWorker.Add(healthcareWorker);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+        }
+        [HttpPost]
+        public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices).FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
+            healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);

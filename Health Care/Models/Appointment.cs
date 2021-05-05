@@ -13,6 +13,7 @@ namespace Health_Care.Models
         public string appointmentTime { get; set; } // put it here to check the time of clinic available time
         public string appointmentDate { get; set; }
         public bool Paid { get; set; }
+
         public bool UserComeToAppointment { get; set; }
 
     }

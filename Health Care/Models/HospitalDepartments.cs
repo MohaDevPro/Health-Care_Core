@@ -5,9 +5,12 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class ClinicType
+    public class HospitalDepartments
     {
         public int id { get; set; }
-        public String ClinicTypeName { get; set; }
+        public int DepatmentsOfHospitalID { get; set; }
+        public int Hospitalid { get; set; }
+
+
     }
 }

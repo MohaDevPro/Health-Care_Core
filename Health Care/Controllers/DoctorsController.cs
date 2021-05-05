@@ -30,7 +30,7 @@ namespace Health_Care.Controllers
                           {
                               id = doctor.id,
                               Name = doctor.name,
-                              Picture = doctor.Pictue,
+                              Picture = doctor.Picture,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic==true && specialitydoctor.Roleid == 0
@@ -48,7 +48,7 @@ namespace Health_Care.Controllers
                           {
                               id = doctor.id,
                               Name = doctor.name,
-                              Picture = doctor.Pictue,
+                              Picture = doctor.Picture,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -68,7 +68,7 @@ namespace Health_Care.Controllers
                           {
                               id = doctor.id,
                               Name = doctor.name,
-                              Picture = doctor.Pictue,
+                              Picture = doctor.Picture,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -97,7 +97,7 @@ namespace Health_Care.Controllers
             var doctor =new {
                 id = id,
                 Name = Doctor.name,
-                Picture=Doctor.Pictue,
+                Picture=Doctor.Picture,
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                  where specialitydoctor.Doctorid == id && specialitydoctor.Roleid == 0

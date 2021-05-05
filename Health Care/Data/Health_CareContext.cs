@@ -62,19 +62,24 @@ namespace Health_Care.Data
 
         public DbSet<Health_Care.Models.ExternalClinic> ExternalClinic { get; set; }
 
-        public DbSet<Health_Care.Models.HospitalClinic> HospitalClinic { get; set; }
+        public DbSet<Health_Care.Models.Hospital> Hospitals { get; set; }
 
         public DbSet<Health_Care.Models.HealthcareWorker> HealthcareWorker { get; set; }
-        public DbSet<Health_Care.Models.MedicalAdvice> MedicalAdvice { get; set; }
         public DbSet<Health_Care.Models.Blogs> Blogs { get; set; }
 
-
+        
 
         public DbSet<FCM_Tokens> FCMTokens { get; set; }
         public DbSet<Notifications> Notifications { get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Health_Care.Models.SpeciallyDoctor> SpeciallyDoctors { get; set; }
         public DbSet<Health_Care.Models.ClinicDoctor> clinicDoctors { get; set; }
+        public DbSet<Health_Care.Models.MedicalAdvice> MedicalAdvice { get; set; }
+        public DbSet<Health_Care.Models.DepartmentsOfHospital> departmentsOfHospitals { get; set; }
+        public DbSet<Health_Care.Models.HospitalDepartments> hospitalDepartments { get; set; }
+
+
+
         public DbSet<Health_Care.Models.Favorite> Favorite { get; set; }
     }
 }

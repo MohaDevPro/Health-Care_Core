@@ -22,10 +22,32 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Services
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Service>>> GetService()
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)
         {
-            return await _context.Service.ToListAsync();
+            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == id);
+            var choosingIDs = new List<int>();
+            if (choosingServices != null) {
+                choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
+            }
+            var listService = new List<object>();
+            foreach(var service in _context.Service)
+            {
+
+                var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
+                var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id):new HealthcareWorkerService();
+
+                var services = new
+                {
+                    service.id,
+                    service.serviceName,
+                    servicePrice = price,
+                    isSelected = choosingIDs.Contains(service.id),
+                    oldchoosing=oldservice
+                };
+                listService.Add(services);
+            }
+            return listService;
         }
 
         // GET: api/Services/5
