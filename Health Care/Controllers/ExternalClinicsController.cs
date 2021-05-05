@@ -23,23 +23,79 @@ namespace Health_Care.Controllers
 
         // GET: api/ExternalClinics
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ExternalClinic>>> GetExternalClinic()
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
         {
-            return await _context.ExternalClinic.ToListAsync();
+            return await (from clinic in _context.ExternalClinic
+                          select new
+                          {
+                              id = clinic.id,
+                              Name = clinic.Name,
+                              Picture = clinic.Picture,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
+                                                select specialit).ToList(),
+                          }
+
+                          ).ToListAsync();
         }
+
 
         // GET: api/ExternalClinics/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ExternalClinic>> GetExternalClinic(int id)
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDoctorID(int id)
         {
-            var externalClinic = await _context.ExternalClinic.FindAsync(id);
+            var externalClinic = await (from clinic in _context.ExternalClinic join Clinicdoctor in _context.clinicDoctors on clinic.id equals Clinicdoctor.Clinicid
+                                        where Clinicdoctor.Doctorid==id
+                                        select new
+                                        {
+                                            id = clinic.id,
+                                            Name = clinic.Name,
+                                            Picture = clinic.Picture,
+                                            specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                              join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                              where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid==1
+                                                              select specialit).ToList(),
+                                        }
 
-            if (externalClinic == null)
-            {
-                return NotFound();
-            }
+                          ).ToListAsync();
 
             return externalClinic;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByHospitalID(int id)
+        {
+            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==id)
+                                        select new
+                                        {
+                                            id = clinic.id,
+                                            Name = clinic.Name,
+                                            Picture = clinic.Picture,
+                                            specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                              join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                              where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
+                                                              select specialit).ToList(),
+                                        }
+
+                          ).ToListAsync();
+
+            return externalClinic;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<object>> GetExternalClinic(int id)
+        {
+            var clinic = await _context.ExternalClinic.FindAsync(id);
+            return new
+            {
+                id = clinic.id,
+                Name = clinic.Name,
+                Picture = clinic.Picture,
+                specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                  where specialitydoctor.Doctorid == clinic.id && specialitydoctor.Roleid == 1
+                                  select specialit).ToList(),
+            };
+
         }
 
         // PUT: api/ExternalClinics/5

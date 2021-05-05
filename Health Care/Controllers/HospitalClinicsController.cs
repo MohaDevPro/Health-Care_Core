@@ -23,9 +23,19 @@ namespace Health_Care.Controllers
 
         // GET: api/HospitalClinics
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HospitalClinic>>> GetHospitalClinic()
+        public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic()
         {
-            return await _context.HospitalClinic.ToListAsync();
+            return await (from hospital in _context.HospitalClinic
+                          select new
+                          {
+                              id = hospital.hospitalId,
+                              Name = hospital.Name,
+                              Picture = hospital.Picture,
+                              Description=hospital.Description
+
+                          }
+
+                          ).ToListAsync();
         }
 
         // GET: api/HospitalClinics/5
