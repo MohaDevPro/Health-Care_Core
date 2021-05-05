@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210505201214_favorite_table")]
+    partial class favorite_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,9 +239,6 @@ namespace Health_Care.Migrations
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("specialityId")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
                     b.ToTable("Doctor");
@@ -267,14 +266,8 @@ namespace Health_Care.Migrations
                     b.Property<int>("doctorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("endTime")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("numberOfAvailableAppointment")
                         .HasColumnType("int");
-
-                    b.Property<string>("startTime")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("userId")
                         .HasColumnType("int");
