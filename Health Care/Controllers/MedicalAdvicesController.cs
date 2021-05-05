@@ -10,50 +10,50 @@ using Health_Care.Models;
 
 namespace Health_Care.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class MedicalAdvicesController : ControllerBase
     {
         private readonly Health_CareContext _context;
 
-        public UsersController(Health_CareContext context)
+        public MedicalAdvicesController(Health_CareContext context)
         {
             _context = context;
         }
 
-        // GET: api/Users
+        // GET: api/MedicalAdvices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<MedicalAdvice>>> GetMedicalAdvice()
         {
-            return await _context.User.ToListAsync();
+            return await _context.MedicalAdvice.ToListAsync();
         }
 
-        // GET: api/Users/5
+        // GET: api/MedicalAdvices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<MedicalAdvice>> GetMedicalAdvice(int id)
         {
-            var user = await _context.User.FindAsync(id);
+            var medicalAdvice = await _context.MedicalAdvice.FindAsync(id);
 
-            if (user == null)
+            if (medicalAdvice == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return medicalAdvice;
         }
 
-        // PUT: api/Users/5
+        // PUT: api/MedicalAdvices/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutMedicalAdvice(int id, MedicalAdvice medicalAdvice)
         {
-            if (id != user.id)
+            if (id != medicalAdvice.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(medicalAdvice).State = EntityState.Modified;
 
             try
             {
@@ -61,7 +61,7 @@ namespace Health_Care.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(id))
+                if (!MedicalAdviceExists(id))
                 {
                     return NotFound();
                 }
@@ -74,37 +74,37 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/MedicalAdvices
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<MedicalAdvice>> PostMedicalAdvice(MedicalAdvice medicalAdvice)
         {
-            _context.User.Add(user);
+            _context.MedicalAdvice.Add(medicalAdvice);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.id }, user);
+            return CreatedAtAction("GetMedicalAdvice", new { id = medicalAdvice.id }, medicalAdvice);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/MedicalAdvices/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> DeleteUser(int id)
+        public async Task<ActionResult<MedicalAdvice>> DeleteMedicalAdvice(int id)
         {
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            var medicalAdvice = await _context.MedicalAdvice.FindAsync(id);
+            if (medicalAdvice == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.MedicalAdvice.Remove(medicalAdvice);
             await _context.SaveChangesAsync();
 
-            return user;
+            return medicalAdvice;
         }
 
-        private bool UserExists(int id)
+        private bool MedicalAdviceExists(int id)
         {
-            return _context.User.Any(e => e.id == id);
+            return _context.MedicalAdvice.Any(e => e.id == id);
         }
     }
 }
