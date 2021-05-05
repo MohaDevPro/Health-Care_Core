@@ -41,22 +41,24 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
             var doctor = new
             {
                 id = id,
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
+                BackGroundPicture = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                                  where healthcareWorkerServices.userId == id 
+                                  where healthcareWorkerServices.userId == healthcareWorker.userId 
                                   select service).ToList(),
             };
-            if (healthcareWorker == null)
-            {
-                return NotFound();
-            }
 
-            return healthcareWorker;
+
+            return doctor;
         }
 
         // PUT: api/HealthcareWorkers/5
