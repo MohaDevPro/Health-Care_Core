@@ -30,17 +30,24 @@ namespace Health_Care.Controllers
             if (choosingServices != null) {
                 choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
             }
-            return await (from service in  _context.Service 
-                          select new
-                          {
+            var listService = new List<object>();
+            foreach(var service in _context.Service)
+            {
 
-                              service.id,
-                              service.serviceName,
-                              servicePrice= choosingIDs.Contains(service.id)? choosingServices.HealthcareWorkerServices.First(x=>x.serviceId==service.id).Price:0,
-                              isSelected = choosingIDs.Contains(service.id)
-                          }
-                          
-                          ).ToListAsync();
+                var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
+                var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id):new HealthcareWorkerService();
+
+                var services = new
+                {
+                    service.id,
+                    service.serviceName,
+                    servicePrice = price,
+                    isSelected = choosingIDs.Contains(service.id),
+                    oldchoosing=oldservice
+                };
+                listService.Add(services);
+            }
+            return listService;
         }
 
         // GET: api/Services/5
