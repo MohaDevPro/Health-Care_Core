@@ -12,10 +12,7 @@ namespace Health_Care.Models
         public string Picture { get; set; }
         public string Description { get; set; }
         public int hospitalId { get; set; } //from user table
-        public int clinicId { get; set; } //from clinicType table
 
-        public int appointmentPrice { get; set; }
-        public int numberOfAvailableAppointment { get; set; }
 
     }
 }
