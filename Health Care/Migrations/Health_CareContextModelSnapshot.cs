@@ -159,8 +159,8 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ClinicTypeName")
-                        .HasColumnType("int");
+                    b.Property<string>("ClinicTypeName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -290,7 +290,6 @@ namespace Health_Care.Migrations
                     b.ToTable("ExternalClinicAppointment");
                 });
 
-
             modelBuilder.Entity("Health_Care.Models.FCM_Tokens", b =>
                 {
                     b.Property<int>("ID")
@@ -412,15 +411,6 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("appointmentPrice")
                         .HasColumnType("int");

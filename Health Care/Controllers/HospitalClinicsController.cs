@@ -29,13 +29,80 @@ namespace Health_Care.Controllers
                           select new
                           {
                               id = hospital.hospitalId,
-                              Name = hospital.Name,
-                              Picture = hospital.Picture,
-                              Description=hospital.Description
+                              //Name = hospital.Name,
+                              //Picture = hospital.Picture,
+                              //Description=hospital.Description
 
                           }
 
                           ).ToListAsync();
+        }
+
+        [HttpGet("{hospitalId}")]
+        public async Task<ActionResult<IEnumerable<HospitalClinicDoctorViewModel>>> GetClinicAndDoctorByHospitalID(int hospitalId)
+        {
+            var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
+                                                 where hospitalObj.id == hospitalId
+                                                 select new HospitalClinicDoctorViewModel
+                                                 {
+                                                     HospitalInfo = hospitalObj,
+                                                     HospitalClinicInfoList = (from hospitalClinicObj in _context.HospitalClinic
+                                                                           join clinicTypeObj in _context.ClinicType
+                                                                           on hospitalClinicObj.clinicId equals clinicTypeObj.id
+                                                                           where hospitalClinicObj.hospitalId == hospitalId
+                                                                           select new HospitalClinic
+                                                                           {
+                                                                               hospitalId = hospitalClinicObj.hospitalId,
+                                                                               clinicId = hospitalClinicObj.clinicId,
+                                                                               appointmentPrice = hospitalClinicObj.appointmentPrice,
+                                                                               numberOfAvailableAppointment = hospitalClinicObj.numberOfAvailableAppointment,
+                                                                           }).ToList(),
+
+
+                                                 }).ToListAsync();
+
+            //var hospitalinfo_clinicinfo = await(from hospitalClinicObj in _context.HospitalClinic
+            //                                     join hospitalObj in _context.User on hospitalClinicObj.hospitalId equals hospitalObj.id
+            //                                     join clinicTypeObj in _context.ClinicType on hospitalClinicObj.clinicId equals clinicTypeObj.id
+            //                                     join clinicDoctorObj in _context.clinicDoctors on clinicTypeObj.id equals clinicDoctorObj.Clinicid
+            //                                     where hospitalClinicObj.hospitalId == hospitalId
+            //                                     select new HospitalClinicDoctorViewModel
+            //                                     {
+            //                                         HospitalInfo = hospitalObj,
+            //                                         ClinicInfo = clinicTypeObj,
+            //                                         ClinicDoctorInfo = clinicDoctorObj,
+            //                                         HospitalClinicInfo = hospitalClinicObj
+            //                                     }).ToListAsync();
+
+            //var hospitalinfo_clinicinfo = await (from hospitalClinicObj in _context.HospitalClinic
+            //                               join hospitalObj in _context.User on hospitalClinicObj.hospitalId equals hospitalObj.id
+            //                               join clinicTypeObj in _context.ClinicType on hospitalClinicObj.clinicId equals clinicTypeObj.id
+            //                               join clinicDoctorObj in _context.clinicDoctors on clinicTypeObj.id equals clinicDoctorObj.Clinicid
+            //                               where hospitalClinicObj.hospitalId == hospitalId
+            //                               select new HospitalClinicDoctorViewModel
+            //                               {
+            //                                   HospitalInfo = hospitalObj ,
+            //                                   ClinicInfo = clinicTypeObj ,
+            //                                   ClinicDoctorInfo = clinicDoctorObj ,
+            //                                   HospitalClinicInfo = hospitalClinicObj
+            //                               }).ToListAsync();
+
+
+            //var externalClinic = await (from clinic in _context.ExternalClinic.Where(x => x.userId == id)
+            //                            select new
+            //                            {
+            //                                id = clinic.id,
+            //                                Name = clinic.Name,
+            //                                Picture = clinic.Picture,
+            //                                specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+            //                                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+            //                                                  where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
+            //                                                  select specialit).ToList(),
+            //                            }
+
+            //              ).ToListAsync();
+
+            return hospitalinfo_clinicinfo;
         }
 
         // GET: api/HospitalClinics/5

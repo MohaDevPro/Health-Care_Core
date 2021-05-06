@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210504113618_initial")]
-    partial class initial
+    [Migration("20210505073018_Initialize")]
+    partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,8 +34,8 @@ namespace Health_Care.Migrations
                     b.Property<string>("RealOpenTime")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("day")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("day")
+                        .HasColumnType("int");
 
                     b.Property<int>("endTime")
                         .HasColumnType("int");
@@ -83,6 +83,33 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Appointment");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.Blogs", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Blogs");
                 });
 
             modelBuilder.Entity("Health_Care.Models.ChargeOrRechargeRequest", b =>
@@ -226,12 +253,6 @@ namespace Health_Care.Migrations
 
                     b.Property<int>("ClinicTypeId")
                         .HasColumnType("int");
-
-                    b.Property<int>("HospitalID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsOnHospital")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");

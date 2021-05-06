@@ -9,7 +9,7 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int hospitalClinicId { get; set; }
-        public int doctorId { get; set; } //from user table
+        public int doctorId { get; set; }
         public string startTime { get; set; }
         public string endTime { get; set; }
         public string Day { get; set; }
