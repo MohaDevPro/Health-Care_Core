@@ -25,14 +25,18 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)
         {
-            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == id).HealthcareWorkerServices.Select(x=>x.serviceId);
+            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == id);
+            var choosingIDs = new List<int>();
+            if (choosingServices != null) {
+                choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
+            }
             return await (from service in  _context.Service
                           select new
                           {
                               service.id,
                               service.serviceName,
                               service.servicePrice,
-                              isSelected = choosingServices.Contains(service.id)
+                              isSelected = choosingIDs.Contains(service.id)
                           }
                           
                           ).ToListAsync();
