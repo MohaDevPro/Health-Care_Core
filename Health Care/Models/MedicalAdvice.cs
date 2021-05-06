@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class HealthcareWorkerService
+    public class MedicalAdvice
     {
         public int id { get; set; }
-        public int HealthcareWorkerid { get; set; }
-        public int serviceId { get; set; }
-        public int Price { get; set; }
+        public string title { get; set; }
+        public string paragraph { get; set; }
     }
 }
