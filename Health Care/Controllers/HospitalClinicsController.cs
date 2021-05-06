@@ -38,28 +38,28 @@ namespace Health_Care.Controllers
                           ).ToListAsync();
         }
 
-        [HttpGet("{hospitalId}")]
-        public async Task<ActionResult<IEnumerable<HospitalClinicDoctorViewModel>>> GetClinicAndDoctorByHospitalID(int hospitalId)
-        {
-            var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
-                                                 where hospitalObj.id == hospitalId
-                                                 select new HospitalClinicDoctorViewModel
-                                                 {
-                                                     HospitalInfo = hospitalObj,
-                                                     HospitalClinicInfoList = (from hospitalClinicObj in _context.HospitalClinic
-                                                                           join clinicTypeObj in _context.ClinicType
-                                                                           on hospitalClinicObj.clinicId equals clinicTypeObj.id
-                                                                           where hospitalClinicObj.hospitalId == hospitalId
-                                                                           select new HospitalClinic
-                                                                           {
-                                                                               hospitalId = hospitalClinicObj.hospitalId,
-                                                                               clinicId = hospitalClinicObj.clinicId,
-                                                                               appointmentPrice = hospitalClinicObj.appointmentPrice,
-                                                                               numberOfAvailableAppointment = hospitalClinicObj.numberOfAvailableAppointment,
-                                                                           }).ToList(),
+        //[HttpGet("{hospitalId}")]
+        //public async Task<ActionResult<IEnumerable<HospitalClinicDoctorViewModel>>> GetClinicAndDoctorByHospitalID(int hospitalId)
+        //{
+            //var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
+            //                                     where hospitalObj.id == hospitalId
+            //                                     select new HospitalClinicDoctorViewModel
+            //                                     {
+            //                                         HospitalInfo = hospitalObj,
+            //                                         HospitalClinicInfoList = (from hospitalClinicObj in _context.HospitalClinic
+            //                                                               join clinicTypeObj in _context.ClinicType
+            //                                                               on hospitalClinicObj.clinicId equals clinicTypeObj.id
+            //                                                               where hospitalClinicObj.hospitalId == hospitalId
+            //                                                               select new HospitalClinic
+            //                                                               {
+            //                                                                   hospitalId = hospitalClinicObj.hospitalId,
+            //                                                                   //clinicId = hospitalClinicObj.clinicId,
+            //                                                                   //appointmentPrice = hospitalClinicObj.appointmentPrice,
+            //                                                                   //numberOfAvailableAppointment = hospitalClinicObj.numberOfAvailableAppointment,
+            //                                                               }).ToList(),
 
 
-                                                 }).ToListAsync();
+            //                                     }).ToListAsync();
 
             //var hospitalinfo_clinicinfo = await(from hospitalClinicObj in _context.HospitalClinic
             //                                     join hospitalObj in _context.User on hospitalClinicObj.hospitalId equals hospitalObj.id
@@ -102,8 +102,8 @@ namespace Health_Care.Controllers
 
             //              ).ToListAsync();
 
-            return hospitalinfo_clinicinfo;
-        }
+        //    return hospitalinfo_clinicinfo;
+        //}
 
         // GET: api/HospitalClinics/5
         [HttpGet("{id}")]

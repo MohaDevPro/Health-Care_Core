@@ -30,12 +30,13 @@ namespace Health_Care.Controllers
             if (choosingServices != null) {
                 choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
             }
-            return await (from service in  _context.Service
+            return await (from service in  _context.Service 
                           select new
                           {
+
                               service.id,
                               service.serviceName,
-                              service.servicePrice,
+                              servicePrice= choosingIDs.Contains(service.id)? choosingServices.HealthcareWorkerServices.First(x=>x.serviceId==service.id).Price:0,
                               isSelected = choosingIDs.Contains(service.id)
                           }
                           
