@@ -16,5 +16,7 @@ namespace Health_Care.Models
         public string identificationImage { get; set; }
         public int specialityId { get; set; }
         public string graduationCertificateImage { get; set; }
+        public ICollection<HealthcareWorkerService> HealthcareWorkerServices { get; set; }
+
     }
 }

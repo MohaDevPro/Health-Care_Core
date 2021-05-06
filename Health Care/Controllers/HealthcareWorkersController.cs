@@ -53,7 +53,7 @@ namespace Health_Care.Controllers
                 BackGroundPicture = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                                  where healthcareWorkerServices.userId == healthcareWorker.userId 
+                                  where healthcareWorkerServices.HealthcareWorkerid == id 
                                   select service).ToList(),
             };
 
