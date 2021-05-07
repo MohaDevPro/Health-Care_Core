@@ -104,6 +104,15 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
+        [HttpPost]
+        public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices).FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
+            healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+        }
 
         // DELETE: api/HealthcareWorkers/5
         [HttpDelete("{id}")]

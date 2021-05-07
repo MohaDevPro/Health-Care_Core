@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,12 +13,7 @@ namespace Health_Care.Models
         public int ClinicTypeId { get; set; }// عيادة أسنان ، عيادة أمراض هضمية
         public int userId { get; set; } //clinicId ==>Or HospitalID from user table #Mohamed KHaled
         public int doctorId { get; set; } //to get the doctor owner
-        public int appointmentPrice { get; set; }
-        public int numberOfAvailableAppointment { get; set; }
-        [NotMapped]
-        public ClinicType ClinicInfo { get; set; }
-        [NotMapped]
-        public Doctor DoctorInfo { get; set; }
+        public int HospitalDepartmentsID { get; set; }
 
     }
 }
