@@ -30,9 +30,9 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetdepartmentsOfHospitalsByHospitalID(int id)
         {
-            var hospital = await _context.HospitalClinic.Where(x => x.hospitalId == id).FirstOrDefaultAsync();
+            var hospital = await _context.Hospitals.Where(x => x.hospitalId == id).FirstOrDefaultAsync();
             return await (from hospitaldepartment in _context.hospitalDepartments join Departments in _context.departmentsOfHospitals on hospitaldepartment.DepatmentsOfHospitalID equals Departments.id
-                                  where hospitaldepartment.HospitalClinicid==hospital.id
+                                  where hospitaldepartment.Hospitalid==hospital.id
                                 select new
                                 {
                                     id = Departments.id,

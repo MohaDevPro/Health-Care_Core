@@ -25,22 +25,62 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic()
         {
-            return await (from hospital in _context.HospitalClinic
+            return await (from hospital in _context.Hospitals
                           select new
                           {
                               id = hospital.hospitalId,
-                              //Name = hospital.Name,
-                              //Picture = hospital.Picture,
-                              //Description=hospital.Description
+                              Name = hospital.Name,
+                              Picture = hospital.Picture,
+                              Description = hospital.Description
 
                           }
 
                           ).ToListAsync();
         }
 
-        //[HttpGet("{hospitalId}")]
-        //public async Task<ActionResult<IEnumerable<HospitalClinicDoctorViewModel>>> GetClinicAndDoctorByHospitalID(int hospitalId)
-        //{
+        [HttpGet("{hospitalId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetClinicAndDoctorByHospitalID(int hospitalId)
+        {
+            var hospital = await _context.Hospitals.Where(x => x.hospitalId == hospitalId).FirstOrDefaultAsync();
+            var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
+                                                 where hospitalObj.id == hospitalId
+                                                 select new 
+                                                 {
+                                                     HospitalInfo = hospitalObj,
+                                                     HospitalDepartmentsList = (from HospitalDepartment in _context.hospitalDepartments
+                                                                               join departments in _context.departmentsOfHospitals
+                                                                               on HospitalDepartment.DepatmentsOfHospitalID equals departments.id
+                                                                               where HospitalDepartment.Hospitalid == hospital.id
+                                                                                select new
+                                                                                {
+                                                                                    id = departments.id,
+                                                                                    Name = departments.Name,
+                                                                                }).ToList(),
+                                                     HospitalClinicList = (from clinic in _context.ExternalClinic.Where(x => x.userId == hospitalId)
+                                                                           select new
+                                                                           {
+                                                                               id = clinic.id,
+                                                                               Name = clinic.Name,
+                                                                           }
+                                                                                  ).ToList(),
+                                                     HospitalDoctorList = (from doctor in _context.Doctor
+                                                                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+                                                                           join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
+                                                                           where clinic.userId == hospitalId
+                                                                           select new
+                                                                           {
+                                                                               id = clinic.id,
+                                                                               Name = clinic.Name,
+                                                                           }
+                                                                                  ).ToList()
+
+
+                                                 }).ToListAsync();
+
+
+
+
+
             //var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
             //                                     where hospitalObj.id == hospitalId
             //                                     select new HospitalClinicDoctorViewModel
@@ -102,14 +142,14 @@ namespace Health_Care.Controllers
 
             //              ).ToListAsync();
 
-        //    return hospitalinfo_clinicinfo;
-        //}
+            return hospitalinfo_clinicinfo;
+        }
 
         // GET: api/HospitalClinics/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HospitalClinic>> GetHospitalClinic(int id)
+        public async Task<ActionResult<Hospital>> GetHospitalClinic(int id)
         {
-            var hospitalClinic = await _context.HospitalClinic.FindAsync(id);
+            var hospitalClinic = await _context.Hospitals.FindAsync(id);
 
             if (hospitalClinic == null)
             {
@@ -123,7 +163,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHospitalClinic(int id, HospitalClinic hospitalClinic)
+        public async Task<IActionResult> PutHospitalClinic(int id, Hospital hospitalClinic)
         {
             if (id != hospitalClinic.id)
             {
@@ -155,9 +195,9 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<HospitalClinic>> PostHospitalClinic(HospitalClinic hospitalClinic)
+        public async Task<ActionResult<Hospital>> PostHospitalClinic(Hospital hospitalClinic)
         {
-            _context.HospitalClinic.Add(hospitalClinic);
+            _context.Hospitals.Add(hospitalClinic);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetHospitalClinic", new { id = hospitalClinic.id }, hospitalClinic);
@@ -165,15 +205,15 @@ namespace Health_Care.Controllers
 
         // DELETE: api/HospitalClinics/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<HospitalClinic>> DeleteHospitalClinic(int id)
+        public async Task<ActionResult<Hospital>> DeleteHospitalClinic(int id)
         {
-            var hospitalClinic = await _context.HospitalClinic.FindAsync(id);
+            var hospitalClinic = await _context.Hospitals.FindAsync(id);
             if (hospitalClinic == null)
             {
                 return NotFound();
             }
 
-            _context.HospitalClinic.Remove(hospitalClinic);
+            _context.Hospitals.Remove(hospitalClinic);
             await _context.SaveChangesAsync();
 
             return hospitalClinic;
@@ -181,7 +221,7 @@ namespace Health_Care.Controllers
 
         private bool HospitalClinicExists(int id)
         {
-            return _context.HospitalClinic.Any(e => e.id == id);
+            return _context.Hospitals.Any(e => e.id == id);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Health_Care.Data
 
         public DbSet<Health_Care.Models.ExternalClinic> ExternalClinic { get; set; }
 
-        public DbSet<Health_Care.Models.HospitalClinic> HospitalClinic { get; set; }
+        public DbSet<Health_Care.Models.Hospital> Hospitals { get; set; }
 
         public DbSet<Health_Care.Models.HealthcareWorker> HealthcareWorker { get; set; }
         public DbSet<Health_Care.Models.Blogs> Blogs { get; set; }
