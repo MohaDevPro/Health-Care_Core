@@ -71,6 +71,8 @@ namespace Health_Care.Controllers
                                                                            {
                                                                                id = doctor.id,
                                                                                Name = doctor.name,
+                                                                               appointmentPrice = doctor.appointmentPrice,
+                                                                               numberOfAvailableAppointment = doctor.numberOfAvailableAppointment,
                                                                            }
                                                                                   ).ToList()
 
