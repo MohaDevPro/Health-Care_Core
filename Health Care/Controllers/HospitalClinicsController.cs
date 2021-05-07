@@ -69,8 +69,8 @@ namespace Health_Care.Controllers
                                                                            where clinic.userId == hospitalId
                                                                            select new
                                                                            {
-                                                                               id = clinic.id,
-                                                                               Name = clinic.Name,
+                                                                               id = doctor.id,
+                                                                               Name = doctor.name,
                                                                            }
                                                                                   ).ToList()
 
