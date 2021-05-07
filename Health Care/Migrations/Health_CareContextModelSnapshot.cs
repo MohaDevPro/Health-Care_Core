@@ -354,13 +354,13 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("HealthcareWorkerid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Price")
+                    b.Property<int?>("HealthcareWorkerid")
                         .HasColumnType("int");
 
                     b.Property<int>("serviceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userId")
                         .HasColumnType("int");
 
                     b.HasKey("id");
@@ -437,11 +437,20 @@ namespace Health_Care.Migrations
                     b.Property<int>("clinicId")
                         .HasColumnType("int");
 
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("hospitalId")
                         .HasColumnType("int");
 
+                    b.Property<string>("name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("numberOfAvailableAppointment")
                         .HasColumnType("int");
+
+                    b.Property<string>("picture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -816,9 +825,7 @@ namespace Health_Care.Migrations
                 {
                     b.HasOne("Health_Care.Models.HealthcareWorker", null)
                         .WithMany("HealthcareWorkerServices")
-                        .HasForeignKey("HealthcareWorkerid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HealthcareWorkerid");
 
                     b.HasOne("Health_Care.Models.Service", null)
                         .WithMany("HealthcareWorkers")

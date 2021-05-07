@@ -74,7 +74,6 @@ namespace Health_Care.Data
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Health_Care.Models.SpeciallyDoctor> SpeciallyDoctors { get; set; }
         public DbSet<Health_Care.Models.ClinicDoctor> clinicDoctors { get; set; }
-        public DbSet<Health_Care.Models.Blogs> Blogs { get; set; }
         public DbSet<Health_Care.Models.MedicalAdvice> MedicalAdvice { get; set; }
 
 

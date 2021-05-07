@@ -7,9 +7,9 @@ namespace Health_Care.Models
 {
     public class HospitalClinicDoctorViewModel
     {
-        public User HospitalInfo { get; set; }
-        public ClinicType ClinicInfo { get; set; }
-        public List<ClinicDoctor> ClinicDoctorInfo { get; set; }
-        public List<HospitalClinic> HospitalClinicInfoList { get; set; }
+        public HospitalClinic HospitalInfo { get; set; } //done
+        //public List<ClinicType> ClinicInfo { get; set; }
+        //public List<ClinicDoctor> ClinicDoctorInfo { get; set; }
+        public List<ExternalClinic> HospitalClinicInfoList { get; set; }
     }
 }

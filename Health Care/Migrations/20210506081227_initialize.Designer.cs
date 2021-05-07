@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210505102922_hj")]
-    partial class hj
+    [Migration("20210506081227_initialize")]
+    partial class initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -320,6 +320,18 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("BackGroundPicture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("graduationCertificateImage")
                         .HasColumnType("nvarchar(max)");
 
@@ -344,6 +356,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("HealthcareWorkerid")
+                        .HasColumnType("int");
+
                     b.Property<int>("serviceId")
                         .HasColumnType("int");
 
@@ -351,6 +366,10 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("id");
+
+                    b.HasIndex("HealthcareWorkerid");
+
+                    b.HasIndex("serviceId");
 
                     b.ToTable("HealthcareWorkerService");
                 });
@@ -420,11 +439,20 @@ namespace Health_Care.Migrations
                     b.Property<int>("clinicId")
                         .HasColumnType("int");
 
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("hospitalId")
                         .HasColumnType("int");
 
+                    b.Property<string>("name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("numberOfAvailableAppointment")
                         .HasColumnType("int");
+
+                    b.Property<string>("picture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -456,6 +484,24 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("HospitalClinicDoctor");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.MedicalAdvice", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("paragraph")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("MedicalAdvice");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Notifications", b =>
@@ -775,6 +821,19 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("WorkerSalary");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>
+                {
+                    b.HasOne("Health_Care.Models.HealthcareWorker", null)
+                        .WithMany("HealthcareWorkerServices")
+                        .HasForeignKey("HealthcareWorkerid");
+
+                    b.HasOne("Health_Care.Models.Service", null)
+                        .WithMany("HealthcareWorkers")
+                        .HasForeignKey("serviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Health_Care.Models.RefreshToken", b =>
