@@ -2,29 +2,32 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class Create_MedicalAdvice_Table : Migration
+    public partial class add_appointmentDoctorClinc : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "MedicalAdvice",
+                name: "AppointmentDoctorClinic",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    title = table.Column<string>(nullable: true),
-                    paragraph = table.Column<string>(nullable: true)
+                    clinicId = table.Column<int>(nullable: false),
+                    doctorId = table.Column<int>(nullable: false),
+                    appointmentDate = table.Column<string>(nullable: true),
+                    numberOfAvailableAppointment = table.Column<int>(nullable: false),
+                    numberOfRealAppointment = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MedicalAdvice", x => x.id);
+                    table.PrimaryKey("PK_AppointmentDoctorClinic", x => x.id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MedicalAdvice");
+                name: "AppointmentDoctorClinic");
         }
     }
 }

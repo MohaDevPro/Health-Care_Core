@@ -20,7 +20,13 @@ namespace Health_Care.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Service>>> GetService()
+        {
+            var service = await _context.Service.ToListAsync();
 
+            return service;
+        }
         // GET: api/Services
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)

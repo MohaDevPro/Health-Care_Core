@@ -10,5 +10,6 @@ namespace Health_Care.Models
         public int id { get; set; }
         public int Clinicid { get; set; }
         public int Doctorid { get; set; }
+
     }
 }
