@@ -23,7 +23,6 @@ namespace Health_Care.Models
         //public ICollection<Role> Roles { get; set; }
         public virtual RefreshToken RefreshTokens { get; set; }
 
-        public virtual Collection<Favorite> Favorites { get; set; }
 
 
     }

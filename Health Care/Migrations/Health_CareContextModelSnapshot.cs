@@ -353,10 +353,6 @@ namespace Health_Care.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("Favorite");
                 });
 
@@ -452,28 +448,7 @@ namespace Health_Care.Migrations
                     b.ToTable("HealthcareWorkerWorkPlace");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.HospitalAppointment", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("appointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("clinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("doctorid")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("HospitalAppointment");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.HospitalClinic", b =>
+            modelBuilder.Entity("Health_Care.Models.Hospital", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -494,7 +469,28 @@ namespace Health_Care.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("HospitalClinic");
+                    b.ToTable("Hospitals");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.HospitalAppointment", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("appointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("clinicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("doctorid")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("HospitalAppointment");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HospitalClinicDoctor", b =>
@@ -534,7 +530,7 @@ namespace Health_Care.Migrations
                     b.Property<int>("DepatmentsOfHospitalID")
                         .HasColumnType("int");
 
-                    b.Property<int>("HospitalClinicid")
+                    b.Property<int>("Hospitalid")
                         .HasColumnType("int");
 
                     b.HasKey("id");
@@ -877,21 +873,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("WorkerSalary");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.Favorite", b =>
-                {
-                    b.HasOne("Health_Care.Models.Patient", "Patient")
-                        .WithMany("Favorites")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Health_Care.Models.User", "User")
-                        .WithMany("Favorites")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>

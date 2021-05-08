@@ -28,14 +28,24 @@ namespace Health_Care.Controllers
             return await _context.Favorite.ToListAsync();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Favorite>>> GetFavoriteByPatientIdAndType(int id,string type)
+       
+
+
+        [HttpGet("{patientId}/{type}")]
+        public async Task<ActionResult<IEnumerable<Favorite>>> GetFavoriteByPatientIdAndType(int patientId, string type)
         {
-            
-            return await _context.Favorite.Where(x=>x.PatientId==id & x.type==type).ToListAsync();
+
+            return await _context.Favorite.Where(x => x.PatientId == patientId & x.type == type).ToListAsync();
         }
 
-        // GET: api/Favorites/5
+        [HttpGet("{patientId}/{userId}/{type}")]
+        public async Task<ActionResult<Favorite>> GetFavoriteByPatientIdUserIdType(int patientId,int userId,string type)
+        {
+
+            return await _context.Favorite.Where(x => x.PatientId == patientId && x.UserId==userId && x.type == type).SingleOrDefaultAsync();
+        }
+
+        //GET: api/Favorites/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Favorite>> GetFavorite(int id)
         {
@@ -47,6 +57,51 @@ namespace Health_Care.Controllers
             }
 
             return favorite;
+        }
+
+        [HttpGet("{patientId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId)
+        {
+            //var favorite = (from PatientFavorite in _context.Favorite join doc in _context.Doctor on PatientFavorite.UserId equals doc.Userid where PatientFavorite.PatientId == patientId select PatientFavorite).ToList();
+
+
+
+            return await (from PatientFavorite in _context.Favorite
+                          join doctor in _context.Doctor on PatientFavorite.UserId equals doctor.Userid
+                          where PatientFavorite.PatientId == patientId && PatientFavorite.type=="doctor"
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                              Picture = doctor.Picture,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                select specialit).ToList(),
+                              isFavorite = true,
+
+
+                          }
+                          ).ToListAsync();
+        }
+
+        [HttpGet("{patientId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetWorkersWithFavorite(int patientId)
+        {
+
+
+            return await (from PatientFavorite in _context.Favorite
+                          join worker in _context.HealthcareWorker on PatientFavorite.UserId equals worker.userId
+                          where PatientFavorite.PatientId == patientId && PatientFavorite.type == "worker"
+                          select new
+                          {
+                              id = worker.id,
+                              Name = worker.Name,
+                              Picture = worker.Picture,
+                              Description=worker.Description,
+                              isFavorite = true,
+                          }
+                          ).ToListAsync();
         }
 
         // PUT: api/Favorites/5
@@ -94,10 +149,11 @@ namespace Health_Care.Controllers
         }
 
         // DELETE: api/Favorites/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Favorite>> DeleteFavorite(int id)
+        [HttpDelete("{patientId}/{userId}/{type}")]
+        //[Route("api/Favorites/{patientId}/{userId}/{type}")]
+        public async Task<ActionResult<Favorite>> DeleteFavorite(int patientId,int userId,string type)
         {
-            var favorite = await _context.Favorite.FindAsync(id);
+            var favorite = await _context.Favorite.Where(x=> x.PatientId==patientId && x.UserId==userId && x.type==type).SingleOrDefaultAsync();
             if (favorite == null)
             {
                 return NotFound();

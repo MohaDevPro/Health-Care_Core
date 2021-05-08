@@ -16,6 +16,5 @@ namespace Health_Care.Models
         public int Balance { get; set; }
         public string LastBalanceChargeDate { get; set; }
 
-        public virtual Collection<Favorite> Favorites { get; set; }
     }
 }
