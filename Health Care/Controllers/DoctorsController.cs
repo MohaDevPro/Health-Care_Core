@@ -49,6 +49,8 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              AppointmentPrice = doctor.appointmentPrice,
+                              NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0

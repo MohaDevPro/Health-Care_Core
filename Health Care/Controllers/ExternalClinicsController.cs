@@ -62,6 +62,7 @@ namespace Health_Care.Controllers
 
             return externalClinic;
         }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByHospitalID(int id)
         {

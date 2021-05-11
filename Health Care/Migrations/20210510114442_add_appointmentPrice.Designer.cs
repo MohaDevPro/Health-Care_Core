@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210510114442_add_appointmentPrice")]
+    partial class add_appointmentPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,33 +113,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Appointment");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.AppointmentDoctorClinic", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("appointmentDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("clinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("doctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("numberOfAvailableAppointment")
-                        .HasColumnType("int");
-
-                    b.Property<int>("numberOfRealAppointment")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("AppointmentDoctorClinic");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Blogs", b =>
@@ -457,6 +432,8 @@ namespace Health_Care.Migrations
 
                     b.HasIndex("HealthcareWorkerid");
 
+                    b.HasIndex("serviceId");
+
                     b.ToTable("HealthcareWorkerService");
                 });
 
@@ -757,6 +734,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("serviceName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("servicePrice")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
                     b.ToTable("Service");
@@ -920,6 +900,12 @@ namespace Health_Care.Migrations
                     b.HasOne("Health_Care.Models.HealthcareWorker", null)
                         .WithMany("HealthcareWorkerServices")
                         .HasForeignKey("HealthcareWorkerid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Health_Care.Models.Service", null)
+                        .WithMany("HealthcareWorkers")
+                        .HasForeignKey("serviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
