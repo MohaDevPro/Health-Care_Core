@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210510112214_iuy")]
+    partial class iuy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,9 +83,6 @@ namespace Health_Care.Migrations
                     b.Property<bool>("appointmentForUserHimself")
                         .HasColumnType("bit");
 
-                    b.Property<int>("appointmentPrice")
-                        .HasColumnType("int");
-
                     b.Property<string>("appointmentStartFrom")
                         .HasColumnType("nvarchar(max)");
 
@@ -111,33 +110,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Appointment");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.AppointmentDoctorClinic", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("appointmentDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("clinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("doctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("numberOfAvailableAppointment")
-                        .HasColumnType("int");
-
-                    b.Property<int>("numberOfRealAppointment")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("AppointmentDoctorClinic");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Blogs", b =>
