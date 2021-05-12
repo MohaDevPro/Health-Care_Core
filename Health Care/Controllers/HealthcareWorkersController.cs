@@ -31,6 +31,7 @@ namespace Health_Care.Controllers
                               id = HealthWorker.id,
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
+                              Backgroundimage=HealthWorker.BackGroundPicture,
                               Description = HealthWorker.Description
                           }
                           ).ToListAsync();
@@ -50,7 +51,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
-                BackGroundPicture = healthcareWorker.BackGroundPicture,
+                Backgroundimage = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
                                   where healthcareWorkerServices.HealthcareWorkerid == id 

@@ -285,13 +285,7 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Background")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
@@ -570,13 +564,21 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DepatmentsOfHospitalID")
                         .HasColumnType("int");
 
                     b.Property<int>("Hospitalid")
                         .HasColumnType("int");
 
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
+
+                    b.HasIndex("Hospitalid");
 
                     b.ToTable("hospitalDepartments");
                 });
@@ -920,6 +922,15 @@ namespace Health_Care.Migrations
                     b.HasOne("Health_Care.Models.HealthcareWorker", null)
                         .WithMany("HealthcareWorkerServices")
                         .HasForeignKey("HealthcareWorkerid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Health_Care.Models.HospitalDepartments", b =>
+                {
+                    b.HasOne("Health_Care.Models.Hospital", null)
+                        .WithMany("hospitalDepartments")
+                        .HasForeignKey("Hospitalid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

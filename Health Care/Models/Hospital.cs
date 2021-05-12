@@ -11,9 +11,11 @@ namespace Health_Care.Models
         public int id { get; set; }
         public string Name { get; set; }
         public string Picture { get; set; }
+        public string BackgoundImage { get; set; }
+
         public string Description { get; set; }
         public int hospitalId { get; set; } //from user table
 
-
+        public ICollection<HospitalDepartments> hospitalDepartments { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Health_Care.Models
 
         public string name { get; set; }
         public string Picture { get; set; }
-
+        public string backgroundImage { get; set; }
         public int appointmentPrice { get; set; }
         public int numberOfAvailableAppointment { get; set; }
 

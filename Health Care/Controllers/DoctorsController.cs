@@ -31,6 +31,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage = doctor.backgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic==true && specialitydoctor.Roleid == 0
@@ -49,6 +50,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage=doctor.backgroundImage,
                               AppointmentPrice = doctor.appointmentPrice,
                               NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -71,6 +73,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage = doctor.backgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -100,6 +103,8 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = Doctor.name,
                 Picture=Doctor.Picture,
+                Backgroundimage = Doctor.backgroundImage,
+
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                  where specialitydoctor.Doctorid == id && specialitydoctor.Roleid == 0
