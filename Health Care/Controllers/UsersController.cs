@@ -101,10 +101,41 @@ namespace Health_Care.Controllers
 
             return user;
         }
+        [HttpPut]
+        public async Task<IActionResult> ChangePass(CH_Password password)
+        {
+            User users = await _context.User.FindAsync(password.id);
+
+            if (users.Password != password.OldPass)
+                return BadRequest();
+
+            users.Password = password.NewPass;
+
+            _context.Entry(users).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(password.id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
 
         private bool UserExists(int id)
         {
             return _context.User.Any(e => e.id == id);
         }
+
     }
 }
