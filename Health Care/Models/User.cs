@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,6 @@ namespace Health_Care.Models
         public int Roleid { get; set; }
         //public ICollection<Role> Roles { get; set; }
         public virtual RefreshToken RefreshTokens { get; set; }
-
 
 
 
