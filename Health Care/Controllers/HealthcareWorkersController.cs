@@ -52,9 +52,14 @@ namespace Health_Care.Controllers
                 Picture = healthcareWorker.Picture,
                 BackGroundPicture = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-                            join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                            where healthcareWorkerServices.userId == id
-                            select service).ToList(),
+                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                                  where healthcareWorkerServices.HealthcareWorkerid == id 
+                                  select new { 
+                                  id=service.id,
+                                  serviceName=service.serviceName,
+                                  servicePrice= healthcareWorkerServices.Price
+
+                                  }).ToList(),
             };
 
 

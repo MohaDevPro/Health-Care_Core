@@ -37,7 +37,7 @@ namespace Health_Care.Controllers
                                 {
                                     id = Departments.id,
                                     Name = Departments.Name,
-                                    Picture = Departments.Picture,
+                                    Picture = hospitaldepartment.Picture,
 
                                 }
 
