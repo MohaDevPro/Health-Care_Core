@@ -24,6 +24,7 @@ namespace Health_Care.Models
 
         public bool Paid { get; set; }
         public bool Accepted { get; set; }
+        public bool cancelledByUser { get; set; }
 
     }
 }

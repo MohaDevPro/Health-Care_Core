@@ -29,6 +29,31 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Appointments/5
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnUserId(int userId)
+        {
+            var appointment = await _context.Appointment.Where(x=>x.userId == userId).ToListAsync();
+            if (appointment == null) { return NotFound(); }
+            return appointment;
+        }
+
+        // GET: api/Appointments/5
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnStatusByUserId(int userId)
+        {
+            List <List<Appointment>> li = new List <List<Appointment>>();
+            var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==true && x.cancelledByUser == false).ToListAsync();
+            var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==false && x.cancelledByUser==false).ToListAsync();
+            var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser==true).ToListAsync();
+            li.Add(ConfirmedAppointment);
+            li.Add(unConfirmedAppointment);
+            li.Add(cancelledAppointment);
+            
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
+        // GET: api/Appointments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
         {
