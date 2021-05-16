@@ -78,6 +78,7 @@ namespace Health_Care.Data
         public DbSet<Health_Care.Models.DepartmentsOfHospital> departmentsOfHospitals { get; set; }
         public DbSet<Health_Care.Models.HospitalDepartments> hospitalDepartments { get; set; }
         public DbSet<Health_Care.Models.AppointmentDoctorClinic> AppointmentDoctorClinic { get; set; }
+        public DbSet<Health_Care.Models.ProfitRatios> ProfitRatios { get; set; }
 
 
 
