@@ -90,6 +90,12 @@ namespace Health_Care.Migrations
                     b.Property<string>("appointmentUntilTo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("cancelReasonWrittenBySecretary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("cancelledByClinicSecretary")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("cancelledByUser")
                         .HasColumnType("bit");
 
@@ -288,13 +294,7 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Background")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
@@ -573,11 +573,17 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DepatmentsOfHospitalID")
                         .HasColumnType("int");
 
                     b.Property<int>("Hospitalid")
                         .HasColumnType("int");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
