@@ -265,7 +265,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        hospitaldepartment.Background = @"\images\" + "bg" + hospitaldepartment.id + "." + bg.ContentType.Split('/')[1];
+                        hospitaldepartment.Background = @"\images\" + "bg_" + hospitaldepartment.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
@@ -328,7 +328,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        hospitaldepartment.Background = @"\images\" + "bg" + hospitaldepartment.id + "." + bg.ContentType.Split('/')[1];
+                        hospitaldepartment.Background = @"\images\" + "bg_" + hospitaldepartment.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
@@ -372,6 +372,298 @@ namespace Health_Care.Controllers
             //System.IO.File.Delete(_environment.WebRootPath + DepartmentsOfHospital.Picture);
             //System.IO.File.Delete(_environment.WebRootPath + DepartmentsOfHospital.BackgroundPicture);
             return hospitaldepartment;
+        }
+
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutExternalClinic(int id, [FromForm] ExternalClinic ExternalClinic, IFormFile Picture, IFormFile bg)
+        {
+            if (id != ExternalClinic.id)
+            {
+                return BadRequest();
+            }
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+                    string path = _environment.WebRootPath + @"\images\";
+                    FileStream fileStream;
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    if (Picture != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "ExternalClinic_logo_" + ExternalClinic.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        ExternalClinic.Picture = @"\images\" + "ExternalClinic_logo_" + ExternalClinic.id + "." + Picture.ContentType.Split('/')[1];
+                        if (bg == null)
+                        {
+                            fileStream.Dispose();
+                        }
+                    }
+                    if (bg != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        ExternalClinic.BackgoundImage = @"\images\" + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                    }
+                    if (Picture != null || bg != null)
+                    {
+                        _context.Entry(ExternalClinic).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return CreatedAtAction("GetExternalClinic", new { id = ExternalClinic.id }, ExternalClinic);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                    {
+                        throw;
+                    }
+                }
+
+
+
+            }
+            return NoContent();
+        }
+
+        // POST: api/ExternalClinics
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPost]
+        //[Authorize(Roles = "admin, ExternalClinic")]
+        public async Task<ActionResult<ExternalClinic>> PostExternalClinic([FromForm] ExternalClinic ExternalClinic, IFormFile Picture, IFormFile bg)
+        {
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    _context.ExternalClinic.Add(ExternalClinic);
+                    await _context.SaveChangesAsync();
+
+                    string path = _environment.WebRootPath + @"\images\";
+                    FileStream fileStream;
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    if (Picture != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "ExternalClinic_logo_" + ExternalClinic.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        ExternalClinic.Picture = @"\images\" + "ExternalClinic_logo_" + ExternalClinic.id + "." + Picture.ContentType.Split('/')[1];
+                    }
+                    if (bg != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        ExternalClinic.BackgoundImage = @"\images\" + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                    }
+                    if (Picture != null || bg != null)
+                    {
+                        _context.Entry(ExternalClinic).State = EntityState.Modified;
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception)
+                {
+
+
+                    throw;
+                }
+
+
+
+            }
+
+            return CreatedAtAction("GetExternalClinic", new { id = ExternalClinic.id }, ExternalClinic);
+        }
+
+        // DELETE: api/ExternalClinics/5
+        [HttpDelete("{id}")]
+        //[Authorize(Roles = "admin, ExternalClinic")]
+        public async Task<ActionResult<ExternalClinic>> DeleteExternalClinic(int id)
+        {
+            var ExternalClinic = await _context.ExternalClinic.FirstOrDefaultAsync(x => x.id == id);
+            if (ExternalClinic == null)
+            {
+                return NotFound();
+            }
+            //var departments = await _context.ExternalClinic.Where(d => d.ExternalClinicID == hospitaldepartmentid.id).ToListAsync();
+            //foreach (Departments dep in departments)
+            //{
+            //    dep.Active = false;
+            //}
+            _context.ExternalClinic.Remove(ExternalClinic);
+            //ExternalClinic.isActive = false;
+            await _context.SaveChangesAsync();
+            //System.IO.File.Delete(_environment.WebRootPath + ExternalClinic.Picture);
+            //System.IO.File.Delete(_environment.WebRootPath + ExternalClinic.BackgroundPicture);
+            return ExternalClinic;
+        }
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDoctor(int id, [FromForm] Doctor Doctor, IFormFile Picture, IFormFile bg)
+        {
+            if (id != Doctor.id)
+            {
+                return BadRequest();
+            }
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+                    string path = _environment.WebRootPath + @"\images\";
+                    FileStream fileStream;
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    if (Picture != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        Doctor.Picture = @"\images\" + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1];
+                        if (bg == null)
+                        {
+                            fileStream.Dispose();
+                        }
+                    }
+                    if (bg != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        Doctor.backgroundImage = @"\images\" + "bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1];
+                    }
+                    if (Picture != null || bg != null)
+                    {
+                        _context.Entry(Doctor).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return CreatedAtAction("GetDoctor", new { id = Doctor.id }, Doctor);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+
+                    {
+                        throw;
+                    }
+                }
+
+
+
+            }
+            return NoContent();
+        }
+
+        // POST: api/Doctors
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPost("{ClinicID}")]
+        //[Authorize(Roles = "admin, Doctor")]
+        public async Task<ActionResult<Doctor>> PostDoctor(int ClinicID, [FromForm] Doctor Doctor, IFormFile Picture, IFormFile bg)
+        {
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+
+                    _context.Doctor.Add(Doctor);
+                    await _context.SaveChangesAsync();
+
+                    _context.clinicDoctors.Add(new ClinicDoctor() { Clinicid = ClinicID, Doctorid = Doctor.id });
+                    string path = _environment.WebRootPath + @"\images\";
+                    FileStream fileStream;
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    if (Picture != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        Doctor.Picture = @"\images\" + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1];
+                    }
+                    if (bg != null)
+                    {
+                        fileStream = System.IO.File.Create(path + "Doctor_bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        Doctor.backgroundImage = @"\images\" + "Doctor_bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1];
+                    }
+                    if (Picture != null || bg != null)
+                    {
+                        _context.Entry(Doctor).State = EntityState.Modified;
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception)
+                {
+
+
+                    throw;
+                }
+
+
+
+            }
+
+            return CreatedAtAction("GetDoctor", new { id = Doctor.id }, Doctor);
+        }
+
+        // DELETE: api/Doctors/5
+        [HttpDelete("{id}")]
+        //[Authorize(Roles = "admin, Doctor")]
+        public async Task<ActionResult<Doctor>> DeleteDoctor(int id)
+        {
+            var Doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.id == id);
+            if (Doctor == null)
+            {
+                return NotFound();
+            }
+            //var departments = await _context.Doctor.Where(d => d.DoctorID == hospitaldepartmentid.id).ToListAsync();
+            //foreach (Departments dep in departments)
+            //{
+            //    dep.Active = false;
+            //}
+            _context.Doctor.Remove(Doctor);
+            //Doctor.isActive = false;
+            await _context.SaveChangesAsync();
+            //System.IO.File.Delete(_environment.WebRootPath + Doctor.Picture);
+            //System.IO.File.Delete(_environment.WebRootPath + Doctor.BackgroundPicture);
+            return Doctor;
         }
 
 

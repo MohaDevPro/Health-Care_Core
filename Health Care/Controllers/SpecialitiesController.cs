@@ -32,7 +32,42 @@ namespace Health_Care.Controllers
         {
             return await _context.Speciality.Where(x=>x.isBasic==isbasic).ToListAsync();
         }
+        [HttpGet("{UserID}/{RoleID}")]
+        public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByUseridAndRoleID(int UserID,int RoleID)
+        {
+            return await (from speciality in  _context.Speciality join sepeialityDoctor in _context.SpeciallyDoctors 
+                          on speciality.id equals sepeialityDoctor.Specialityid
+                          where sepeialityDoctor.Doctorid==UserID && sepeialityDoctor.Roleid==RoleID
+                          select speciality
+                          ).ToListAsync();
+        }
+        [HttpPost("{UserID}/{SpecialityID}/{RoleID}")]
+        public async Task<ActionResult<Speciality>> PostSpecialityForUser(int UserID,int SpecialityID,int RoleID)
+        {
+            var specialitydoctor = new SpeciallyDoctor() { Doctorid = UserID, Specialityid = SpecialityID, Roleid = RoleID };
+            var check = _context.SpeciallyDoctors.FirstOrDefault(x => x.Doctorid == UserID && x.Specialityid == SpecialityID && x.Roleid == RoleID);
+            if (check == null)
+            {
+                _context.SpeciallyDoctors.Add(specialitydoctor);
+                await _context.SaveChangesAsync();
+            }
 
+            return CreatedAtAction("GetSpeciality", new { id = specialitydoctor.id }, specialitydoctor);
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<SpeciallyDoctor>> DeleteSpecialityForUser(int id)
+        {
+            var speciality = await _context.SpeciallyDoctors.FindAsync(id);
+            if (speciality == null)
+            {
+                return NotFound();
+            }
+
+            _context.SpeciallyDoctors.Remove(speciality);
+            await _context.SaveChangesAsync();
+
+            return speciality;
+        }
         // GET: api/Specialities/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Speciality>> GetSpeciality(int id)
