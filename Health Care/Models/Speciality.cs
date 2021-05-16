@@ -9,6 +9,7 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public string specialityName { get; set; }
+        public int BasicSpecialityID { get; set; }
         public bool isBasic { get; set; }
     }
 }

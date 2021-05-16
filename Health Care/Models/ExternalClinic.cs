@@ -17,5 +17,6 @@ namespace Health_Care.Models
         public int numberOfAvailableAppointment { get; set; }
         public int HospitalDepartmentsID { get; set; }
 
+
     }
 }
