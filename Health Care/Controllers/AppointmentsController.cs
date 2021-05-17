@@ -29,6 +29,92 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Appointments/5
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnUserId(int userId)
+        {
+            var appointment = await _context.Appointment.Where(x=>x.userId == userId).ToListAsync();
+            if (appointment == null) { return NotFound(); }
+            return appointment;
+        }
+
+        // GET: api/Appointments/5
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnStatusByUserId(int userId)
+        {
+            List <List<Appointment>> li = new List <List<Appointment>>();
+
+            var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==true && x.cancelledByUser == false).ToListAsync();
+            var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==false && x.cancelledByUser==false).ToListAsync();
+            var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser==true).ToListAsync();
+            
+            li.Add(ConfirmedAppointment);
+            li.Add(unConfirmedAppointment);
+            li.Add(cancelledAppointment);
+            
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
+
+        // GET: api/Appointments/5
+        [HttpGet("{clinicId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId)
+        {
+            List<List<Appointment>> li = new List<List<Appointment>>();
+
+            var ConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary==false).OrderBy(x=> x.appointmentDate).ToListAsync();
+
+            var unConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary==false).OrderBy(x => x.appointmentDate).ToListAsync();
+
+            var cancelledAppointmentByUser = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == true ).OrderBy(x => x.appointmentDate).ToListAsync();
+            
+            var cancelledAppointmentBySecretary = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            
+            li.Add(ConfirmedAppointment);
+            li.Add(unConfirmedAppointment);
+            li.Add(cancelledAppointmentByUser);
+            li.Add(cancelledAppointmentBySecretary);
+
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
+        {
+            string searchDate = month + "/" + day + "/" + year;
+
+            var appointmentList = await _context.Appointment
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            return appointmentList;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDateToCancelbyClinic(string month, string day, string year, int clinicId, int doctorId)
+        {
+            string searchDate = month + "/" + day + "/" + year;
+
+            var appointmentList = await _context.Appointment
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
+                && x.cancelledByUser==false && x.cancelledByClinicSecretary==false).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            return appointmentList;
+        }
+
+        // GET: api/Appointments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
         {

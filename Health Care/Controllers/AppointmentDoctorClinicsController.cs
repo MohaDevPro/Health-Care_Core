@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Health_Care.Controllers
 {
@@ -14,6 +15,26 @@ namespace Health_Care.Controllers
     [ApiController]
     public class AppointmentDoctorClinicsController : ControllerBase
     {
+
+        // To Get 5 Days 
+        [HttpGet("{month}/{day}/{year}")]
+        public List<String> GetDatesBetween(string month, string day, string year)
+        {
+            string startDate = month + "/" + day + "/" + year;
+            DateTime sd = DateTime.ParseExact(startDate, "M/d/yyyy", null);
+            List<DateTime> allDates = new List<DateTime>();
+            List<String> allDatesString = new List<String>();
+
+            for (DateTime date = sd ; date <= sd.AddDays(5) ; date = date.AddDays(1))
+            {   
+                allDates.Add(date.Date);
+                var x = date.Date.Month + "/" + date.Date.Day + "/" + date.Date.Year ;
+                allDatesString.Add(x);
+            }
+
+            return allDatesString;
+        }
+
         private readonly Health_CareContext _context;
 
         public AppointmentDoctorClinicsController(Health_CareContext context)
@@ -41,6 +62,29 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             return appointmentDoctorClinic;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<DateAppointmentClinicDoctorViewModel>>> GetAppointmentDoctorClinicBasedOnDateAndClinic(string month, string day, string year, int clinicId,int doctorId)
+        {
+            //List<> = List<>();
+            List<String> DatesListFor5Days = GetDatesBetween(month, day, year);
+            List<DateAppointmentClinicDoctorViewModel> li = new List<DateAppointmentClinicDoctorViewModel>();
+
+            for(var x = 0; x< DatesListFor5Days.Count; x++)
+            {
+                var splittedDate = DatesListFor5Days[x].Split('/');
+                string searchDate = splittedDate[0] + "/" + splittedDate[1] + "/" + splittedDate[2];
+
+                var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
+
+                li.Add(new DateAppointmentClinicDoctorViewModel(){ date = searchDate , appointmentDoctorClinicObj = appointmentDoctorClinicObj });
+            }
+
+            
+            
+            if (li == null) { return NotFound(); }
+            return li;
         }
 
         // GET: api/AppointmentDoctorClinics/5
@@ -121,5 +165,8 @@ namespace Health_Care.Controllers
         {
             return _context.AppointmentDoctorClinic.Any(e => e.id == id);
         }
+
+
+        
     }
 }
