@@ -28,17 +28,22 @@ namespace Health_Care.Controllers
             return await _context.ProfitFromTheApp.ToListAsync();
         }
 
+        [HttpGet("{hospitalId}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<ProfitFromTheApp>> GetProfitFromTheAppBasedOnCategory(int hospitalId, int clinicId, int doctorId)
+        {
+            var ProfitObj = await _context.ProfitFromTheApp
+                .FirstOrDefaultAsync(x => x.hospitalId == hospitalId && x.clinicId == clinicId && x.doctorId == doctorId);
+
+            return ProfitObj;
+        }
+
         // GET: api/ProfitFromTheApps/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProfitFromTheApp>> GetProfitFromTheApp(int id)
         {
             var profitFromTheApp = await _context.ProfitFromTheApp.FindAsync(id);
 
-            if (profitFromTheApp == null)
-            {
-                return NotFound();
-            }
-
+            if (profitFromTheApp == null) { return NotFound(); }
             return profitFromTheApp;
         }
 

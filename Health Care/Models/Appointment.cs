@@ -23,10 +23,13 @@ namespace Health_Care.Models
         public string visitReason { get; set; }
         public bool PatientComeToAppointment { get; set; }
         public bool Paid { get; set; }
+        public bool PercentageFromAppointmentPriceForApp { get; set; }
         public bool Accepted { get; set; }
         public bool cancelledByUser { get; set; }
         public bool cancelledByClinicSecretary { get; set; }
         public string cancelReasonWrittenBySecretary { get; set; }
+        public string appointmentDoctorClinicId { get; set; }
+
 
     }
 }

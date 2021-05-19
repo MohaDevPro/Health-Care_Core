@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210518031655_editAppointmentProfitfromAppModel")]
+    partial class editAppointmentProfitfromAppModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,9 +83,6 @@ namespace Health_Care.Migrations
                     b.Property<string>("appointmentDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("appointmentDoctorClinicId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("appointmentForUserHimself")
                         .HasColumnType("bit");
 
@@ -148,9 +147,6 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("numberOfRealAppointment")
-                        .HasColumnType("int");
-
-                    b.Property<int>("totalProfitFromRealAppointment")
                         .HasColumnType("int");
 
                     b.HasKey("id");

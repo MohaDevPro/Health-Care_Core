@@ -99,6 +99,22 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> GetConfirmedAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
+        {
+            string searchDate = month + "/" + day + "/" + year;
+
+            var appointmentList = await _context.Appointment
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
+                       && x.Accepted==true&& x.Paid == false ).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            return appointmentList;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDateToCancelbyClinic(string month, string day, string year, int clinicId, int doctorId)
         {
             string searchDate = month + "/" + day + "/" + year;
