@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+//using Health_Care.Migrations;
 
 namespace Health_Care.Controllers
 {
@@ -22,22 +23,81 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Doctors
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctor()
         {
+
             return await (from doctor in _context.Doctor
                           select new
                           {
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage = doctor.backgroundImage,
+                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                select specialit).ToList(),
+                          }
+                          ).ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetNamesOfDoctors()
+        {
+
+            return await (from doctor in _context.Doctor
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                          }
+                          ).ToListAsync();
+        }
+
+
+        [HttpGet("{patientId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId)
+        {
+            var favorite = (from PatientFavorite in _context.Favorite join doc in _context.Doctor on PatientFavorite.UserId equals doc.Userid where PatientFavorite.PatientId == patientId select PatientFavorite ).ToList();
+
+            
+            
+            var doctors= await(from doctor in _context.Doctor
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
+                              Picture = doctor.Picture,
+                              userId=doctor.Userid,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic==true && specialitydoctor.Roleid == 0
                                                 select specialit).ToList(),
                           }
-
                           ).ToListAsync();
+            var listFinalResult =new List<object>();
+            bool flag = false;
+            foreach(var i in doctors)
+            {
+                foreach(var j in favorite)
+                {
+                    if (j.UserId == i.userId)
+                        flag = true;
+                }
+                var docrotwithfavorite = new
+                {
+                    i.id,
+                    i.Name,
+                    i.Picture,
+                    i.specialitylist,
+                    isFavorite = flag ? true : false,
+                };
+                listFinalResult.Add(docrotwithfavorite);
+                flag = false;
+            }
+            return listFinalResult;
+
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id)
@@ -49,6 +109,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage=doctor.backgroundImage,
                               AppointmentPrice = doctor.appointmentPrice,
                               NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -71,6 +132,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              Backgroundimage = doctor.backgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -100,6 +162,8 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = Doctor.name,
                 Picture=Doctor.Picture,
+                Backgroundimage = Doctor.backgroundImage,
+
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                  where specialitydoctor.Doctorid == id && specialitydoctor.Roleid == 0

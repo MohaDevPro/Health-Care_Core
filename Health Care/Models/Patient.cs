@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,5 +15,6 @@ namespace Health_Care.Models
         public string chronicDiseases { get; set; }
         public int Balance { get; set; }
         public string LastBalanceChargeDate { get; set; }
+
     }
 }

@@ -86,7 +86,47 @@ namespace Health_Care.Controllers
             if (li == null) { return NotFound(); }
             return li;
         }
+        [HttpGet("{hospitalid}/{clinicid}/{doctorid}/{startdate}/{finishdate}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetOrderByQuery(int hospitalid, int clinicid, int doctorid, string startdate, string finishdate)
+        {
+            var allorders = _context.AppointmentDoctorClinic.AsQueryable();
+            if (hospitalid != 0)
+            {
+                var clinicOnHospitalIDS = _context.ExternalClinic.Where(x => x.userId == hospitalid).Select(x => x.id).ToList();
+                allorders = allorders.Where(x => clinicOnHospitalIDS.Contains(x.clinicId));
+            }
+            if (clinicid != 0)
+            {
+                allorders = allorders.Where(x => x.clinicId == clinicid);
+            }
+            if (doctorid != 0)
+            {
+                allorders = allorders.Where(x => x.doctorId == doctorid);
+            }
+            var splitStartDate = startdate.Split('-');
+            var splitfinishDate = finishdate.Split('-');
+            var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
+            allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate));
+            var doctors = await _context.Doctor.ToListAsync();
+            var clinics = await _context.ExternalClinic.ToListAsync();
+            var execuate = await allorders.ToListAsync();
+            var test = from doctor in doctors
+                       join appointment in execuate on doctor.id equals appointment.doctorId
+                       join clinic in clinics on appointment.clinicId equals clinic.id
+                       select new 
+                       {
+                           id = appointment.id,
+                           //Totaly = orders.TotalyWithDiscount,
+                           Date = appointment.appointmentDate,
+                           ClinicName = clinic.Name,
+                           DoctorName = doctor.name,
+                           appointment.numberOfRealAppointment,
 
+                       };
+
+
+            return test.ToList();
+        }
         // GET: api/AppointmentDoctorClinics/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AppointmentDoctorClinic>> GetAppointmentDoctorClinic(int id)

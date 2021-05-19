@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -10,14 +10,25 @@
     <PackageReference Include="FirebaseAdmin" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
     <Compile Remove=".config\**" />
+    <Compile Remove="Migrations\**" />
     <Content Remove=".config\**" />
+    <Content Remove="Migrations\**" />
     <EmbeddedResource Remove=".config\**" />
+    <EmbeddedResource Remove="Migrations\**" />
     <None Remove=".config\**" />
+    <None Remove="Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20210505072415_xcv.cs" />
-    <Compile Remove="Migrations\20210505072415_xcv.Designer.cs" />
+    <Compile Include="Migrations\20210518005132_new2.cs" />
+    <Compile Include="Migrations\20210518005132_new2.designer.cs" />
+    <Compile Include="Migrations\20210518005529_new3.cs" />
+    <Compile Include="Migrations\20210518005529_new3.designer.cs" />
+    <Compile Include="Migrations\20210518011339_new4.cs" />
+    <Compile Include="Migrations\20210518011339_new4.designer.cs" />
+    <Compile Include="Migrations\20210518011828_new5.cs" />
+    <Compile Include="Migrations\20210518011828_new5.designer.cs" />
+    <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>

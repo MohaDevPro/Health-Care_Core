@@ -31,6 +31,7 @@ namespace Health_Care.Controllers
                               id = HealthWorker.id,
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
+                              Backgroundimage=HealthWorker.BackGroundPicture,
                               Description = HealthWorker.Description
                           }
                           ).ToListAsync();
@@ -50,7 +51,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
-                BackGroundPicture = healthcareWorker.BackGroundPicture,
+                Backgroundimage = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
                                   where healthcareWorkerServices.HealthcareWorkerid == id 
@@ -96,6 +97,46 @@ namespace Health_Care.Controllers
             }
 
             return NoContent();
+        }
+
+
+        [HttpGet("{patientId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId)
+        {
+            var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
+            var WorkerH = await (from HealthWorker in _context.HealthcareWorker
+                                 select new
+                                 {
+                                     id = HealthWorker.id,
+                                     Name = HealthWorker.Name,
+                                     Picture = HealthWorker.Picture,
+                                     userId = HealthWorker.userId,
+                                     Description = HealthWorker.Description
+                                 }
+                          ).ToListAsync();
+            var listFinalResult = new List<object>();
+            bool flag = false;
+            foreach (var i in WorkerH)
+            {
+                foreach (var j in WorkerWithFavorite)
+                {
+                    if (j.UserId == i.userId)
+                        flag = true;
+                }
+                var docrotwithfavorite = new
+                {
+                    i.id,
+                    i.Name,
+                    i.Picture,
+                    i.Description,
+                    isFavorite = flag ? true : false,
+                };
+                listFinalResult.Add(docrotwithfavorite);
+                flag = false;
+            }
+            return listFinalResult;
+
+
         }
 
         // POST: api/HealthcareWorkers

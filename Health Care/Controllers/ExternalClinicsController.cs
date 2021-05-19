@@ -31,10 +31,23 @@ namespace Health_Care.Controllers
                               id = clinic.id,
                               Name = clinic.Name,
                               Picture = clinic.Picture,
+                              Backgroundimage=clinic.BackgoundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
                                                 select specialit).ToList(),
+                          }
+
+                          ).ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicForAdmin()
+        {
+            return await (from clinic in _context.ExternalClinic
+                          select new
+                          {
+                              id = clinic.id,
+                              Name = clinic.Name,
                           }
 
                           ).ToListAsync();
@@ -52,6 +65,8 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
+                                            Backgroundimage = clinic.BackgoundImage,
+
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                               where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid==1
@@ -72,6 +87,7 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
+                                            Backgroundimage = clinic.BackgoundImage,
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                               where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
@@ -92,6 +108,7 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
+                                            Backgroundimage = clinic.BackgoundImage,
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                               where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
@@ -111,6 +128,7 @@ namespace Health_Care.Controllers
                 id = clinic.id,
                 Name = clinic.Name,
                 Picture = clinic.Picture,
+                Backgroundimage = clinic.BackgoundImage,
                 specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                   join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                   where specialitydoctor.Doctorid == clinic.id && specialitydoctor.Roleid == 1

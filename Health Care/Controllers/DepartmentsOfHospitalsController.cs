@@ -23,7 +23,7 @@ namespace Health_Care.Controllers
 
         // GET: api/DepartmentsOfHospitals
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<DepartmentsOfHospital>>> GetdepartmentsOfHospitals()
+        public async Task<ActionResult<IEnumerable<DepartmentsOfHospital>>> GetdepartmentsOfHospital()
         {
             return await _context.departmentsOfHospitals.ToListAsync();
         }
@@ -32,14 +32,16 @@ namespace Health_Care.Controllers
         {
             var hospital = await _context.Hospitals.Where(x => x.hospitalId == id).FirstOrDefaultAsync();
             return await (from hospitaldepartment in _context.hospitalDepartments join Departments in _context.departmentsOfHospitals on hospitaldepartment.DepatmentsOfHospitalID equals Departments.id
-                                  where hospitaldepartment.Hospitalid==hospital.id
-                                select new
-                                {
-                                    id = Departments.id,
-                                    Name = Departments.Name,
-                                    Picture = hospitaldepartment.Picture,
+                          where hospitaldepartment.Hospitalid == hospital.id
+                          select new
+                          {
+                              id = Departments.id,
+                              Name = Departments.Name,
+                              Picture = hospitaldepartment.Picture,
+                              Backgroundimage = hospitaldepartment.Background,
+                              HospitalDepartmentid=hospitaldepartment.id
 
-                                }
+                          }
 
                           ).ToListAsync();
         }

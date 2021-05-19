@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class Speciality
+    public class CH_Password
     {
         public int id { get; set; }
-        public string specialityName { get; set; }
-        public int BasicSpecialityID { get; set; }
-        public bool isBasic { get; set; }
+        public string OldPass { get; set; }
+        public string NewPass { get; set; }
     }
 }
