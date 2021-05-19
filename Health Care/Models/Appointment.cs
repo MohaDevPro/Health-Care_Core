@@ -17,7 +17,6 @@ namespace Health_Care.Models
         public bool appointmentForUserHimself { get; set; }
         public string appointmentStartFrom { get; set; }
         public string appointmentUntilTo { get; set; }
-        
         public string patientName { get; set; }
         public string patientphone { get; set; }
         public string visitReason { get; set; }
