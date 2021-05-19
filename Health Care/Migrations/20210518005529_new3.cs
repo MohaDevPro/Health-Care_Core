@@ -2,13 +2,13 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class editSpeciality : Migration
+    public partial class new3 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "BasicSpecialityID",
-                table: "Speciality",
+                name: "clinicId",
+                table: "AppWorktime",
                 nullable: false,
                 defaultValue: 0);
         }
@@ -16,8 +16,8 @@ namespace Health_Care.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "BasicSpecialityID",
-                table: "Speciality");
+                name: "clinicId",
+                table: "AppWorktime");
         }
     }
 }

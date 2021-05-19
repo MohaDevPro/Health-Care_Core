@@ -44,6 +44,20 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinicForAdmin()
+        {
+            return await (from hospital in _context.Hospitals
+                          select new
+                          {
+                              id = hospital.hospitalId,
+                              Name = hospital.Name,
+
+                          }
+
+                          ).ToListAsync();
+        }
+
 
         [HttpGet("{hospitalId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetClinicAndDoctorByHospitalID(int hospitalId)

@@ -183,11 +183,23 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("BalanceReceipt")
+                    b.Property<int>("BalanceReceipt")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BalanceReceiptImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ConfirmToAddBalance")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NumberOfReceipt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResounOfCancel")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("rechargeDate")
                         .HasColumnType("nvarchar(max)");

@@ -9,8 +9,15 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int userId { get; set; }
-        public string BalanceReceipt { get; set; } //صورة السند
+        public string NumberOfReceipt { get; set; }  // رقم الحوالة
+        public string BalanceReceiptImage { get; set; } //صورة السند
+        public int BalanceReceipt { get; set; } //مبلغ الشحن
+
         public string rechargeDate { get; set; }
         public bool ConfirmToAddBalance { get; set; }
+        public bool IsCanceled { get; set; }
+        public string ResounOfCancel { get; set; }
+
+
     }
 }
