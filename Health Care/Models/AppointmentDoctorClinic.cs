@@ -13,6 +13,7 @@ namespace Health_Care.Models
         public string appointmentDate { get; set; }
         public int numberOfAvailableAppointment { get; set; }
         public int numberOfRealAppointment { get; set; }
+        public int totalProfitFromRealAppointment { get; set; }
 
     }
 }

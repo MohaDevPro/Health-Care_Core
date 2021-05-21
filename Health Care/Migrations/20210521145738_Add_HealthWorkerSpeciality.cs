@@ -2,29 +2,28 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class profiRatios : Migration
+    public partial class Add_HealthWorkerSpeciality : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ProfitRatios",
+                name: "SpecialityHealthWorker",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    name = table.Column<string>(nullable: true),
-                    percentage = table.Column<int>(nullable: false)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProfitRatios", x => x.id);
+                    table.PrimaryKey("PK_SpecialityHealthWorker", x => x.id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProfitRatios");
+                name: "SpecialityHealthWorker");
         }
     }
 }

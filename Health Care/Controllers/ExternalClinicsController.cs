@@ -40,6 +40,18 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicForAdmin()
+        {
+            return await (from clinic in _context.ExternalClinic
+                          select new
+                          {
+                              id = clinic.id,
+                              Name = clinic.Name,
+                          }
+
+                          ).ToListAsync();
+        }
 
 
         // GET: api/ExternalClinics/5

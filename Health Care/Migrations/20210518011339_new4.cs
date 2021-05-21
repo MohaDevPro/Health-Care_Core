@@ -2,22 +2,21 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class editSpeciality : Migration
+    public partial class new4 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "BasicSpecialityID",
-                table: "Speciality",
-                nullable: false,
-                defaultValue: 0);
+            migrationBuilder.AddColumn<string>(
+                name: "ResounOfCancel",
+                table: "ChargeOrRechargeRequest",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "BasicSpecialityID",
-                table: "Speciality");
+                name: "ResounOfCancel",
+                table: "ChargeOrRechargeRequest");
         }
     }
 }

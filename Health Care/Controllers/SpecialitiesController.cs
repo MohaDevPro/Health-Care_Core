@@ -26,7 +26,13 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpeciality()
         {
             return await _context.Speciality.ToListAsync();
+        } 
+        
+        public async Task<ActionResult<IEnumerable<SpecialityHealthWorker>>> GetSpecialityHealthWorker()
+        {
+            return await _context.SpecialityHealthWorker.ToListAsync();
         }
+
         [HttpGet("{isbasic}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByBasicType(bool isbasic)
         {
@@ -54,10 +60,10 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetSpeciality", new { id = specialitydoctor.id }, specialitydoctor);
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<SpeciallyDoctor>> DeleteSpecialityForUser(int id)
+        [HttpDelete("{UserID}/{SpecialityID}/{RoleID}")]
+        public async Task<ActionResult<SpeciallyDoctor>> DeleteSpecialityForUser(int UserID, int SpecialityID, int RoleID)
         {
-            var speciality = await _context.SpeciallyDoctors.FindAsync(id);
+            var speciality = await _context.SpeciallyDoctors.FirstOrDefaultAsync(x=>x.Doctorid==UserID&&x.Specialityid==SpecialityID&&x.Roleid==RoleID);
             if (speciality == null)
             {
                 return NotFound();

@@ -17,5 +17,6 @@ namespace Health_Care.Models
         public string RealOpenTime { get; set; }
         public string RealClossTime { get; set; }
 
+
     }
 }

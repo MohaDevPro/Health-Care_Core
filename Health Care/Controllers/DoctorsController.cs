@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
-using Health_Care.Migrations;
+//using Health_Care.Migrations;
+
 
 namespace Health_Care.Controllers
 {
@@ -35,10 +36,24 @@ namespace Health_Care.Controllers
                               Name = doctor.name,
                               Picture = doctor.Picture,
                               Backgroundimage = doctor.backgroundImage,
+                              identificationImage = doctor.identificationImage,
+                              graduationCertificateImage = doctor.graduationCertificateImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
                                                 select specialit).ToList(),
+                          }
+                          ).ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetNamesOfDoctors()
+        {
+
+            return await (from doctor in _context.Doctor
+                          select new
+                          {
+                              id = doctor.id,
+                              Name = doctor.name,
                           }
                           ).ToListAsync();
         }

@@ -2,22 +2,17 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class editBakgroundImage : Migration
+    public partial class EditDoctor : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "BackgoundImage",
-                table: "Hospitals",
+                name: "graduationCertificateImage",
+                table: "Doctor",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "BackgoundImage",
-                table: "ExternalClinic",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "backgroundImage",
+                name: "identificationImage",
                 table: "Doctor",
                 nullable: true);
         }
@@ -25,15 +20,11 @@ namespace Health_Care.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "BackgoundImage",
-                table: "Hospitals");
+                name: "graduationCertificateImage",
+                table: "Doctor");
 
             migrationBuilder.DropColumn(
-                name: "BackgoundImage",
-                table: "ExternalClinic");
-
-            migrationBuilder.DropColumn(
-                name: "backgroundImage",
+                name: "identificationImage",
                 table: "Doctor");
         }
     }
