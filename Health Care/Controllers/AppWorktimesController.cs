@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Health_Care.Controllers
 {
@@ -20,7 +22,7 @@ namespace Health_Care.Controllers
         {
             _context = context;
         }
-        //static AvailableWorkTimeVM availableWork { get; set; }
+        static AppWorktime availableWork { get; set; }
 
         // GET: api/AppWorktimes
         [HttpGet]
@@ -49,6 +51,72 @@ namespace Health_Care.Controllers
             var userid = doctor.Userid;
             var appWorktimes = await _context.AppWorktime.Where(x => x.userId == userid).ToListAsync();
             return appWorktimes;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Object>> GetAppWorktimeAsGroup(int id)
+        {
+            var AvailableIfEdit = new AvailableWorkTimeVM
+            {
+                sat = false,
+                sun = false,
+                mon = false,
+                tue = false,
+                wed = false,
+                thur = false,
+                fri = false,
+                userId = id,
+            };
+            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id select Available).ToListAsync();
+            foreach (var items in GetAll)
+            {
+                if (items.day == 1)
+                    AvailableIfEdit.mon = true;
+                else if (items.day == 2)
+                    AvailableIfEdit.tue = true;
+                else if (items.day == 3)
+                    AvailableIfEdit.wed = true;
+                else if (items.day == 4)
+                    AvailableIfEdit.thur = true;
+                else if (items.day == 5)
+                    AvailableIfEdit.fri = true;
+                else if (items.day == 6)
+                    AvailableIfEdit.sat = true;
+                else AvailableIfEdit.sun = true;
+            }
+
+            var Result = new
+            {
+                sat = AvailableIfEdit.sat,
+                sun = AvailableIfEdit.sun,
+                mon = AvailableIfEdit.mon,
+                tue = AvailableIfEdit.tue,
+                wed = AvailableIfEdit.wed,
+                thur = AvailableIfEdit.thur,
+                fri = AvailableIfEdit.fri,
+                userId = id,
+            };
+            return Result;
+        }
+        [HttpGet("{id}/{AM_PM}")]
+        public async Task<ActionResult<Object>> GetAppWorktimeByIdAndPeriod(int id,string AM_PM)
+        {
+            bool isSelected=false;
+            var Open = "";
+            var Close = "";
+            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id && Available.shiftAM_PM==AM_PM select Available).FirstOrDefaultAsync();
+            if (GetAll != null)
+            {
+                isSelected = true;
+                Open = GetAll.RealOpenTime;
+                Close = GetAll.RealClossTime;
+            }
+            var AvailableTime = new
+            {
+                morningEvening = isSelected,
+                realOpenTime = Open,
+                realClossTime = Close,
+            };
+            return AvailableTime;
         }
 
         // PUT: api/AppWorktimes/5
@@ -111,199 +179,296 @@ namespace Health_Care.Controllers
             return appWorktime;
         }
 
-        //[HttpPost]
-        //public ActionResult PostServiceSettingAsGroup(AvailableWorkTimeVM availableWorkTimeVM)
-        //{
-        //    ServiceSetting serviceSetting = new ServiceSetting();
-        //    serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //    serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //    serviceSetting.ServiceID = groupServiceSetting.ServiceID;
-        //    serviceSetting.Period = groupServiceSetting.Period;
+        [HttpPost]
+        public ActionResult PostAvailableWorkTimeAsGroup(AvailableWorkTimeVM availableWorkTimeVM)
+        {
+            var AvailableIfEdit = new AvailableWorkTimeVM {
+                sat = false,
+                sun = false,
+                mon = false,
+                tue = false,
+                wed = false,
+                thur = false,
+                fri = false,
+                shiftAMPM = availableWorkTimeVM.shiftAMPM,
+                userId=availableWorkTimeVM.userId,
+            };
+            var checkIfEdit =  (from Available in _context.AppWorktime where Available.userId==availableWorkTimeVM.userId && Available.shiftAM_PM==availableWorkTimeVM.shiftAMPM select Available).ToList();
+            foreach(var items in checkIfEdit)
+            {
+                if (items.day == 1)
+                    AvailableIfEdit.mon = true;
+                else if (items.day == 2)
+                    AvailableIfEdit.tue = true;
+                else if (items.day == 3)
+                    AvailableIfEdit.wed = true;
+                else if (items.day == 4)
+                    AvailableIfEdit.thur = true;
+                else if (items.day == 5)
+                    AvailableIfEdit.fri = true;
+                else if (items.day == 6)
+                    AvailableIfEdit.sat = true;
+                else if(items.day==7)
+                    AvailableIfEdit.sun = true;
 
-        //    try
-        //    {
-        //        if (groupServiceSetting.sat == true)
-        //        {
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Saturday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
+                AvailableIfEdit.RealOpenTime = items.RealOpenTime;
+                AvailableIfEdit.RealClossTime = items.RealClossTime;
+                AvailableIfEdit.startTime = items.startTime;
+                AvailableIfEdit.endTime = items.endTime;
+                
+            }
+            if (checkIfEdit != null)
+            {
+                if (AvailableIfEdit.startTime != availableWorkTimeVM.startTime || AvailableIfEdit.endTime != availableWorkTimeVM.endTime)
+                {
+                    DeleteAppWorktimeAsGroup(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM);
+                }
+                else
+                {
+                    if (AvailableIfEdit.sat == true && availableWorkTimeVM.sat == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 6);
 
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Sunday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Saturday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
+                    }
+                    if (AvailableIfEdit.sun == true && availableWorkTimeVM.sun == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 7);
 
-        //        }
-        //        if (groupServiceSetting.sun == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Sunday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Monday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Sunday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
+                    }
+                    if (AvailableIfEdit.mon == true && availableWorkTimeVM.mon == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 1);
 
-        //        }
-        //        if (groupServiceSetting.mon == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Monday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Tuesday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Monday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //        }
-        //        if (groupServiceSetting.tue == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Tuesday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Wednesday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Tuesday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
+                    }
+                    if (AvailableIfEdit.tue == true && availableWorkTimeVM.tue == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 2);
 
-        //        }
-        //        if (groupServiceSetting.wed == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Wednesday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Thursday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Wednesday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
+                    }
+                    if (AvailableIfEdit.wed == true && availableWorkTimeVM.wed == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 3);
 
-        //        }
-        //        if (groupServiceSetting.thur == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Thursday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Friday.ToString();
-        //                availableWork = serviceSetting;
+                    }
+                    if (AvailableIfEdit.thur == true && availableWorkTimeVM.thur == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 4);
 
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
+                    }
+                    if (AvailableIfEdit.fri == true && availableWorkTimeVM.fri == false)
+                    {
+                        DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 5);
+                    }
+                }
+            }
 
-        //                serviceSetting.Day = DayOfWeek.Thursday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //        }
-        //        if (groupServiceSetting.fri == true)
-        //        {
-        //            serviceSetting.OpenTime = Convert.ToInt32(groupServiceSetting.OpenTime);
-        //            serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //            if (Convert.ToInt32(groupServiceSetting.ClossTime) < Convert.ToInt32(groupServiceSetting.OpenTime))
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Friday.ToString();
-        //                serviceSetting.ClossTime = 1439;//11:59
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //                serviceSetting.OpenTime = 0;
-        //                serviceSetting.ClossTime = Convert.ToInt32(groupServiceSetting.ClossTime);
-        //                serviceSetting.Day = DayOfWeek.Saturday.ToString();
-        //                availableWork = serviceSetting;
-        //                addServiceSetting();
-        //            }
-        //            else
-        //            {
-        //                serviceSetting.Day = DayOfWeek.Friday.ToString();
-        //                availableWork = serviceSetting;
+            AppWorktime appworktime = new AppWorktime();
+            appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+            appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+            appworktime.userId = availableWorkTimeVM.userId;
+            appworktime.shiftAM_PM = availableWorkTimeVM.shiftAMPM;
+            appworktime.RealOpenTime = availableWorkTimeVM.RealOpenTime;
+            appworktime.RealClossTime = availableWorkTimeVM.RealClossTime;
 
-        //                addServiceSetting();
-        //            }
-        //        }
-        //        return Ok();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Content(e.Message.ToString());
-        //    }
-        //}
-        //public void addServiceSetting()
-        //{
+            try
+            {
+                if (AvailableIfEdit.sat==false && availableWorkTimeVM.sat == true )
+                {
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 6;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
 
-        //    _context.ServiceSetting.Add(availableWork);
-        //    _context.SaveChanges();
-        //    availableWork.id = 0;
-        //}
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 7;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 6;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
 
+                }
+                if (AvailableIfEdit.sun == false && availableWorkTimeVM.sun == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 7;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 1;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 7;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+
+                }
+                if (AvailableIfEdit.mon == false && availableWorkTimeVM.mon == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 1;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 2;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 1;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                }
+                if (AvailableIfEdit.tue == false && availableWorkTimeVM.tue == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 2;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 3;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 2;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+
+                }
+                if (AvailableIfEdit.wed == false && availableWorkTimeVM.wed == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 3;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 4;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 3;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+
+                }
+                if (AvailableIfEdit.thur == false && availableWorkTimeVM.thur == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 4;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 5;
+                        availableWork = appworktime;
+
+                        addAppWorktime();
+                    }
+                    else
+                    {
+
+                        appworktime.day = 4;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                }
+                if (AvailableIfEdit.fri == false && availableWorkTimeVM.fri == true)
+                {
+                    appworktime.startTime = Convert.ToInt32(availableWorkTimeVM.startTime);
+                    appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                    if (Convert.ToInt32(availableWorkTimeVM.endTime) < Convert.ToInt32(availableWorkTimeVM.startTime))
+                    {
+                        appworktime.day = 5;
+                        appworktime.endTime = 1439;//11:59
+                        availableWork = appworktime;
+                        addAppWorktime();
+                        appworktime.startTime = 0;
+                        appworktime.endTime = Convert.ToInt32(availableWorkTimeVM.endTime);
+                        appworktime.day = 6;
+                        availableWork = appworktime;
+                        addAppWorktime();
+                    }
+                    else
+                    {
+                        appworktime.day = 5;
+                        availableWork = appworktime;
+
+                        addAppWorktime();
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return Content(e.Message.ToString());
+            }
+        }
+        public void addAppWorktime()
+        {
+
+            _context.AppWorktime.Add(availableWork);
+            _context.SaveChanges();
+            availableWork.id = 0;
+        }
+        public  void DeleteAppWorktimeByDayAndPeriod(int userId,string AM_PM,int day)
+        {
+            var getappWorktime =  _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM && x.day == day).SingleOrDefault();
+            var appWorktime =  _context.AppWorktime.Find(getappWorktime.id);
+            _context.AppWorktime.Remove(appWorktime);
+           
+             _context.SaveChanges();
+        }
+        public void DeleteAppWorktimeAsGroup(int userId, string AM_PM)
+        {
+            var appWorktimes = _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM);
+           
+           
+            _context.AppWorktime.RemoveRange(appWorktimes);
+            _context.SaveChangesAsync();
+        }
         private bool AppWorktimeExists(int id)
         {
             return _context.AppWorktime.Any(e => e.id == id);

@@ -71,7 +71,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareWorker healthcareWorker)
+        public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareAppworktime healthcareWorker)
         {
             if (id != healthcareWorker.id)
             {
@@ -143,7 +143,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
+        public async Task<ActionResult<HealthcareAppworktime>> PostHealthcareWorker(HealthcareAppworktime healthcareWorker)
         {
             _context.HealthcareWorker.Add(healthcareWorker);
             await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace Health_Care.Controllers
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
         [HttpPost]
-        public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
+        public async Task<ActionResult<HealthcareAppworktime>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
             var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices).FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
             healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
@@ -162,7 +162,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/HealthcareWorkers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<HealthcareWorker>> DeleteHealthcareWorker(int id)
+        public async Task<ActionResult<HealthcareAppworktime>> DeleteHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
             if (healthcareWorker == null)
