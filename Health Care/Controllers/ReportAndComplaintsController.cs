@@ -28,6 +28,32 @@ namespace Health_Care.Controllers
             return await _context.ReportAndComplaint.ToListAsync();
         }
 
+        [HttpGet("{userId}")] //for patient , clinic ......
+        public async Task<ActionResult<ReportAndComplaintViewModel>> GetReportAndComplaintByUserId(int userId)
+        {
+            List<ReportAndComplaint> answeredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.userId == userId && x.isAnswered ).OrderByDescending(x=>x.ReportAndComplaintDate).ToListAsync();
+            List<ReportAndComplaint> unAnsweredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.userId == userId && x.isAnswered==false ).ToListAsync();
+            ReportAndComplaintViewModel x = new ReportAndComplaintViewModel()
+            {
+                AnsweredReportAndComplaint = answeredReportAndComplaints,
+                UnAnsweredReportAndComplaint = unAnsweredReportAndComplaints,
+            };
+            return x ;
+        }
+
+        [HttpGet] //for patient , clinic ......
+        public async Task<ActionResult<ReportAndComplaintViewModel>> GetReportAndComplaintForAdmin()
+        {
+            List<ReportAndComplaint> answeredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered).ToListAsync();
+            List<ReportAndComplaint> unAnsweredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered == false).OrderByDescending(x => x.ReportAndComplaintDate).ToListAsync();
+            ReportAndComplaintViewModel x = new ReportAndComplaintViewModel()
+            {
+                AnsweredReportAndComplaint = answeredReportAndComplaints,
+                UnAnsweredReportAndComplaint = unAnsweredReportAndComplaints,
+            };
+            return x;
+        }
+
         // GET: api/ReportAndComplaints/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ReportAndComplaint>> GetReportAndComplaint(int id)

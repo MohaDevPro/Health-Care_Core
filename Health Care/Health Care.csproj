@@ -28,6 +28,18 @@
     <Compile Include="Migrations\20210518011339_new4.designer.cs" />
     <Compile Include="Migrations\20210518011828_new5.cs" />
     <Compile Include="Migrations\20210518011828_new5.designer.cs" />
+    <Compile Include="Migrations\20210519132550_er.cs" />
+    <Compile Include="Migrations\20210519132550_er.Designer.cs" />
+    <Compile Include="Migrations\20210521090023_reportsandcomplains.cs" />
+    <Compile Include="Migrations\20210521090023_reportsandcomplains.Designer.cs" />
+    <Compile Include="Migrations\20210521113242_editReporAndComplaint.cs" />
+    <Compile Include="Migrations\20210521113242_editReporAndComplaint.Designer.cs" />
+    <Compile Include="Migrations\20210521113322_editReportAndComplaint.cs" />
+    <Compile Include="Migrations\20210521113322_editReportAndComplaint.Designer.cs" />
+    <Compile Include="Migrations\20210521124732_editReportComplainttModel.cs" />
+    <Compile Include="Migrations\20210521124732_editReportComplainttModel.Designer.cs" />
+    <Compile Include="Migrations\20210522031052_hclocationmodel.cs" />
+    <Compile Include="Migrations\20210522031052_hclocationmodel.Designer.cs" />
     <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 

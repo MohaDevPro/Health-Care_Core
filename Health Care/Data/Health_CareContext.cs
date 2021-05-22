@@ -83,5 +83,9 @@ namespace Health_Care.Data
 
 
         public DbSet<Health_Care.Models.Favorite> Favorite { get; set; }
+
+
+
+        public DbSet<Health_Care.Models.HospitalClinicAddress> HospitalClinicAddress { get; set; }
     }
 }

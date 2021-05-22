@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210521124732_editReportComplainttModel")]
+    partial class editReportComplainttModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -588,30 +590,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("HospitalAppointment");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.HospitalClinicAddress", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("detailedAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("hospitalOrClinicId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("latitude")
-                        .HasColumnType("real");
-
-                    b.Property<float>("longitude")
-                        .HasColumnType("real");
-
-                    b.HasKey("id");
-
-                    b.ToTable("HospitalClinicAddress");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HospitalClinicDoctor", b =>
