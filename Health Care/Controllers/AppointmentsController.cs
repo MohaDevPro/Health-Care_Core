@@ -36,6 +36,13 @@ namespace Health_Care.Controllers
             if (appointment == null) { return NotFound(); }
             return appointment;
         }
+        [HttpGet("{appointmentDoctorClinicid}")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
+        {
+            var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+"").ToListAsync();
+            if (appointment == null) { return NotFound(); }
+            return appointment;
+        }
 
         // GET: api/Appointments/5
         [HttpGet("{userId}")]
@@ -90,6 +97,22 @@ namespace Health_Care.Controllers
 
             var appointmentList = await _context.Appointment
                 .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            return appointmentList;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> GetConfirmedAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
+        {
+            string searchDate = month + "/" + day + "/" + year;
+
+            var appointmentList = await _context.Appointment
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
+                       && x.Accepted==true&& x.Paid == false ).ToListAsync();
 
             if (appointmentList == null)
             {
