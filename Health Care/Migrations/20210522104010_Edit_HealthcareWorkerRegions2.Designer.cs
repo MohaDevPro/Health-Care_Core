@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210511074928_addcancelappointmentbyuser_property")]
-    partial class addcancelappointmentbyuser_property
+    [Migration("20210522104010_Edit_HealthcareWorkerRegions2")]
+    partial class Edit_HealthcareWorkerRegions2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,6 +91,12 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("appointmentUntilTo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("cancelReasonWrittenBySecretary")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("cancelledByClinicSecretary")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("cancelledByUser")
                         .HasColumnType("bit");
@@ -290,18 +296,30 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Background")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
                     b.ToTable("departmentsOfHospitals");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.District", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("GovernorateID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("District");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Doctor", b =>
@@ -320,6 +338,15 @@ namespace Health_Care.Migrations
                     b.Property<int>("appointmentPrice")
                         .HasColumnType("int");
 
+                    b.Property<string>("backgroundImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("graduationCertificateImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("identificationImage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("name")
                         .HasColumnType("nvarchar(max)");
 
@@ -337,6 +364,9 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BackgoundImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ClinicTypeId")
                         .HasColumnType("int");
@@ -403,6 +433,42 @@ namespace Health_Care.Migrations
                     b.ToTable("FCMTokens");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.Favorite", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Favorite");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.Governorate", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Governorate");
+                });
+
             modelBuilder.Entity("Health_Care.Models.HealthcareWorker", b =>
                 {
                     b.Property<int>("id")
@@ -416,10 +482,19 @@ namespace Health_Care.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReagionID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WorkPlace")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("graduationCertificateImage")
@@ -428,7 +503,7 @@ namespace Health_Care.Migrations
                     b.Property<string>("identificationImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("specialityId")
+                    b.Property<int>("specialityID")
                         .HasColumnType("int");
 
                     b.Property<int>("userId")
@@ -437,6 +512,26 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("HealthcareWorker");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.HealthcareWorkerRegion", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("HealthcareWorkerid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("HealthcareWorkerid");
+
+                    b.ToTable("HealthcareWorkerRegions");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>
@@ -461,8 +556,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("HealthcareWorkerid");
-
-                    b.HasIndex("serviceId");
 
                     b.ToTable("HealthcareWorkerService");
                 });
@@ -504,6 +597,9 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BackgoundImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -577,13 +673,21 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DepatmentsOfHospitalID")
                         .HasColumnType("int");
 
                     b.Property<int>("Hospitalid")
                         .HasColumnType("int");
 
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
+
+                    b.HasIndex("Hospitalid");
 
                     b.ToTable("hospitalDepartments");
                 });
@@ -679,6 +783,24 @@ namespace Health_Care.Migrations
                     b.ToTable("ProfitFromTheApp");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.ProfitRatios", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("medicalExaminationPercentage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("servicePercentage")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.ToTable("ProfitRatios");
+                });
+
             modelBuilder.Entity("Health_Care.Models.RefreshToken", b =>
                 {
                     b.Property<int>("TokenId")
@@ -705,15 +827,18 @@ namespace Health_Care.Migrations
 
             modelBuilder.Entity("Health_Care.Models.Region", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("regionName")
+                    b.Property<int>("DistrictID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("id");
+                    b.HasKey("ID");
 
                     b.ToTable("Region");
                 });
@@ -764,9 +889,6 @@ namespace Health_Care.Migrations
                     b.Property<string>("serviceName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("servicePrice")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
                     b.ToTable("Service");
@@ -779,6 +901,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("BasicSpecialityID")
+                        .HasColumnType("int");
+
                     b.Property<bool>("isBasic")
                         .HasColumnType("bit");
 
@@ -788,6 +913,21 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Speciality");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.SpecialityHealthWorker", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("SpecialityHealthWorker");
                 });
 
             modelBuilder.Entity("Health_Care.Models.SpeciallyDoctor", b =>
@@ -925,6 +1065,13 @@ namespace Health_Care.Migrations
                     b.ToTable("WorkerSalary");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.HealthcareWorkerRegion", b =>
+                {
+                    b.HasOne("Health_Care.Models.HealthcareWorker", "HealthcareWorker")
+                        .WithMany("HealthcareWorkerRegions")
+                        .HasForeignKey("HealthcareWorkerid");
+                });
+
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>
                 {
                     b.HasOne("Health_Care.Models.HealthcareWorker", null)
@@ -932,10 +1079,13 @@ namespace Health_Care.Migrations
                         .HasForeignKey("HealthcareWorkerid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.HasOne("Health_Care.Models.Service", null)
-                        .WithMany("HealthcareWorkers")
-                        .HasForeignKey("serviceId")
+            modelBuilder.Entity("Health_Care.Models.HospitalDepartments", b =>
+                {
+                    b.HasOne("Health_Care.Models.Hospital", null)
+                        .WithMany("hospitalDepartments")
+                        .HasForeignKey("Hospitalid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
