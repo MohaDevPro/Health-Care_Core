@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210522103512_Edit_HealthcareWorkerRegions")]
+    partial class Edit_HealthcareWorkerRegions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,16 +74,10 @@ namespace Health_Care.Migrations
                     b.Property<bool>("PatientComeToAppointment")
                         .HasColumnType("bit");
 
-                    b.Property<double>("PercentageFromAppointmentPriceForApp")
-                        .HasColumnType("float");
-
                     b.Property<string>("TypeOfAppointment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("appointmentDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("appointmentDoctorClinicId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("appointmentForUserHimself")
@@ -150,9 +146,6 @@ namespace Health_Care.Migrations
                     b.Property<int>("numberOfRealAppointment")
                         .HasColumnType("int");
 
-                    b.Property<int>("totalProfitFromRealAppointment")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
                     b.ToTable("AppointmentDoctorClinic");
@@ -192,23 +185,11 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("BalanceReceipt")
-                        .HasColumnType("int");
-
-                    b.Property<string>("BalanceReceiptImage")
+                    b.Property<string>("BalanceReceipt")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ConfirmToAddBalance")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("NumberOfReceipt")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResounOfCancel")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("rechargeDate")
                         .HasColumnType("nvarchar(max)");
@@ -546,6 +527,9 @@ namespace Health_Care.Migrations
                     b.Property<int>("RegionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Userid")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
                     b.HasIndex("HealthcareWorkerid");
@@ -791,19 +775,10 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("clinicId")
+                    b.Property<int>("balance")
                         .HasColumnType("int");
 
-                    b.Property<int>("doctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("hospitalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("profit")
-                        .HasColumnType("int");
-
-                    b.Property<int>("sumOfAppointment")
+                    b.Property<int>("userId")
                         .HasColumnType("int");
 
                     b.HasKey("id");

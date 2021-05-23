@@ -31,7 +31,8 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)
         {
-            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == id);
+            var healthcareWorker = _context.HealthcareWorker.Where(h => h.userId == id).FirstOrDefault();
+            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == healthcareWorker.id);
             var choosingIDs = new List<int>();
             if (choosingServices != null) {
                 choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
@@ -39,7 +40,6 @@ namespace Health_Care.Controllers
             var listService = new List<object>();
             foreach(var service in _context.Service)
             {
-
                 var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
                 var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id):new HealthcareWorkerService();
 
@@ -50,6 +50,27 @@ namespace Health_Care.Controllers
                     servicePrice = price,
                     isSelected = choosingIDs.Contains(service.id),
                     oldchoosing=oldservice
+                };
+                listService.Add(services);
+            }
+            return listService;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllServiceByHealthWorker() { 
+
+
+            var choosingIDs = new List<int>();
+            
+            var listService = new List<object>();
+            foreach(var service in _context.Service)
+            {
+                var services = new
+                {
+                    service.id,
+                    service.serviceName,
+                    servicePrice = 0,
+                    isSelected = false,
+                    oldchoosing= new HealthcareWorkerService()
                 };
                 listService.Add(services);
             }

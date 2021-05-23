@@ -36,6 +36,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20210518182105_EditDoctor.cs" />
+    <Compile Remove="Migrations\20210518182105_EditDoctor.Designer.cs" />
+    <Compile Remove="Migrations\20210521130127_Add_Region.cs" />
+    <Compile Remove="Migrations\20210521130127_Add_Region.Designer.cs" />
+    <Compile Remove="Migrations\20210521130152_Add_Region.cs" />
+    <Compile Remove="Migrations\20210521130152_Add_Region.Designer.cs" />
+    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.cs" />
+    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.Designer.cs" />
+    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.cs" />
+    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">
