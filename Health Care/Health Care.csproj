@@ -40,6 +40,10 @@
     <Compile Include="Migrations\20210521124732_editReportComplainttModel.Designer.cs" />
     <Compile Include="Migrations\20210522031052_hclocationmodel.cs" />
     <Compile Include="Migrations\20210522031052_hclocationmodel.Designer.cs" />
+    <Compile Include="Migrations\20210522220845_hcws.cs" />
+    <Compile Include="Migrations\20210522220845_hcws.Designer.cs" />
+    <Compile Include="Migrations\20210522221921_njop.cs" />
+    <Compile Include="Migrations\20210522221921_njop.Designer.cs" />
     <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 

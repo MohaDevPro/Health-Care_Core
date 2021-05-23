@@ -32,7 +32,17 @@ namespace Health_Care.Controllers
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
                               Backgroundimage=HealthWorker.BackGroundPicture,
-                              Description = HealthWorker.Description
+                              Description = HealthWorker.Description,
+                              Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                                          join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                                          where healthcareWorkerServices.HealthcareWorkerid == HealthWorker.id
+                                          select new
+                                          {
+                                              id = service.id,
+                                              serviceName = service.serviceName,
+                                              servicePrice = healthcareWorkerServices.Price
+
+                                          }).ToList(),
                           }
                           ).ToListAsync();
         }
@@ -153,7 +163,8 @@ namespace Health_Care.Controllers
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
-            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices).FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
+            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices)
+                .FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
             healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
             await _context.SaveChangesAsync();
 
