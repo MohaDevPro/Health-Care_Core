@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Health_Care.Controllers
 {
@@ -15,13 +17,22 @@ namespace Health_Care.Controllers
     public class ExternalClinicsController : ControllerBase
     {
         private readonly Health_CareContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ExternalClinicsController(Health_CareContext context)
+
+        public ExternalClinicsController(Health_CareContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: api/ExternalClinics
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicAll ()
+        {
+            return await _context.ExternalClinic.ToListAsync();
+        }
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
         {
@@ -177,6 +188,58 @@ namespace Health_Care.Controllers
         {
             _context.ExternalClinic.Add(externalClinic);
             await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetExternalClinic", new { id = externalClinic.id }, externalClinic);
+        }
+        [HttpPost]
+        //[Authorize(Roles = "admin, ExternalClinic")]
+        public async Task<ActionResult<ExternalClinic>> PostExternalClinicWithImages([FromForm] ExternalClinic externalClinic, IFormFile Picture, IFormFile bg)
+        {
+            if (ModelState.IsValid)
+            {
+                if (Picture != null && bg != null)
+                {
+                    try
+                    {
+                        _context.ExternalClinic.Add(externalClinic);
+                        await _context.SaveChangesAsync();
+
+                        string path = _environment.WebRootPath + @"\images\";
+                        FileStream fileStream;
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        fileStream = System.IO.File.Create(path + "logo_externalClinic_" + externalClinic.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+
+                        fileStream.Close();
+                        externalClinic.Picture = @"\images\" + "logo_externalClinic_" + externalClinic.id + "." + Picture.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "bg_externalClinic_" + externalClinic.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        externalClinic.BackgoundImage = @"\images\" + "bg_externalClinic_" + externalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        _context.Entry(externalClinic).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+
+
+                        throw;
+                    }
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+            }
 
             return CreatedAtAction("GetExternalClinic", new { id = externalClinic.id }, externalClinic);
         }

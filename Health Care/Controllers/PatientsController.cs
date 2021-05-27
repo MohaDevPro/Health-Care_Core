@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetPatient()
         {
-            return await _context.Patient.ToListAsync();
+            return await _context.Patient.Include(p=>p.ChronicDiseases).ToListAsync();
         }
 
         // GET: api/Patients/5

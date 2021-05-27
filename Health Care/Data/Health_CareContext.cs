@@ -84,5 +84,6 @@ namespace Health_Care.Data
         public DbSet<Governorate> Governorate { get; set; }
         public DbSet<District> District { get; set; }   
         public DbSet<HealthcareWorkerRegion> HealthcareWorkerRegions { get; set; }
+        public DbSet<ChronicDisease> ChronicDiseases { get; set; }
     }
 }

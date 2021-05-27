@@ -221,6 +221,26 @@ namespace Health_Care.Migrations
                     b.ToTable("ChargeOrRechargeRequest");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.ChronicDisease", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("Patientid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Patientid");
+
+                    b.ToTable("ChronicDiseases");
+                });
+
             modelBuilder.Entity("Health_Care.Models.ClinicDoctor", b =>
                 {
                     b.Property<int>("id")
@@ -769,12 +789,8 @@ namespace Health_Care.Migrations
                     b.Property<string>("birthDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("chronicDiseases")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("userId")
                         .HasColumnType("int");
@@ -1091,6 +1107,13 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("WorkerSalary");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.ChronicDisease", b =>
+                {
+                    b.HasOne("Health_Care.Models.Patient", "Patient")
+                        .WithMany("ChronicDiseases")
+                        .HasForeignKey("Patientid");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerRegion", b =>
