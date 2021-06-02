@@ -21,10 +21,17 @@ namespace Health_Care.Controllers
             _context = context;
         }
         [HttpGet]
+
+
+
+
+
+
+        [HttpGet]
+        [HttpGe
         public async Task<ActionResult<IEnumerable<Service>>> GetService()
         {
             var service = await _context.Service.ToListAsync();
-
             return service;
         }
         // GET: api/Services

@@ -888,6 +888,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("serviceName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("servicePrice")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
 
                     b.ToTable("Service");
