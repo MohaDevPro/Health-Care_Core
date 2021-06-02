@@ -78,6 +78,31 @@ namespace Health_Care.Controllers
             return doctor;
         }
 
+        [HttpGet("{serviceId}")]
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
+        {
+            //var healthcareWorkerServiceList = await _context.HealthcareWorkerService.Where(x => x.serviceId == serviceId).ToListAsync();
+            List<HealthcareWorker> healthWorkerInfo = 
+                                   (from hw in _context.HealthcareWorker
+                                    join hws in _context.HealthcareWorkerService on hw.id equals hws.HealthcareWorkerid
+                                    where hws.serviceId == serviceId
+                                    select new HealthcareWorker
+                                    {
+                                        id = hw.id,
+                                        Name = hw.Name,
+                                        userId = hw.userId,
+                                        Picture = hw.Picture,
+                                        BackGroundPicture = hw.BackGroundPicture,
+                                        Description = hw.Description,
+                                        identificationImage = hw.identificationImage,
+                                        specialityId = hw.specialityId,
+                                        graduationCertificateImage = hw.graduationCertificateImage,
+                                    }).ToList();
+            return healthWorkerInfo;
+        }
+
+
+
         // PUT: api/HealthcareWorkers/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
