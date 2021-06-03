@@ -91,5 +91,9 @@ namespace Health_Care.Data
 
 
         public DbSet<Health_Care.Models.HealthCareWorkerAppWorkTime> HealthCareWorkerAppWorkTime { get; set; }
+
+
+
+        public DbSet<Health_Care.Models.HealthWorkerRequestByUser> HealthWorkerRequestByUser { get; set; }
     }
 }
