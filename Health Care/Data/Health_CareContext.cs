@@ -85,5 +85,11 @@ namespace Health_Care.Data
         public DbSet<District> District { get; set; }   
         public DbSet<HealthcareWorkerRegion> HealthcareWorkerRegions { get; set; }
         public DbSet<ChronicDisease> ChronicDiseases { get; set; }
+        public DbSet<HealthCareWorkerAppWorkTime> HealthCareWorkerAppWorkTime { get; set; }
+        public DbSet<HealthWorkerRequestByUser> HealthWorkerRequestByUser { get; set; }
+        public DbSet<HospitalClinicAddress> HospitalClinicAddress { get; set; }
+
+
+
     }
 }
