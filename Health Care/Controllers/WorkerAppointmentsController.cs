@@ -16,6 +16,25 @@ namespace Health_Care.Controllers
     {
         private readonly Health_CareContext _context;
 
+        //// To Get 2 weeks Appointment based on Work Days of Worker
+        //[HttpGet("{month}/{day}/{year}")]
+        //public List<String> GetDatesBetween(string month, string day, string year)
+        //{
+        //    string startDate = month + "/" + day + "/" + year;
+        //    DateTime sd = DateTime.ParseExact(startDate, "M/d/yyyy", null);
+        //    List<DateTime> allDates = new List<DateTime>();
+        //    List<String> allDatesString = new List<String>();
+
+        //    for (DateTime date = sd; date <= sd.AddDays(20); date = date.AddDays(1))
+        //    {
+        //        allDates.Add(date.Date);
+        //        var x = date.Date.Month + "/" + date.Date.Day + "/" + date.Date.Year;
+        //        allDatesString.Add(x);
+        //    }
+
+        //    return allDatesString;
+        //}
+
         public WorkerAppointmentsController(Health_CareContext context)
         {
             _context = context;
@@ -40,6 +59,40 @@ namespace Health_Care.Controllers
             }
 
             return workerAppointment;
+        }
+
+        [HttpGet]
+        public string timee()
+        {
+            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
+
+            return TodayDate;
+        }
+
+        [HttpGet("{workerId}")]
+        public async Task<ActionResult<IEnumerable<WorkerAppointmentViewModel>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
+        {
+            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
+            var workerAppointmentList = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
+                .OrderBy(x=>x.appointmentDate).ToListAsync();
+
+            foreach (var item in workerAppointmentList)
+            {
+                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate == TodayDate && x.appointmentId == item.id);
+                result.Add(new WorkerAppointmentViewModel()
+                {
+                    workerAppointment = item,
+                    healthWorkerRequestByUser = workerAppointmentRequest,
+                });
+            }
+
+            if (result == null) { return NotFound(); }
+            
+            return result;
         }
 
         // PUT: api/WorkerAppointments/5

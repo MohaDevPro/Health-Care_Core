@@ -15,12 +15,11 @@ namespace Health_Care.Controllers
     [ApiController]
     public class AppointmentDoctorClinicsController : ControllerBase
     {
-
-        // To Get 5 Days 
+        //To Get 5 Days
         [HttpGet("{month}/{day}/{year}")]
         public List<String> GetDatesBetween(string month, string day, string year)
         {
-            string startDate = month + "/" + day + "/" + year;
+            string startDate = month + "/" + day + "/" + year ;
             DateTime sd = DateTime.ParseExact(startDate, "M/d/yyyy", null);
             List<DateTime> allDates = new List<DateTime>();
             List<String> allDatesString = new List<String>();
@@ -32,7 +31,7 @@ namespace Health_Care.Controllers
                 allDatesString.Add(x);
             }
 
-            return allDatesString;
+            return allDatesString ;
         }
 
         private readonly Health_CareContext _context;

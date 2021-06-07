@@ -10,5 +10,6 @@ namespace Health_Care.Models
         public int id { get; set; }
         public int appointmentId { get; set; }
         public string RequestTime { get; set; }
+        public string RequestDate { get; set; }
     }
 }
