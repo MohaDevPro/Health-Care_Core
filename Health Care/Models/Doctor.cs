@@ -15,6 +15,8 @@ namespace Health_Care.Models
         public string backgroundImage { get; set; }
         public int appointmentPrice { get; set; }
         public int numberOfAvailableAppointment { get; set; }
+        public string identificationImage { get; set; }
+        public string graduationCertificateImage { get; set; }
 
     }
 }

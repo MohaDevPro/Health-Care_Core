@@ -120,6 +120,7 @@ namespace Health_Care.Controllers
                            ClinicName = clinic.Name,
                            DoctorName = doctor.name,
                            appointment.numberOfRealAppointment,
+                           appointment.totalProfitFromRealAppointment,
 
                        };
 

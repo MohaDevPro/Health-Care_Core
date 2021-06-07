@@ -36,6 +36,13 @@ namespace Health_Care.Controllers
             if (appointment == null) { return NotFound(); }
             return appointment;
         }
+        [HttpGet("{appointmentDoctorClinicid}")]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
+        {
+            var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+"").ToListAsync();
+            if (appointment == null) { return NotFound(); }
+            return appointment;
+        }
 
         // GET: api/Appointments/5
         [HttpGet("{userId}")]

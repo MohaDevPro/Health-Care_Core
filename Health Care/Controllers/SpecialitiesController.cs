@@ -26,7 +26,13 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpeciality()
         {
             return await _context.Speciality.ToListAsync();
+        } 
+        
+        public async Task<ActionResult<IEnumerable<SpecialityHealthWorker>>> GetSpecialityHealthWorker()
+        {
+            return await _context.SpecialityHealthWorker.ToListAsync();
         }
+
         [HttpGet("{isbasic}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByBasicType(bool isbasic)
         {

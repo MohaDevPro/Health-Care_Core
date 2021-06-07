@@ -46,8 +46,19 @@ namespace Health_Care.Controllers
                           }
                           ).ToListAsync();
         }
+        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkers()
+        {
+            return await _context.HealthcareWorker.ToListAsync();
+        }
 
-      
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkersWithRegions()
+        {
+            return await _context.HealthcareWorker.Include(h => h.HealthcareWorkerRegions).ToListAsync();
+        }
+
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
@@ -186,6 +197,30 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
+        
+        //[HttpPost("{id}")]
+        //public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(int id, HealthcareWorker healthcareWorker)
+        //{
+        //    _context.HealthcareWorker.Add(healthcareWorker);
+        //    await _context.SaveChangesAsync();
+        //    //var healthWorker = _context.HealthcareWorker.Include(h=>h.HealthcareWorkerRegions).Where(h => h.userId == id).FirstOrDefault();
+        //    //if (healthWorker == null)
+        //    //{
+        //    //    return NotFound("This is not exist");
+        //    //}
+        //    //healthWorker.specialityID = healthcareWorker.specialityID;
+        //    //healthWorker.WorkPlace = healthcareWorker.WorkPlace;
+        //    //healthWorker.ReagionID = healthcareWorker.ReagionID;
+        //    //healthWorker.Gender = healthcareWorker.Gender;
+        //    //healthWorker.Description = healthcareWorker.Description;
+        //    //foreach (var item in healthcareWorker.HealthcareWorkerRegions)
+        //    //{
+        //    //    healthWorker.HealthcareWorkerRegions.Add(item);
+        //    //}
+        //    //await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+        //}
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {

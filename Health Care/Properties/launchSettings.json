@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/Health Care",
+      "applicationUrl": "http://localhost/Health_Care",
       "sslPort": 0
     },
     "iisExpress": {
