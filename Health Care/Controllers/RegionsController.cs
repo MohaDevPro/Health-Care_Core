@@ -27,6 +27,16 @@ namespace Health_Care.Controllers
         {
             return await _context.Region.ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
+        {
+            return await _context.Governorate.ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
+        {
+            return await _context.District.ToListAsync();
+        }
 
         // GET: api/Regions/5
         [HttpGet("{id}")]
@@ -48,7 +58,7 @@ namespace Health_Care.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRegion(int id, Region region)
         {
-            if (id != region.id)
+            if (id != region.ID)
             {
                 return BadRequest();
             }
@@ -83,7 +93,7 @@ namespace Health_Care.Controllers
             _context.Region.Add(region);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRegion", new { id = region.id }, region);
+            return CreatedAtAction("GetRegion", new { id = region.ID }, region);
         }
 
         // DELETE: api/Regions/5
@@ -104,7 +114,7 @@ namespace Health_Care.Controllers
 
         private bool RegionExists(int id)
         {
-            return _context.Region.Any(e => e.id == id);
+            return _context.Region.Any(e => e.ID == id);
         }
     }
 }

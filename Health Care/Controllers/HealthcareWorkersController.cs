@@ -32,9 +32,31 @@ namespace Health_Care.Controllers
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
                               Backgroundimage=HealthWorker.BackGroundPicture,
-                              Description = HealthWorker.Description
+                              Description = HealthWorker.Description,
+                              Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                                          join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                                          where healthcareWorkerServices.HealthcareWorkerid == HealthWorker.id
+                                          select new
+                                          {
+                                              id = service.id,
+                                              serviceName = service.serviceName,
+                                              servicePrice = healthcareWorkerServices.Price
+
+                                          }).ToList(),
                           }
                           ).ToListAsync();
+        }
+        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkers()
+        {
+            return await _context.HealthcareWorker.ToListAsync();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkersWithRegions()
+        {
+            return await _context.HealthcareWorker.Include(h => h.HealthcareWorkerRegions).ToListAsync();
         }
 
         // GET: api/HealthcareWorkers/5
@@ -66,6 +88,31 @@ namespace Health_Care.Controllers
 
             return doctor;
         }
+
+        [HttpGet("{serviceId}")]
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
+        {
+            //var healthcareWorkerServiceList = await _context.HealthcareWorkerService.Where(x => x.serviceId == serviceId).ToListAsync();
+            List<HealthcareWorker> healthWorkerInfo = 
+                                   (from hw in _context.HealthcareWorker
+                                    join hws in _context.HealthcareWorkerService on hw.id equals hws.HealthcareWorkerid
+                                    where hws.serviceId == serviceId
+                                    select new HealthcareWorker
+                                    {
+                                        id = hw.id,
+                                        Name = hw.Name,
+                                        userId = hw.userId,
+                                        Picture = hw.Picture,
+                                        BackGroundPicture = hw.BackGroundPicture,
+                                        Description = hw.Description,
+                                        identificationImage = hw.identificationImage,
+                                        specialityId = hw.specialityId,
+                                        graduationCertificateImage = hw.graduationCertificateImage,
+                                    }).ToList();
+            return healthWorkerInfo;
+        }
+
+
 
         // PUT: api/HealthcareWorkers/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -150,10 +197,35 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
+        
+        //[HttpPost("{id}")]
+        //public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(int id, HealthcareWorker healthcareWorker)
+        //{
+        //    _context.HealthcareWorker.Add(healthcareWorker);
+        //    await _context.SaveChangesAsync();
+        //    //var healthWorker = _context.HealthcareWorker.Include(h=>h.HealthcareWorkerRegions).Where(h => h.userId == id).FirstOrDefault();
+        //    //if (healthWorker == null)
+        //    //{
+        //    //    return NotFound("This is not exist");
+        //    //}
+        //    //healthWorker.specialityID = healthcareWorker.specialityID;
+        //    //healthWorker.WorkPlace = healthcareWorker.WorkPlace;
+        //    //healthWorker.ReagionID = healthcareWorker.ReagionID;
+        //    //healthWorker.Gender = healthcareWorker.Gender;
+        //    //healthWorker.Description = healthcareWorker.Description;
+        //    //foreach (var item in healthcareWorker.HealthcareWorkerRegions)
+        //    //{
+        //    //    healthWorker.HealthcareWorkerRegions.Add(item);
+        //    //}
+        //    //await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+        //}
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
-            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices).FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
+            var healthcareWorker = await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerServices)
+                .FirstOrDefaultAsync(x=>x.id==healthcareWorkerservices[0].HealthcareWorkerid);
             healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
             await _context.SaveChangesAsync();
 

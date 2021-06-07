@@ -9,6 +9,7 @@ using Health_Care.Data;
 using Health_Care.Models;
 //using Health_Care.Migrations;
 
+
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
@@ -35,6 +36,8 @@ namespace Health_Care.Controllers
                               Name = doctor.name,
                               Picture = doctor.Picture,
                               Backgroundimage = doctor.backgroundImage,
+                              identificationImage = doctor.identificationImage,
+                              graduationCertificateImage = doctor.graduationCertificateImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0

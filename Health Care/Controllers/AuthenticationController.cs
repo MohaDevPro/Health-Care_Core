@@ -1,6 +1,7 @@
 ﻿using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Mr.Delivery.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -24,10 +26,12 @@ namespace Health_Care.Controllers
     {
         private readonly Health_CareContext _context;
         private readonly JWTSettings _jwtsettings;
-        public AuthenticationController(Health_CareContext context, IOptions<JWTSettings> jwtsettings)
+        private readonly IWebHostEnvironment _environment;
+            
+            public AuthenticationController(Health_CareContext context, IOptions<JWTSettings> jwtsettings, IWebHostEnvironment environment)
         {
             _context = context;
-            _jwtsettings = jwtsettings.Value;
+            _jwtsettings = jwtsettings.Value;_environment = environment;
         }
 
         [HttpPost]
@@ -111,12 +115,157 @@ namespace Health_Care.Controllers
                 RefreshRequest refreshRequest = new RefreshRequest();
                 refreshRequest.AccessToken = GenerateAccessToken(user);
                 refreshRequest.RefreshToken = refreshToken.Token;
-                return Ok(refreshRequest);
+                return Ok(new UserWithToken()
+                {
+                    id = user.id,
+                    nameAR = user.nameAR,
+                    nameEN = user.nameEN,
+                    phoneNumber = user.phoneNumber,
+                    DeviceId = user.DeviceId,
+                    email = user.email,
+                    AccessToken = refreshRequest.AccessToken,
+                    RefreshToken = refreshRequest.RefreshToken
+                });
             }
             return BadRequest();
 
         }
+        [HttpPost("{id}")]
+        //[Authorize(Roles = "admin, doctor")]
+        public async Task<ActionResult<Doctor>> signUpDoctorDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
+        {
+            Doctor doctor = new Doctor();
+            if (ModelState.IsValid)
+            {
+                if (idImage != null && certificateImage != null && Picture != null && bg != null)
+                {
+                    try
+                    {
+                        doctor = _context.Doctor.Where(d => d.Userid == id).FirstOrDefault();
+                        if (doctor==null)
+                        {
+                            return NotFound();
+                        }
 
+                        string path = _environment.WebRootPath + @"\images\";
+                        FileStream fileStream;
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        fileStream = System.IO.File.Create(path + "logo_doctor_" + doctor.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        doctor.Picture = @"\images\" + "logo_doctor_" + doctor.id + "." + Picture.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "bg_doctor_" + doctor.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        doctor.backgroundImage = @"\images\" + "bg_doctor_" + doctor.id + "." + bg.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "idImage_doctor_" + doctor.id + "." + idImage.ContentType.Split('/')[1]);
+                        idImage.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        doctor.identificationImage = @"\images\" + "idImage_doctor_" + doctor.id + "." + idImage.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1]);
+                        certificateImage.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        doctor.graduationCertificateImage = @"\images\" + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1];
+                        
+                        _context.Entry(doctor).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+
+
+                        throw;
+                    }
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+            }
+
+            return CreatedAtAction("Getdoctor", new { id = doctor.id }, doctor);
+        }
+        [HttpPost("{id}")]
+        //[Authorize(Roles = "admin, doctor")]
+        public async Task<ActionResult<Doctor>> signUpHealthWorkerDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
+        {
+            HealthcareWorker healthcareWorker = new HealthcareWorker();
+            if (ModelState.IsValid)
+            {
+                if (idImage != null && certificateImage != null && Picture != null && bg != null)
+                {
+                    try
+                    {
+                        healthcareWorker = _context.HealthcareWorker.Where(d => d.userId == id).FirstOrDefault();
+                        if (healthcareWorker==null)
+                        {
+                            return NotFound();
+                        }
+
+                        string path = _environment.WebRootPath + @"\images\";
+                        FileStream fileStream;
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        fileStream = System.IO.File.Create(path + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        healthcareWorker.Picture = @"\images\" + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        healthcareWorker.BackGroundPicture = @"\images\" + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1]);
+                        idImage.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        healthcareWorker.identificationImage = @"\images\" + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1]);
+                        certificateImage.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        fileStream.Dispose();
+                        healthcareWorker.graduationCertificateImage = @"\images\" + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1];
+                        
+                        _context.Entry(healthcareWorker).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception)
+                    {
+
+
+                        throw;
+                    }
+
+                }
+                else
+                {
+                    return BadRequest();
+                }
+
+            }
+
+            return CreatedAtAction("Getdoctor", new { id = healthcareWorker.id }, healthcareWorker);
+        }
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<string>> RefreshToken([FromBody] RefreshRequest refreshRequest)

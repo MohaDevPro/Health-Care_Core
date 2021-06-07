@@ -20,22 +20,36 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Migrations\20210518005132_new2.cs" />
-    <Compile Include="Migrations\20210518005132_new2.designer.cs" />
-    <Compile Include="Migrations\20210518005529_new3.cs" />
-    <Compile Include="Migrations\20210518005529_new3.designer.cs" />
-    <Compile Include="Migrations\20210518011339_new4.cs" />
-    <Compile Include="Migrations\20210518011339_new4.designer.cs" />
-    <Compile Include="Migrations\20210518011828_new5.cs" />
-    <Compile Include="Migrations\20210518011828_new5.designer.cs" />
-    <Compile Include="Migrations\20210519132514_new6.cs" />
-    <Compile Include="Migrations\20210519132514_new6.designer.cs" />
-    <Compile Include="Migrations\20210521024817_new8.cs" />
-    <Compile Include="Migrations\20210521024817_new8.designer.cs" />
+    <Compile Remove="Migrations\20210518182105_EditDoctor.cs" />
+    <Compile Remove="Migrations\20210518182105_EditDoctor.Designer.cs" />
+    <Compile Remove="Migrations\20210521130127_Add_Region.cs" />
+    <Compile Remove="Migrations\20210521130127_Add_Region.Designer.cs" />
+    <Compile Remove="Migrations\20210521130152_Add_Region.cs" />
+    <Compile Remove="Migrations\20210521130152_Add_Region.Designer.cs" />
+    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.cs" />
+    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.Designer.cs" />
+    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.cs" />
+    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Migrations\20210523061007_AfterMerge.cs" />
+    <Compile Include="Migrations\20210523061007_AfterMerge.Designer.cs" />
+    <Compile Include="Migrations\20210523062420_Add_ChronicDisease.cs" />
+    <Compile Include="Migrations\20210523062420_Add_ChronicDisease.Designer.cs" />
+    <Compile Include="Migrations\20210523063107_Edit_ChronicDisease.cs" />
+    <Compile Include="Migrations\20210523063107_Edit_ChronicDisease.Designer.cs" />
+    <Compile Include="Migrations\20210523063146_Edit_ChronicDisease2.cs" />
+    <Compile Include="Migrations\20210523063146_Edit_ChronicDisease2.Designer.cs" />
+    <Compile Include="Migrations\20210523063653_Edit_ChronicDisease3.cs" />
+    <Compile Include="Migrations\20210523063653_Edit_ChronicDisease3.Designer.cs" />
+    <Compile Include="Migrations\20210523063834_Edit_ChronicDisease4.cs" />
+    <Compile Include="Migrations\20210523063834_Edit_ChronicDisease4.Designer.cs" />
     <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">

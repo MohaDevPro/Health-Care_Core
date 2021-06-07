@@ -73,15 +73,23 @@ namespace Health_Care.Data
         public DbSet<Notifications> Notifications { get; set; }
         public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Health_Care.Models.SpeciallyDoctor> SpeciallyDoctors { get; set; }
+        public DbSet<SpecialityHealthWorker> SpecialityHealthWorker { get; set; }
         public DbSet<Health_Care.Models.ClinicDoctor> clinicDoctors { get; set; }
         public DbSet<Health_Care.Models.MedicalAdvice> MedicalAdvice { get; set; }
         public DbSet<Health_Care.Models.DepartmentsOfHospital> departmentsOfHospitals { get; set; }
         public DbSet<Health_Care.Models.HospitalDepartments> hospitalDepartments { get; set; }
         public DbSet<Health_Care.Models.AppointmentDoctorClinic> AppointmentDoctorClinic { get; set; }
         public DbSet<Health_Care.Models.ProfitRatios> ProfitRatios { get; set; }
-
-
-
         public DbSet<Health_Care.Models.Favorite> Favorite { get; set; }
+        public DbSet<Governorate> Governorate { get; set; }
+        public DbSet<District> District { get; set; }   
+        public DbSet<HealthcareWorkerRegion> HealthcareWorkerRegions { get; set; }
+        public DbSet<ChronicDisease> ChronicDiseases { get; set; }
+        public DbSet<HealthCareWorkerAppWorkTime> HealthCareWorkerAppWorkTime { get; set; }
+        public DbSet<HealthWorkerRequestByUser> HealthWorkerRequestByUser { get; set; }
+        public DbSet<HospitalClinicAddress> HospitalClinicAddress { get; set; }
+
+
+
     }
 }
