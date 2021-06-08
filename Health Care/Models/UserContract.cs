@@ -11,7 +11,7 @@ namespace Health_Care.Models
         public int userId { get; set; }
         public int contractId { get; set; }
         public string contractStartDate { get; set; } // 1 year
-        public String contractEndDate { get; set; }
+        public string contractEndDate { get; set; }
 
         //public virtual User user { get; set; }
 

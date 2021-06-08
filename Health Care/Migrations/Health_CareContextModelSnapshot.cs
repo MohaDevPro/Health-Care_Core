@@ -284,12 +284,29 @@ namespace Health_Care.Migrations
                     b.Property<int>("contractFor")
                         .HasColumnType("int");
 
-                    b.Property<string>("contractPath")
+                    b.HasKey("id");
+
+                    b.ToTable("Contract");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.ContractTerm", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("contractID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("term")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
-                    b.ToTable("Contract");
+                    b.HasIndex("contractID");
+
+                    b.ToTable("ContractTerms");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Conversation", b =>
@@ -1114,6 +1131,15 @@ namespace Health_Care.Migrations
                     b.HasOne("Health_Care.Models.Patient", "Patient")
                         .WithMany("ChronicDiseases")
                         .HasForeignKey("Patientid");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.ContractTerm", b =>
+                {
+                    b.HasOne("Health_Care.Models.Contract", "Contract")
+                        .WithMany("ContractTerms")
+                        .HasForeignKey("contractID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerRegion", b =>

@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contract>>> GetContract()
         {
-            return await _context.Contract.ToListAsync();
+            return await _context.Contract.Include(c=>c.ContractTerms).ToListAsync();
         }
 
         // GET: api/Contracts/5
@@ -33,6 +33,18 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<Contract>> GetContract(int id)
         {
             var contract = await _context.Contract.FindAsync(id);
+
+            if (contract == null)
+            {
+                return NotFound();
+            }
+
+            return contract;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Contract>> GetContractBasedOnRole(int id)
+        {
+            var contract = await _context.Contract.Include(c=>c.ContractTerms).Where(c=>c.contractFor==id).FirstOrDefaultAsync();
 
             if (contract == null)
             {
@@ -52,8 +64,10 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(contract).State = EntityState.Modified;
+            Contract contract1 = _context.Contract.Where(c => c.id == id).Include(c=>c.ContractTerms).FirstOrDefault();
+            contract1.contractFor = contract.contractFor;
+            contract1.ContractTerms = contract.ContractTerms;
+            _context.Entry(contract1).State = EntityState.Modified;
 
             try
             {

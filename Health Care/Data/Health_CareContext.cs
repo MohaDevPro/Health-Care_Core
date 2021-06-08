@@ -43,6 +43,7 @@ namespace Health_Care.Data
         public DbSet<Health_Care.Models.AppWorktime> AppWorktime { get; set; }
 
         public DbSet<Health_Care.Models.Contract> Contract { get; set; }
+        public DbSet<Health_Care.Models.ContractTerm> ContractTerms { get; set; }
 
         public DbSet<Health_Care.Models.HospitalAppointment> HospitalAppointment { get; set; }
 
