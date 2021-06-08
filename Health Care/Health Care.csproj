@@ -45,6 +45,12 @@
     <Compile Include="Migrations\20210523063653_Edit_ChronicDisease3.Designer.cs" />
     <Compile Include="Migrations\20210523063834_Edit_ChronicDisease4.cs" />
     <Compile Include="Migrations\20210523063834_Edit_ChronicDisease4.Designer.cs" />
+    <Compile Include="Migrations\20210601041946_Edit_Contract.cs" />
+    <Compile Include="Migrations\20210601041946_Edit_Contract.Designer.cs" />
+    <Compile Include="Migrations\20210601043907_Edit_Contract2.cs" />
+    <Compile Include="Migrations\20210601043907_Edit_Contract2.Designer.cs" />
+    <Compile Include="Migrations\20210601044120_Edit_Contract3.cs" />
+    <Compile Include="Migrations\20210601044120_Edit_Contract3.Designer.cs" />
     <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 

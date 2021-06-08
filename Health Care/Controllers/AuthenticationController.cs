@@ -51,6 +51,7 @@ namespace Health_Care.Controllers
                 RefreshRequest refreshRequest = new RefreshRequest();
                 refreshRequest.RefreshToken = refreshToken.Token;
                 refreshRequest.AccessToken = GenerateAccessToken(user);
+                string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
                 return Ok(new UserWithToken()
                 {
                     id = user.id,
@@ -60,7 +61,10 @@ namespace Health_Care.Controllers
                     address=user.address,
                     DeviceId=user.DeviceId,
                     email=user.email,
-                    regionId=user.regionId,
+                    roleid = user.Roleid,
+                    type = type,
+                    isActiveAccount = user.isActiveAccount,
+                    regionId =user.regionId,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
                 }) ;
@@ -88,7 +92,7 @@ namespace Health_Care.Controllers
             {
 
                 if (_context.User.Any(u => u.phoneNumber == user.phoneNumber))
-                    return BadRequest();
+                    return Conflict();
 
                 _context.User.Add(user);
                 await _context.SaveChangesAsync();
@@ -115,6 +119,7 @@ namespace Health_Care.Controllers
                 RefreshRequest refreshRequest = new RefreshRequest();
                 refreshRequest.AccessToken = GenerateAccessToken(user);
                 refreshRequest.RefreshToken = refreshToken.Token;
+                string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
                 return Ok(new UserWithToken()
                 {
                     id = user.id,
@@ -123,6 +128,9 @@ namespace Health_Care.Controllers
                     phoneNumber = user.phoneNumber,
                     DeviceId = user.DeviceId,
                     email = user.email,
+                    type = type,
+                    roleid = user.Roleid, 
+                    isActiveAccount=user.isActiveAccount,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
                 });
