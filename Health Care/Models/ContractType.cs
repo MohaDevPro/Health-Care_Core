@@ -13,8 +13,9 @@ namespace Health_Care.Models
         //public string contractFor { get; set; } //عامل صحي ، دكتور، مستشفى ....
         public int contractFor { get; set; } // حسب الroleid
 
-        
-        public string contractPath { get; set; } // contract document
+        //public string contractPath { get; set; } // contract document
 
+
+        public ICollection<ContractTerm> ContractTerms { get; set; }
     }
 }

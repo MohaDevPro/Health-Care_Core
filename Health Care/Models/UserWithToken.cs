@@ -13,7 +13,10 @@ namespace Mr.Delivery.Models
         public string phoneNumber { get; set; }
         public string address { get; set; }
         public int regionId { get; set; }
+        public int roleid { get; set; }
         public string email { get; set; } 
+        public string type { get; set; } 
+        public bool isActiveAccount { get; set; } 
         public string DeviceId { get; set; }
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
