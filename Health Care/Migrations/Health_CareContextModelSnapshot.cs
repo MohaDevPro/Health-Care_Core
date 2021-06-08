@@ -493,6 +493,21 @@ namespace Health_Care.Migrations
                     b.ToTable("Favorite");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.Governorate", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Governorate");
+                });
+
             modelBuilder.Entity("Health_Care.Models.HealthCareWorkerAppWorkTime", b =>
                 {
                     b.Property<int>("id")
@@ -582,7 +597,7 @@ namespace Health_Care.Migrations
                     b.Property<string>("identificationImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("specialityID")
+                    b.Property<int>("specialityId")
                         .HasColumnType("int");
 
                     b.Property<int>("userId")
