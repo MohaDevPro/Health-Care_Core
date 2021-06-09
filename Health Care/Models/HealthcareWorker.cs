@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class HealthcareWorker
+    public class HealthcareAppworktime
     {
         public HealthcareWorker()
         {
