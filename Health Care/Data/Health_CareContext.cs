@@ -43,6 +43,7 @@ namespace Health_Care.Data
         public DbSet<Health_Care.Models.AppWorktime> AppWorktime { get; set; }
 
         public DbSet<Health_Care.Models.Contract> Contract { get; set; }
+        public DbSet<Health_Care.Models.ContractTerm> ContractTerms { get; set; }
 
         public DbSet<Health_Care.Models.HospitalAppointment> HospitalAppointment { get; set; }
 
@@ -84,5 +85,12 @@ namespace Health_Care.Data
         public DbSet<Governorate> Governorate { get; set; }
         public DbSet<District> District { get; set; }   
         public DbSet<HealthcareWorkerRegion> HealthcareWorkerRegions { get; set; }
+        public DbSet<ChronicDisease> ChronicDiseases { get; set; }
+        public DbSet<HealthCareWorkerAppWorkTime> HealthCareWorkerAppWorkTime { get; set; }
+        public DbSet<HealthWorkerRequestByUser> HealthWorkerRequestByUser { get; set; }
+        public DbSet<HospitalClinicAddress> HospitalClinicAddress { get; set; }
+
+
+
     }
 }

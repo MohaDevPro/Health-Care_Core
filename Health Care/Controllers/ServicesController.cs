@@ -24,7 +24,6 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<Service>>> GetService()
         {
             var service = await _context.Service.ToListAsync();
-
             return service;
         }
         // GET: api/Services

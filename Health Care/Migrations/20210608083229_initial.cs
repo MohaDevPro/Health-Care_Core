@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class NewMigiration : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -27,10 +27,12 @@ namespace Health_Care.Migrations
                     visitReason = table.Column<string>(nullable: true),
                     PatientComeToAppointment = table.Column<bool>(nullable: false),
                     Paid = table.Column<bool>(nullable: false),
+                    PercentageFromAppointmentPriceForApp = table.Column<int>(nullable: false),
                     Accepted = table.Column<bool>(nullable: false),
                     cancelledByUser = table.Column<bool>(nullable: false),
                     cancelledByClinicSecretary = table.Column<bool>(nullable: false),
-                    cancelReasonWrittenBySecretary = table.Column<string>(nullable: true)
+                    cancelReasonWrittenBySecretary = table.Column<string>(nullable: true),
+                    appointmentDoctorClinicId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,7 +49,8 @@ namespace Health_Care.Migrations
                     doctorId = table.Column<int>(nullable: false),
                     appointmentDate = table.Column<string>(nullable: true),
                     numberOfAvailableAppointment = table.Column<int>(nullable: false),
-                    numberOfRealAppointment = table.Column<int>(nullable: false)
+                    numberOfRealAppointment = table.Column<int>(nullable: false),
+                    totalProfitFromRealAppointment = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -98,9 +101,13 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     userId = table.Column<int>(nullable: false),
-                    BalanceReceipt = table.Column<string>(nullable: true),
+                    NumberOfReceipt = table.Column<string>(nullable: true),
+                    BalanceReceiptImage = table.Column<string>(nullable: true),
+                    BalanceReceipt = table.Column<int>(nullable: false),
                     rechargeDate = table.Column<string>(nullable: true),
-                    ConfirmToAddBalance = table.Column<bool>(nullable: false)
+                    ConfirmToAddBalance = table.Column<bool>(nullable: false),
+                    IsCanceled = table.Column<bool>(nullable: false),
+                    ResounOfCancel = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -182,6 +189,20 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "District",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GovernorateID = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_District", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Doctor",
                 columns: table => new
                 {
@@ -192,7 +213,9 @@ namespace Health_Care.Migrations
                     Picture = table.Column<string>(nullable: true),
                     backgroundImage = table.Column<string>(nullable: true),
                     appointmentPrice = table.Column<int>(nullable: false),
-                    numberOfAvailableAppointment = table.Column<int>(nullable: false)
+                    numberOfAvailableAppointment = table.Column<int>(nullable: false),
+                    identificationImage = table.Column<string>(nullable: true),
+                    graduationCertificateImage = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -264,23 +287,58 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Governorate",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Governorate", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "HealthcareWorker",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     userId = table.Column<int>(nullable: false),
+                    ReagionID = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    Gender = table.Column<string>(nullable: true),
+                    WorkPlace = table.Column<string>(nullable: true),
+                    specialityId = table.Column<int>(nullable: false),
                     Picture = table.Column<string>(nullable: true),
                     BackGroundPicture = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     identificationImage = table.Column<string>(nullable: true),
-                    specialityId = table.Column<int>(nullable: false),
                     graduationCertificateImage = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HealthcareWorker", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HealthCareWorkerAppWorkTime",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userId = table.Column<int>(nullable: false),
+                    shiftAM_PM = table.Column<string>(nullable: false),
+                    day = table.Column<int>(nullable: false),
+                    startTime = table.Column<int>(nullable: false),
+                    endTime = table.Column<int>(nullable: false),
+                    RealOpenTime = table.Column<string>(nullable: true),
+                    RealClossTime = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HealthCareWorkerAppWorkTime", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -302,6 +360,21 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HealthWorkerRequestByUser",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    appointmentId = table.Column<int>(nullable: false),
+                    RequestTime = table.Column<string>(nullable: true),
+                    RequestDate = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HealthWorkerRequestByUser", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "HospitalAppointment",
                 columns: table => new
                 {
@@ -314,6 +387,22 @@ namespace Health_Care.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HospitalAppointment", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HospitalClinicAddress",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    hospitalOrClinicId = table.Column<int>(nullable: false),
+                    latitude = table.Column<float>(nullable: false),
+                    longitude = table.Column<float>(nullable: false),
+                    detailedAddress = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HospitalClinicAddress", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -387,9 +476,8 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     userId = table.Column<int>(nullable: false),
-                    gender = table.Column<string>(nullable: false),
+                    gender = table.Column<string>(nullable: true),
                     birthDate = table.Column<string>(nullable: true),
-                    chronicDiseases = table.Column<string>(nullable: true),
                     Balance = table.Column<int>(nullable: false),
                     LastBalanceChargeDate = table.Column<string>(nullable: true)
                 },
@@ -404,8 +492,11 @@ namespace Health_Care.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    userId = table.Column<int>(nullable: false),
-                    balance = table.Column<int>(nullable: false)
+                    hospitalId = table.Column<int>(nullable: false),
+                    clinicId = table.Column<int>(nullable: false),
+                    doctorId = table.Column<int>(nullable: false),
+                    sumOfAppointment = table.Column<int>(nullable: false),
+                    profit = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -430,13 +521,14 @@ namespace Health_Care.Migrations
                 name: "Region",
                 columns: table => new
                 {
-                    id = table.Column<int>(nullable: false)
+                    ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    regionName = table.Column<string>(nullable: true)
+                    DistrictID = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Region", x => x.id);
+                    table.PrimaryKey("PK_Region", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -445,9 +537,14 @@ namespace Health_Care.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    complaintTypeid = table.Column<int>(nullable: false),
-                    name = table.Column<string>(nullable: true),
-                    description = table.Column<string>(nullable: true)
+                    Type = table.Column<string>(nullable: true),
+                    userId = table.Column<int>(nullable: false),
+                    title = table.Column<string>(nullable: true),
+                    description = table.Column<string>(nullable: true),
+                    replyTextByAdmin = table.Column<string>(nullable: true),
+                    ReportAndComplaintDate = table.Column<string>(nullable: true),
+                    ReportAndComplaintTime = table.Column<string>(nullable: true),
+                    isAnswered = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -473,7 +570,8 @@ namespace Health_Care.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    serviceName = table.Column<string>(nullable: true)
+                    serviceName = table.Column<string>(nullable: true),
+                    servicePrice = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -493,6 +591,19 @@ namespace Health_Care.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Speciality", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SpecialityHealthWorker",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpecialityHealthWorker", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -554,11 +665,20 @@ namespace Health_Care.Migrations
                 {
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    appointmentId = table.Column<int>(nullable: false),
                     serviceId = table.Column<int>(nullable: false),
                     workerId = table.Column<int>(nullable: false),
+                    patientId = table.Column<int>(nullable: false),
                     regionId = table.Column<int>(nullable: false),
-                    acceptedAppointment = table.Column<bool>(nullable: false)
+                    servicePrice = table.Column<int>(nullable: false),
+                    appointmentDate = table.Column<string>(nullable: true),
+                    appointmentShift = table.Column<string>(nullable: false),
+                    ConfirmHealthWorkerCome_ByPatient = table.Column<bool>(nullable: false),
+                    ConfirmHealthWorkerCome_ByHimself = table.Column<bool>(nullable: false),
+                    reservedAmountUntilConfirm = table.Column<bool>(nullable: false),
+                    PercentageFromAppointmentPriceForApp = table.Column<int>(nullable: false),
+                    AcceptedByHealthWorker = table.Column<bool>(nullable: false),
+                    cancelledByHealthWorker = table.Column<bool>(nullable: false),
+                    cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -578,6 +698,26 @@ namespace Health_Care.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WorkerSalary", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HealthcareWorkerRegions",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    HealthcareWorkerid = table.Column<int>(nullable: true),
+                    RegionId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HealthcareWorkerRegions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_HealthcareWorkerRegions_HealthcareWorker_HealthcareWorkerid",
+                        column: x => x.HealthcareWorkerid,
+                        principalTable: "HealthcareWorker",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -625,6 +765,26 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChronicDiseases",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(nullable: true),
+                    Patientid = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChronicDiseases", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ChronicDiseases_Patient_Patientid",
+                        column: x => x.Patientid,
+                        principalTable: "Patient",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -644,6 +804,16 @@ namespace Health_Care.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChronicDiseases_Patientid",
+                table: "ChronicDiseases",
+                column: "Patientid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HealthcareWorkerRegions_HealthcareWorkerid",
+                table: "HealthcareWorkerRegions",
+                column: "HealthcareWorkerid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HealthcareWorkerService_HealthcareWorkerid",
@@ -680,6 +850,9 @@ namespace Health_Care.Migrations
                 name: "ChargeOrRechargeRequest");
 
             migrationBuilder.DropTable(
+                name: "ChronicDiseases");
+
+            migrationBuilder.DropTable(
                 name: "clinicDoctors");
 
             migrationBuilder.DropTable(
@@ -693,6 +866,9 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "departmentsOfHospitals");
+
+            migrationBuilder.DropTable(
+                name: "District");
 
             migrationBuilder.DropTable(
                 name: "Doctor");
@@ -710,13 +886,28 @@ namespace Health_Care.Migrations
                 name: "FCMTokens");
 
             migrationBuilder.DropTable(
+                name: "Governorate");
+
+            migrationBuilder.DropTable(
+                name: "HealthCareWorkerAppWorkTime");
+
+            migrationBuilder.DropTable(
+                name: "HealthcareWorkerRegions");
+
+            migrationBuilder.DropTable(
                 name: "HealthcareWorkerService");
 
             migrationBuilder.DropTable(
                 name: "HealthcareWorkerWorkPlace");
 
             migrationBuilder.DropTable(
+                name: "HealthWorkerRequestByUser");
+
+            migrationBuilder.DropTable(
                 name: "HospitalAppointment");
+
+            migrationBuilder.DropTable(
+                name: "HospitalClinicAddress");
 
             migrationBuilder.DropTable(
                 name: "HospitalClinicDoctor");
@@ -729,9 +920,6 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notifications");
-
-            migrationBuilder.DropTable(
-                name: "Patient");
 
             migrationBuilder.DropTable(
                 name: "ProfitFromTheApp");
@@ -758,6 +946,9 @@ namespace Health_Care.Migrations
                 name: "Speciality");
 
             migrationBuilder.DropTable(
+                name: "SpecialityHealthWorker");
+
+            migrationBuilder.DropTable(
                 name: "SpeciallyDoctors");
 
             migrationBuilder.DropTable(
@@ -768,6 +959,9 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "WorkerSalary");
+
+            migrationBuilder.DropTable(
+                name: "Patient");
 
             migrationBuilder.DropTable(
                 name: "HealthcareWorker");
