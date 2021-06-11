@@ -10,5 +10,6 @@ namespace Health_Care.Models
         public int id { get; set; }
         public string serviceName { get; set; }
         public int servicePrice { get; set; }
+        public bool active { get; set; }
     }
 }

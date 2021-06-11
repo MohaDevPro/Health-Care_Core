@@ -20,6 +20,8 @@ namespace Health_Care.Models
         public string DeviceId { get; set; }
         public bool isActiveAccount { get; set; }
         public int Roleid { get; set; }
+        public bool completeData { get; set; }
+        public bool active { get; set; }
         //public ICollection<Role> Roles { get; set; }
         public virtual RefreshToken RefreshTokens { get; set; }
 

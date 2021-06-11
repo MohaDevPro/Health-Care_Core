@@ -30,6 +30,7 @@ namespace Health_Care.Controllers
         {
 
             return await (from doctor in _context.Doctor
+                          where doctor.active == true
                           select new
                           {
                               id = doctor.id,
@@ -45,11 +46,44 @@ namespace Health_Care.Controllers
                           }
                           ).ToListAsync();
         }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Doctor>>> GetDisabled()
+        {
+            return await _context.Doctor.Where(a => a.active == false).ToListAsync();
+        }
+
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Doctor> doctor)
+        {
+            if (doctor.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Doctor item in doctor)
+                {
+                    var s = _context.Doctor.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetNamesOfDoctors()
         {
 
             return await (from doctor in _context.Doctor
+                          where doctor.active == true
                           select new
                           {
                               id = doctor.id,
@@ -67,6 +101,7 @@ namespace Health_Care.Controllers
             
             
             var doctors= await(from doctor in _context.Doctor
+                               where doctor.active == true
                           select new
                           {
                               id = doctor.id,
@@ -105,7 +140,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id)
         {
-            return await (from doctor in _context.Doctor join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+            return await (from doctor in _context.Doctor where doctor.active == true join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           where Clinicdoctor.Clinicid==id
                           select new
                           {
@@ -127,6 +162,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id)
         {
             var doctors=(from doctor in _context.Doctor
+                         where doctor.active == true
                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
                           where clinic.userId == id
@@ -234,8 +270,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Doctor.Remove(doctor);
+            doctor.active = false;
+            //_context.Doctor.Remove(doctor);
             await _context.SaveChangesAsync();
 
             return doctor;

@@ -30,13 +30,14 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicAll ()
         {
-            return await _context.ExternalClinic.ToListAsync();
+            return await _context.ExternalClinic.Where(x => x.active == true).ToListAsync();
         }
         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
         {
             return await (from clinic in _context.ExternalClinic
+                          where clinic.active == true
                           select new
                           {
                               id = clinic.id,
@@ -55,6 +56,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicForAdmin()
         {
             return await (from clinic in _context.ExternalClinic
+                          where clinic.active == true
                           select new
                           {
                               id = clinic.id,
@@ -69,7 +71,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDoctorID(int id)
         {
-            var externalClinic = await (from clinic in _context.ExternalClinic join Clinicdoctor in _context.clinicDoctors on clinic.id equals Clinicdoctor.Clinicid
+            var externalClinic = await (from clinic in _context.ExternalClinic where clinic.active == true join Clinicdoctor in _context.clinicDoctors on clinic.id equals Clinicdoctor.Clinicid
                                         where Clinicdoctor.Doctorid==id
                                         select new
                                         {
@@ -92,7 +94,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByHospitalID(int id)
         {
-            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==id)
+            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==id && x.active == true)
                                         select new
                                         {
                                             id = clinic.id,
@@ -112,7 +114,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDepartmentID(int id)
         {
-            var externalClinic = await (from clinic in _context.ExternalClinic join DepartmentHospital in _context.hospitalDepartments on clinic.HospitalDepartmentsID equals DepartmentHospital.id
+            var externalClinic = await (from clinic in _context.ExternalClinic where clinic.active == true join DepartmentHospital in _context.hospitalDepartments on clinic.HospitalDepartmentsID equals DepartmentHospital.id
                                         where DepartmentHospital.DepatmentsOfHospitalID==id
                                         select new
                                         {
@@ -146,6 +148,34 @@ namespace Health_Care.Controllers
                                   select specialit).ToList(),
             };
 
+        }
+
+        public async Task<ActionResult<IEnumerable<ExternalClinic>>> GetDisabled()
+        {
+            return await _context.ExternalClinic.Where(x => x.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<ExternalClinic> externalClinic)
+        {
+            if (externalClinic.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (ExternalClinic item in externalClinic)
+                {
+                    ExternalClinic s = _context.ExternalClinic.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/ExternalClinics/5
@@ -253,8 +283,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.ExternalClinic.Remove(externalClinic);
+            externalClinic.active = false;
+            //_context.ExternalClinic.Remove(externalClinic);
             await _context.SaveChangesAsync();
 
             return externalClinic;

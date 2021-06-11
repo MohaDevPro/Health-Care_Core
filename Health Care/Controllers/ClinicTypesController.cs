@@ -25,9 +25,37 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClinicType>>> GetClinicType()
         {
-            return await _context.ClinicType.ToListAsync();
+            return await _context.ClinicType.Where(c=>c.active==true).ToListAsync();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ClinicType>>> GetDisabled()
+        {
+            return await _context.ClinicType.Where(a => a.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<ClinicType> clinicType)
+        {
+            if (clinicType.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (ClinicType item in clinicType)
+                {
+                    var s = _context.ClinicType.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
         // GET: api/ClinicTypes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ClinicType>> GetClinicType(int id)
@@ -95,8 +123,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.ClinicType.Remove(clinicType);
+            clinicType.active = false;
+            //_context.ClinicType.Remove(clinicType);
             await _context.SaveChangesAsync();
 
             return clinicType;

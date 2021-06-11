@@ -143,18 +143,20 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<Doctor>> signUpDoctorDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
             Doctor doctor = new Doctor();
+            User user = new User();
             if (ModelState.IsValid)
             {
                 if (idImage != null && certificateImage != null && Picture != null && bg != null)
                 {
                     try
                     {
-                        doctor = _context.Doctor.Where(d => d.Userid == id).FirstOrDefault();
-                        if (doctor==null)
+                        user = _context.User.Where(d => d.id == id).FirstOrDefault();
+                        if (user==null)
                         {
                             return NotFound();
                         }
-
+                        doctor.name = user.nameAR;
+                        doctor.Userid = id;
                         string path = _environment.WebRootPath + @"\images\";
                         FileStream fileStream;
                         if (!Directory.Exists(path))
@@ -185,8 +187,8 @@ namespace Health_Care.Controllers
                         fileStream.Close();
                         fileStream.Dispose();
                         doctor.graduationCertificateImage = @"\images\" + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1];
-                        
-                        _context.Entry(doctor).State = EntityState.Modified;
+
+                        _context.Doctor.Add(doctor);
                         await _context.SaveChangesAsync();
                     }
                     catch (Exception)

@@ -51,14 +51,20 @@
     <Compile Include="Migrations\20210601043907_Edit_Contract2.Designer.cs" />
     <Compile Include="Migrations\20210601044120_Edit_Contract3.cs" />
     <Compile Include="Migrations\20210601044120_Edit_Contract3.Designer.cs" />
+    <Compile Include="Migrations\20210610104233_AddActive.cs" />
+    <Compile Include="Migrations\20210610104233_AddActive.Designer.cs" />
+    <Compile Include="Migrations\20210610161005_AddActive2.cs" />
+    <Compile Include="Migrations\20210610161005_AddActive2.Designer.cs" />
+    <Compile Include="Migrations\20210611121842_completeData.cs" />
+    <Compile Include="Migrations\20210611121842_completeData.Designer.cs" />
     <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.13" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.13" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.15">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

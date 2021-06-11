@@ -15,7 +15,7 @@ namespace Health_Care.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.13")
+                .HasAnnotation("ProductVersion", "3.1.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -77,6 +77,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("TypeOfAppointment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("appointmentDate")
                         .HasColumnType("nvarchar(max)");
@@ -269,6 +272,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("ClinicTypeName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.HasKey("id");
 
                     b.ToTable("ClinicType");
@@ -280,6 +286,9 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<int>("contractFor")
                         .HasColumnType("int");
@@ -355,6 +364,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.HasKey("id");
 
                     b.ToTable("departmentsOfHospitals");
@@ -373,6 +385,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.HasKey("ID");
 
                     b.ToTable("District");
@@ -390,6 +405,9 @@ namespace Health_Care.Migrations
 
                     b.Property<int>("Userid")
                         .HasColumnType("int");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<int>("appointmentPrice")
                         .HasColumnType("int");
@@ -435,6 +453,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<int>("doctorId")
                         .HasColumnType("int");
@@ -508,6 +529,24 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Favorite");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.Governorate", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Governorate");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthCareWorkerAppWorkTime", b =>
@@ -593,13 +632,16 @@ namespace Health_Care.Migrations
                     b.Property<string>("WorkPlace")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("graduationCertificateImage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("identificationImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("specialityID")
+                    b.Property<int>("specialityId")
                         .HasColumnType("int");
 
                     b.Property<int>("userId")
@@ -705,6 +747,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<int>("hospitalId")
                         .HasColumnType("int");
@@ -867,6 +912,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("LastBalanceChargeDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("birthDate")
                         .HasColumnType("nvarchar(max)");
 
@@ -963,6 +1011,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.HasKey("ID");
 
                     b.ToTable("Region");
@@ -1014,6 +1065,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("RoleName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.HasKey("id");
 
                     b.ToTable("Role");
@@ -1025,6 +1079,9 @@ namespace Health_Care.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("serviceName")
                         .HasColumnType("nvarchar(max)");
@@ -1047,6 +1104,9 @@ namespace Health_Care.Migrations
                     b.Property<int>("BasicSpecialityID")
                         .HasColumnType("int");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("isBasic")
                         .HasColumnType("bit");
 
@@ -1067,6 +1127,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
 
                     b.HasKey("id");
 
@@ -1110,8 +1173,14 @@ namespace Health_Care.Migrations
                     b.Property<int>("Roleid")
                         .HasColumnType("int");
 
+                    b.Property<bool>("active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("address")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("completeData")
+                        .HasColumnType("bit");
 
                     b.Property<string>("email")
                         .HasColumnType("nvarchar(max)");
