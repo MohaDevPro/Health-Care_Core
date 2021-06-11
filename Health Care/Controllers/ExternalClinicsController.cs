@@ -112,8 +112,8 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDepartmentID(int id)
         {
-            var externalClinic = await (from clinic in _context.ExternalClinic join DepartmentHospital in _context.hospitalDepartments on clinic.HospitalDepartmentsID equals DepartmentHospital.id
-                                        where DepartmentHospital.DepatmentsOfHospitalID==id
+            var externalClinic = await (from clinic in _context.ExternalClinic 
+                                        where clinic.HospitalDepartmentsID==id
                                         select new
                                         {
                                             id = clinic.id,
