@@ -23,6 +23,7 @@ namespace Health_Care.Models
         public string Description { get; set; } 
         public string identificationImage { get; set; }
         public string graduationCertificateImage { get; set; }
+        public bool active { get; set; }
         public ICollection<HealthcareWorkerService> HealthcareWorkerServices { get; set; }
         public ICollection<HealthcareWorkerRegion> HealthcareWorkerRegions { get; set; }
 

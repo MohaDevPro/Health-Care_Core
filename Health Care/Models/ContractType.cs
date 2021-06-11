@@ -15,7 +15,7 @@ namespace Health_Care.Models
 
         //public string contractPath { get; set; } // contract document
 
-
+        public bool active { get; set; }
         public ICollection<ContractTerm> ContractTerms { get; set; }
     }
 }

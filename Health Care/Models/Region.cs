@@ -11,6 +11,7 @@ namespace Health_Care.Models
         [Key]
         public int ID { get; set; }
         public int DistrictID { get; set; }
-        public string Name { get; set; }    
+        public string Name { get; set; }
+        public bool active { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contract>>> GetContract()
         {
-            return await _context.Contract.Include(c=>c.ContractTerms).ToListAsync();
+            return await _context.Contract.Where(s => s.active == true).Include(c=>c.ContractTerms).ToListAsync();
         }
 
         // GET: api/Contracts/5
@@ -44,7 +44,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Contract>> GetContractBasedOnRole(int id)
         {
-            var contract = await _context.Contract.Include(c=>c.ContractTerms).Where(c=>c.contractFor==id).FirstOrDefaultAsync();
+            var contract = await _context.Contract.Where(s => s.active == true).Include(c=>c.ContractTerms).Where(c=>c.contractFor==id).FirstOrDefaultAsync();
 
             if (contract == null)
             {
@@ -52,6 +52,35 @@ namespace Health_Care.Controllers
             }
 
             return contract;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Contract>>> GetDisabled()
+        {
+            return await _context.Contract.Where(a => a.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Contract> contract)
+        {
+            if (contract.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Contract item in contract)
+                {
+                    var s = _context.Contract.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/Contracts/5
@@ -109,8 +138,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Contract.Remove(contract);
+            contract.active = false;
+            //_context.Contract.Remove(contract);
             await _context.SaveChangesAsync();
 
             return contract;
