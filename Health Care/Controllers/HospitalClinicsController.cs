@@ -308,14 +308,14 @@ namespace Health_Care.Controllers
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost("{hospitalid}")]
         //[Authorize(Roles = "admin, DepartmentsOfHospital")]
-        public async Task<ActionResult<DepartmentsOfHospital>> PostDepartmentsOfHospital(int hospitalid,[FromForm] DepartmentsOfHospital DepartmentsOfHospital, IFormFile Picture, IFormFile bg)
+        public async Task<ActionResult<object>> PostDepartmentsOfHospital(int hospitalid,[FromForm] DepartmentsOfHospital DepartmentsOfHospital, IFormFile Picture, IFormFile bg)
         {
+            var hospitaldepartment = new HospitalDepartments();
             if (ModelState.IsValid)
             {
 
                     try
                     {
-                        var hospitaldepartment = new HospitalDepartments();
                         hospitaldepartment.Hospitalid = hospitalid;
                         hospitaldepartment.DepatmentsOfHospitalID = DepartmentsOfHospital.id;
                         _context.hospitalDepartments.Add(hospitaldepartment);
@@ -361,8 +361,7 @@ namespace Health_Care.Controllers
               
 
             }
-
-            return CreatedAtAction("GetDepartmentsOfHospital", new { id = DepartmentsOfHospital.id }, DepartmentsOfHospital);
+            return CreatedAtAction("GetDepartmentsOfHospital", new { id = hospitaldepartment.id }, new { hospitalDepartmentid= hospitaldepartment.id,DepartmentsOfHospital.id,DepartmentsOfHospital.Name });
         }
 
         // DELETE: api/DepartmentsOfHospitals/5
