@@ -16,6 +16,7 @@ namespace Health_Care.Models
         public int doctorId { get; set; } //to get the doctor owner
         public int numberOfAvailableAppointment { get; set; }
         public int HospitalDepartmentsID { get; set; }
+        public bool  active { get; set; }
 
 
     }

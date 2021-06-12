@@ -25,25 +25,52 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpeciality()
         {
-            return await _context.Speciality.ToListAsync();
+            return await _context.Speciality.Where(s=>s.active==true).ToListAsync();
         } 
         
-        public async Task<ActionResult<IEnumerable<SpecialityHealthWorker>>> GetSpecialityHealthWorker()
+        //public async Task<ActionResult<IEnumerable<SpecialityHealthWorker>>> GetSpecialityHealthWorker()
+        //{
+        //    return await _context.SpecialityHealthWorker.ToListAsync();
+        //}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Speciality>>> GetDisabled()
         {
-            return await _context.SpecialityHealthWorker.ToListAsync();
+            return await _context.Speciality.Where(a => a.active == false).ToListAsync();
         }
 
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Speciality> Speciality)
+        {
+            if (Speciality.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Speciality item in Speciality)
+                {
+                    var s = _context.Speciality.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
         [HttpGet("{isbasic}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByBasicType(bool isbasic)
         {
-            return await _context.Speciality.Where(x=>x.isBasic==isbasic).ToListAsync();
+            return await _context.Speciality.Where(x=>x.isBasic==isbasic && x.active ==true).ToListAsync();
         }
         [HttpGet("{UserID}/{RoleID}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByUseridAndRoleID(int UserID,int RoleID)
         {
             return await (from speciality in  _context.Speciality join sepeialityDoctor in _context.SpeciallyDoctors 
                           on speciality.id equals sepeialityDoctor.Specialityid
-                          where sepeialityDoctor.Doctorid==UserID && sepeialityDoctor.Roleid==RoleID
+                          where sepeialityDoctor.Doctorid==UserID && sepeialityDoctor.Roleid==RoleID && speciality.active ==true
                           select speciality
                           ).ToListAsync();
         }
@@ -141,8 +168,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Speciality.Remove(speciality);
+            speciality.active = false;
+            //_context.Speciality.Remove(speciality);
             await _context.SaveChangesAsync();
 
             return speciality;

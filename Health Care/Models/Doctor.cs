@@ -17,6 +17,7 @@ namespace Health_Care.Models
         public int numberOfAvailableAppointment { get; set; }
         public string identificationImage { get; set; }
         public string graduationCertificateImage { get; set; }
+        public bool active { get; set; }
 
     }
 }

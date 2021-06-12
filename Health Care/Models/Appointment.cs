@@ -29,6 +29,6 @@ namespace Health_Care.Models
         public string cancelReasonWrittenBySecretary { get; set; }
         public string appointmentDoctorClinicId { get; set; }
 
-
+        public bool active { get; set; }
     }
 }

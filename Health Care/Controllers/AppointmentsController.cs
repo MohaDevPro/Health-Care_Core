@@ -25,9 +25,36 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointment()
         {
-            return await _context.Appointment.ToListAsync();
+            return await _context.Appointment.Where(a => a.active == true).ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetDisabled()
+        {
+            return await _context.Appointment.Where(a=>a.active == false).ToListAsync();
         }
 
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Appointment> appointement)
+        {
+            if (appointement.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Appointment item in appointement)
+                {
+                    var s = _context.Appointment.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
         // GET: api/Appointments/5
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId)
@@ -47,7 +74,7 @@ namespace Health_Care.Controllers
         [HttpGet("{appointmentDoctorClinicid}")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
         {
-            var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+"").ToListAsync();
+            var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+ "" && x.active == true).ToListAsync();
             if (appointment == null) { return NotFound(); }
             return appointment;
         }
@@ -58,9 +85,9 @@ namespace Health_Care.Controllers
         {
             List <List<Appointment>> li = new List <List<Appointment>>();
 
-            var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==true && x.cancelledByUser == false).ToListAsync();
-            var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==false && x.cancelledByUser==false).ToListAsync();
-            var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser==true).ToListAsync();
+            var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==true && x.cancelledByUser == false && x.active == true).ToListAsync();
+            var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted==false && x.cancelledByUser== false && x.active == true).ToListAsync();
+            var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser== true && x.active == true).ToListAsync();
             
             li.Add(ConfirmedAppointment);
             li.Add(unConfirmedAppointment);
@@ -78,16 +105,16 @@ namespace Health_Care.Controllers
             List<List<Appointment>> li = new List<List<Appointment>>();
 
             var ConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary==false).OrderBy(x=> x.appointmentDate).ToListAsync();
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x=> x.appointmentDate).ToListAsync();
 
             var unConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary==false).OrderBy(x => x.appointmentDate).ToListAsync();
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
 
             var cancelledAppointmentByUser = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == true ).OrderBy(x => x.appointmentDate).ToListAsync();
+            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
             
             var cancelledAppointmentBySecretary = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
             
             li.Add(ConfirmedAppointment);
             li.Add(unConfirmedAppointment);
@@ -104,7 +131,7 @@ namespace Health_Care.Controllers
             string searchDate = day + "/" + month + "/" + year;
 
             var appointmentList = await _context.Appointment
-                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId && x.active == true).ToListAsync();
 
             if (appointmentList == null)
             {
@@ -120,7 +147,7 @@ namespace Health_Care.Controllers
 
             var appointmentList = await _context.Appointment
                 .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
-                       && x.Accepted==true&& x.Paid == false ).ToListAsync();
+                       && x.Accepted==true&& x.Paid == false && x.active == true).ToListAsync();
 
             if (appointmentList == null)
             {
@@ -136,7 +163,7 @@ namespace Health_Care.Controllers
 
             var appointmentList = await _context.Appointment
                 .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
-                && x.cancelledByUser==false && x.cancelledByClinicSecretary==false).ToListAsync();
+                && x.cancelledByUser==false && x.cancelledByClinicSecretary== false && x.active == true).ToListAsync();
 
             if (appointmentList == null)
             {
@@ -212,8 +239,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Appointment.Remove(appointment);
+            appointment.active = false;
+            //_context.Appointment.Remove(appointment);
             await _context.SaveChangesAsync();
 
             return appointment;

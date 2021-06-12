@@ -25,8 +25,50 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegion()
         {
-            return await _context.Region.ToListAsync();
+            return await _context.Region.Where(a=>a.active == true).ToListAsync();
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
+        //{
+        //    return await _context.Governorate.ToListAsync();
+        //}
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
+        //{
+        //    return await _context.District.ToListAsync();
+        //}
+
+
+
+        // GET: api/Regions/5
+
+        public async Task<ActionResult<IEnumerable<Region>>> GetDisabled()
+        {
+            return await _context.Region.Where(a => a.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Region> regions)
+        {
+            if (regions.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Region item in regions)
+                {
+                    var s = _context.Region.Where(s => s.ID == item.ID).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegionBasedOnDistrictId(int id)
         {
@@ -48,7 +90,6 @@ namespace Health_Care.Controllers
             return await _context.District.Where(x => x.GovernorateID == id).ToListAsync();
         }
 
-        // GET: api/Regions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Region>> GetRegion(int id)
         {
@@ -175,8 +216,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Region.Remove(region);
+            region.active = false;
+            //_context.Region.Remove(region);
             await _context.SaveChangesAsync();
 
             return region;

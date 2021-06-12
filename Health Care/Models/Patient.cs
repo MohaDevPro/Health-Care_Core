@@ -14,6 +14,7 @@ namespace Health_Care.Models
         public string birthDate { get; set; }
         public int Balance { get; set; }
         public string LastBalanceChargeDate { get; set; }
+        public bool active { get; set; }
         public IList<ChronicDisease> ChronicDiseases { get; set; }
 
     }
