@@ -41,7 +41,21 @@ namespace Health_Care.Controllers
 
             return userContract;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<bool>> GetIsUserAcceptContract(int id)
+        {
+            var userContract = await _context.UserContract.Where(u=>u.userId == id).FirstOrDefaultAsync();
 
+            if (userContract == null)
+            {
+                return false;
+            }
+            if (Convert.ToDateTime(userContract.contractEndDate) < Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd")))
+            {
+                return false;
+            }
+            return true;
+        }
         // PUT: api/UserContracts/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.

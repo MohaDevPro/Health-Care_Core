@@ -12,53 +12,52 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PatientsController : ControllerBase
+    public class DistrictsController : ControllerBase
     {
         private readonly Health_CareContext _context;
 
-        public PatientsController(Health_CareContext context)
+        public DistrictsController(Health_CareContext context)
         {
             _context = context;
         }
 
-        // GET: api/Patients
+        // GET: api/Districts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetPatient()
+        public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
         {
-            return await _context.Patient.Where(x => x.active == true).Include(p=>p.ChronicDiseases).ToListAsync();
+            return await _context.District.Where(a => a.active == true).ToListAsync();
         }
 
-        // GET: api/Patients/5
+        // GET: api/Districts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Patient>> GetPatient(int id)
+        public async Task<ActionResult<District>> GetDistrict(int id)
         {
-            //var patient = await _context.Patient.FindAsync(id);
-            var patient = await _context.Patient.FirstOrDefaultAsync(x=>x.userId == id);
+            var district = await _context.District.FindAsync(id);
 
-            if (patient == null)
+            if (district == null)
             {
                 return NotFound();
             }
 
-            return patient;
+            return district;
         }
-        public async Task<ActionResult<IEnumerable<Patient>>> GetDisabled()
+        public async Task<ActionResult<IEnumerable<District>>> GetDisabled()
         {
-            return await _context.Patient.Where(x => x.active == false).ToListAsync();
+            return await _context.District.Where(a => a.active == false).ToListAsync();
         }
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
-        public async Task<IActionResult> RestoreService(List<Patient> halthcareWorker)
+        public async Task<IActionResult> RestoreService(List<District> district)
         {
-            if (halthcareWorker.Count == 0)
+            if (district.Count == 0)
                 return NoContent();
 
             try
             {
-                foreach (Patient item in halthcareWorker)
+                foreach (District item in district)
                 {
-                    Patient s = _context.Patient.Where(s => s.id == item.id).FirstOrDefault();
+                    var s = _context.District.Where(s => s.ID == item.ID).FirstOrDefault();
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -70,18 +69,18 @@ namespace Health_Care.Controllers
             }
         }
 
-        // PUT: api/Patients/5
+        // PUT: api/Districts/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPatient(int id, Patient patient)
+        public async Task<IActionResult> PutDistrict(int id, District district)
         {
-            if (id != patient.id)
+            if (id != district.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(patient).State = EntityState.Modified;
+            _context.Entry(district).State = EntityState.Modified;
 
             try
             {
@@ -89,7 +88,7 @@ namespace Health_Care.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PatientExists(id))
+                if (!DistrictExists(id))
                 {
                     return NotFound();
                 }
@@ -102,37 +101,37 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-        // POST: api/Patients
+        // POST: api/Districts
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Patient>> PostPatient(Patient patient)
+        public async Task<ActionResult<District>> PostDistrict(District district)
         {
-            _context.Patient.Add(patient);
+            _context.District.Add(district);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPatient", new { id = patient.id }, patient);
+            return CreatedAtAction("GetDistrict", new { id = district.ID }, district);
         }
 
-        // DELETE: api/Patients/5
+        // DELETE: api/Districts/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Patient>> DeletePatient(int id)
+        public async Task<ActionResult<District>> DeleteDistrict(int id)
         {
-            var patient = await _context.Patient.FindAsync(id);
-            if (patient == null)
+            var district = await _context.District.FindAsync(id);
+            if (district == null)
             {
                 return NotFound();
             }
-            patient.active = false;
-            //_context.Patient.Remove(patient);
+            district.active = false;
+            //_context.District.Remove(district);
             await _context.SaveChangesAsync();
 
-            return patient;
+            return district;
         }
 
-        private bool PatientExists(int id)
+        private bool DistrictExists(int id)
         {
-            return _context.Patient.Any(e => e.id == id);
+            return _context.District.Any(e => e.ID == id);
         }
     }
 }

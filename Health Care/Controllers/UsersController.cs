@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return await _context.User.ToListAsync();
+            return await _context.User.Where(s => s.active == true).ToListAsync();
         }
 
         // GET: api/Users/5
@@ -42,6 +42,36 @@ namespace Health_Care.Controllers
             return user;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetDisabled()
+        {
+            return await _context.User.Where(a => a.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<User> users)
+        {
+            if (users.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (User item in users)
+                {
+                    var s = _context.User.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+
         // PUT: api/Users/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
@@ -57,6 +87,37 @@ namespace Health_Care.Controllers
 
             try
             {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{result}/{id}")]
+        public async Task<IActionResult> PutUserCompleteData(bool reuslt,int id )
+        {
+
+            var user =_context.User.Where(u => u.id == id).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+
+            try
+            {
+                user.completeData = true;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -95,8 +156,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.User.Remove(user);
+            user.active = false;
+            //_context.User.Remove(user);
             await _context.SaveChangesAsync();
 
             return user;

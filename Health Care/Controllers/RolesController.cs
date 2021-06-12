@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Role>>> GetRole()
         {
-            return await _context.Role.ToListAsync();
+            return await _context.Role.Where(x => x.active == true).ToListAsync();
         }
 
         // GET: api/Roles/5
@@ -40,6 +40,33 @@ namespace Health_Care.Controllers
             }
 
             return role;
+        }
+        public async Task<ActionResult<IEnumerable<Role>>> GetDisabled()
+        {
+            return await _context.Role.Where(x => x.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Role> role)
+        {
+            if (role.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Role item in role)
+                {
+                    var s = _context.Role.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/Roles/5
@@ -95,8 +122,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Role.Remove(role);
+            role.active = false;
+            //_context.Role.Remove(role);
             await _context.SaveChangesAsync();
 
             return role;

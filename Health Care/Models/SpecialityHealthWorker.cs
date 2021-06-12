@@ -9,5 +9,6 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public string Name { get; set; }
+        public bool active { get; set; }
     }
 }
