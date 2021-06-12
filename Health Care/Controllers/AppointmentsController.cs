@@ -30,9 +30,17 @@ namespace Health_Care.Controllers
 
         // GET: api/Appointments/5
         [HttpGet("{userId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnUserId(int userId)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId)
         {
-            var appointment = await _context.Appointment.Where(x=>x.userId == userId).ToListAsync();
+            var appointment = await(from appointments in  _context.Appointment join
+                                    Clinic in _context.ExternalClinic on appointments.distnationClinicId equals Clinic.id
+                                    where appointments.userId==userId 
+                                    select new {
+                                        appointment=appointments,
+                                        Doctor=new {Clinic.id,Clinic.Name},
+                                    }
+                                    
+                                    ).ToListAsync();
             if (appointment == null) { return NotFound(); }
             return appointment;
         }
@@ -93,7 +101,7 @@ namespace Health_Care.Controllers
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
         {
-            string searchDate = month + "/" + day + "/" + year;
+            string searchDate = day + "/" + month + "/" + year;
 
             var appointmentList = await _context.Appointment
                 .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId).ToListAsync();
