@@ -69,6 +69,7 @@ namespace Health_Care.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegionBasedOnDistrictId(int id)
         {
