@@ -66,7 +66,7 @@ namespace Health_Care.Controllers
             var listService = new List<object>();
             foreach(var service in _context.Service)
             {
-                if (service.active == false)
+                if (service.active == true)
                 {
                     var services = new
                     {
