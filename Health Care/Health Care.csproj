@@ -13,36 +13,6 @@
     <Content Remove=".config\**" />
     <EmbeddedResource Remove=".config\**" />
     <None Remove=".config\**" />
-    <None Remove="Migrations\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20210518182105_EditDoctor.cs" />
-    <Compile Remove="Migrations\20210518182105_EditDoctor.Designer.cs" />
-    <Compile Remove="Migrations\20210521130127_Add_Region.cs" />
-    <Compile Remove="Migrations\20210521130127_Add_Region.Designer.cs" />
-    <Compile Remove="Migrations\20210521130152_Add_Region.cs" />
-    <Compile Remove="Migrations\20210521130152_Add_Region.Designer.cs" />
-    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.cs" />
-    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.Designer.cs" />
-    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.cs" />
-    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="Migrations\20210601041946_Edit_Contract.cs" />
-    <Compile Include="Migrations\20210601041946_Edit_Contract.Designer.cs" />
-    <Compile Include="Migrations\20210601043907_Edit_Contract2.cs" />
-    <Compile Include="Migrations\20210601043907_Edit_Contract2.Designer.cs" />
-    <Compile Include="Migrations\20210601044120_Edit_Contract3.cs" />
-    <Compile Include="Migrations\20210601044120_Edit_Contract3.Designer.cs" />
-    <Compile Include="Migrations\20210610104233_AddActive.cs" />
-    <Compile Include="Migrations\20210610104233_AddActive.Designer.cs" />
-    <Compile Include="Migrations\20210610161005_AddActive2.cs" />
-    <Compile Include="Migrations\20210610161005_AddActive2.Designer.cs" />
-    <Compile Include="Migrations\20210611121842_completeData.cs" />
-    <Compile Include="Migrations\20210611121842_completeData.Designer.cs" />
-    <Compile Include="Migrations\Health_CareContextModelSnapshot.cs" />
   </ItemGroup>
 
   <ItemGroup>

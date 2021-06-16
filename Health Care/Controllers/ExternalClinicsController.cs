@@ -149,6 +149,20 @@ namespace Health_Care.Controllers
             };
 
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<object>> GetExternalClinicByuserID(int id)
+        {
+            var clinic = await _context.ExternalClinic.FirstOrDefaultAsync(x=>x.userId==id);
+            return new
+            {
+                id = clinic.id,
+                Name = clinic.Name,
+                Picture = clinic.Picture,
+                Backgroundimage = clinic.BackgoundImage,
+
+            };
+
+        }
 
         public async Task<ActionResult<IEnumerable<ExternalClinic>>> GetDisabled()
         {

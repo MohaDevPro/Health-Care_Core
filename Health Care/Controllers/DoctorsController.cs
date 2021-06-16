@@ -216,7 +216,25 @@ namespace Health_Care.Controllers
 
             return doctor;
         }
+        public async Task<ActionResult<object>> GetDoctorBasedOnuserID(int id)
+        {
+            var Doctor = await _context.Doctor.FirstOrDefaultAsync(x=>x.Userid==id);
+            var doctor = new
+            {
+                id = id,
+                Name = Doctor.name,
+                Picture = Doctor.Picture,
+                Backgroundimage = Doctor.backgroundImage,
 
+            };
+
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+            return doctor;
+        }
         // PUT: api/Doctors/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
