@@ -12,53 +12,52 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class PatientsController : ControllerBase
+    public class GovernoratesController : ControllerBase
     {
         private readonly Health_CareContext _context;
 
-        public PatientsController(Health_CareContext context)
+        public GovernoratesController(Health_CareContext context)
         {
             _context = context;
         }
 
-        // GET: api/Patients
+        // GET: api/Governorates
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetPatient()
+        public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
         {
-            return await _context.Patient.Where(x => x.active == true).Include(p=>p.ChronicDiseases).ToListAsync();
+            return await _context.Governorate.Where(x=> x.active == true).ToListAsync();
         }
 
-        // GET: api/Patients/5
+        // GET: api/Governorates/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Patient>> GetPatient(int id)
+        public async Task<ActionResult<Governorate>> GetGovernorate(int id)
         {
-            //var patient = await _context.Patient.FindAsync(id);
-            var patient = await _context.Patient.FirstOrDefaultAsync(x=>x.userId == id);
+            var governorate = await _context.Governorate.FindAsync(id);
 
-            if (patient == null)
+            if (governorate == null)
             {
                 return NotFound();
             }
 
-            return patient;
+            return governorate;
         }
-        public async Task<ActionResult<IEnumerable<Patient>>> GetDisabled()
+        public async Task<ActionResult<IEnumerable<Governorate>>> GetDisabled()
         {
-            return await _context.Patient.Where(x => x.active == false).ToListAsync();
+            return await _context.Governorate.Where(a => a.active == false).ToListAsync();
         }
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
-        public async Task<IActionResult> RestoreService(List<Patient> halthcareWorker)
+        public async Task<IActionResult> RestoreService(List<Governorate> governorate)
         {
-            if (halthcareWorker.Count == 0)
+            if (governorate.Count == 0)
                 return NoContent();
 
             try
             {
-                foreach (Patient item in halthcareWorker)
+                foreach (Governorate item in governorate)
                 {
-                    Patient s = _context.Patient.Where(s => s.id == item.id).FirstOrDefault();
+                    var s = _context.Governorate.Where(s => s.ID == item.ID).FirstOrDefault();
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -70,18 +69,18 @@ namespace Health_Care.Controllers
             }
         }
 
-        // PUT: api/Patients/5
+        // PUT: api/Governorates/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPatient(int id, Patient patient)
+        public async Task<IActionResult> PutGovernorate(int id, Governorate governorate)
         {
-            if (id != patient.id)
+            if (id != governorate.ID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(patient).State = EntityState.Modified;
+            _context.Entry(governorate).State = EntityState.Modified;
 
             try
             {
@@ -89,7 +88,7 @@ namespace Health_Care.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PatientExists(id))
+                if (!GovernorateExists(id))
                 {
                     return NotFound();
                 }
@@ -102,37 +101,37 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-        // POST: api/Patients
+        // POST: api/Governorates
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Patient>> PostPatient(Patient patient)
+        public async Task<ActionResult<Governorate>> PostGovernorate(Governorate governorate)
         {
-            _context.Patient.Add(patient);
+            _context.Governorate.Add(governorate);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPatient", new { id = patient.id }, patient);
+            return CreatedAtAction("GetGovernorate", new { id = governorate.ID }, governorate);
         }
 
-        // DELETE: api/Patients/5
+        // DELETE: api/Governorates/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Patient>> DeletePatient(int id)
+        public async Task<ActionResult<Governorate>> DeleteGovernorate(int id)
         {
-            var patient = await _context.Patient.FindAsync(id);
-            if (patient == null)
+            var governorate = await _context.Governorate.FindAsync(id);
+            if (governorate == null)
             {
                 return NotFound();
             }
-            patient.active = false;
-            //_context.Patient.Remove(patient);
+            governorate.active = false;
+            //_context.Governorate.Remove(governorate);
             await _context.SaveChangesAsync();
 
-            return patient;
+            return governorate;
         }
 
-        private bool PatientExists(int id)
+        private bool GovernorateExists(int id)
         {
-            return _context.Patient.Any(e => e.id == id);
+            return _context.Governorate.Any(e => e.ID == id);
         }
     }
 }

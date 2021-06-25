@@ -14,11 +14,12 @@ namespace Health_Care.Models
         public bool wed { get; set; }
         public bool thur { get; set; }
         public bool fri { get; set; }
-        public string openTime { get; set; }
-        public string clossTime { get; set; }
-
-
-        public int period { get; set; }
+        public int startTime { get; set; }
+        public int endTime { get; set; }
+        public bool morningEvening { get; set; }
+        public string shiftAMPM { get; set; }
+        public string RealOpenTime { get; set; }
+        public string RealClossTime { get; set; }
 
         public int userId { get; set; }
     }

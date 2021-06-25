@@ -25,14 +25,17 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DepartmentsOfHospital>>> GetdepartmentsOfHospital()
         {
-            return await _context.departmentsOfHospitals.ToListAsync();
+            return await _context.departmentsOfHospitals.Where(a => a.active == true).ToListAsync();
         }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetdepartmentsOfHospitalsByHospitalID(int id)
         {
             var hospital = await _context.Hospitals.Where(x => x.hospitalId == id).FirstOrDefaultAsync();
-            return await (from hospitaldepartment in _context.hospitalDepartments 
-                          join Departments in _context.departmentsOfHospitals on hospitaldepartment.DepatmentsOfHospitalID equals Departments.id
+            return await (from hospitaldepartment in _context.hospitalDepartments
+
+                          join Departments in _context.departmentsOfHospitals.Where(x=>x.active ==true) on hospitaldepartment.DepatmentsOfHospitalID equals Departments.id
                           where hospitaldepartment.Hospitalid == hospital.id
                           select new
                           {
@@ -58,6 +61,33 @@ namespace Health_Care.Controllers
             }
 
             return departmentsOfHospital;
+        }
+        public async Task<ActionResult<IEnumerable<DepartmentsOfHospital>>> GetDisabled()
+        {
+            return await _context.departmentsOfHospitals.Where(x => x.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<DepartmentsOfHospital> halthcareWorker)
+        {
+            if (halthcareWorker.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (DepartmentsOfHospital item in halthcareWorker)
+                {
+                    DepartmentsOfHospital s = _context.departmentsOfHospitals.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/DepartmentsOfHospitals/5
@@ -113,8 +143,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.departmentsOfHospitals.Remove(departmentsOfHospital);
+            departmentsOfHospital.active = false;
+            //_context.departmentsOfHospitals.Remove(departmentsOfHospital);
             await _context.SaveChangesAsync();
 
             return departmentsOfHospital;

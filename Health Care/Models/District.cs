@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace Health_Care.Models
 {
-    public class ClinicType
+    public class District
     {
-        public int id { get; set; }
-        public String ClinicTypeName { get; set; }
+        public int ID { get; set; }
+        public int GovernorateID { get; set; }
+        public string Name { get; set; }
         public bool active { get; set; }
     }
 }

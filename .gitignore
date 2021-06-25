@@ -28,4 +28,5 @@ bld/
 .vs/Health Care/v16/.suo
 .vs/Health Care/config/applicationhost.config
 Health Care/obj/
-/Health Care/Properties/PublishProfiles/FolderProfile2.pubxml
+/Health Care/Properties/PublishProfiles/
+Health Care/Properties/PublishProfiles/

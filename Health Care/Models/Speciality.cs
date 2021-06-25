@@ -11,5 +11,6 @@ namespace Health_Care.Models
         public string specialityName { get; set; }
         public int BasicSpecialityID { get; set; }
         public bool isBasic { get; set; }
+        public bool active { get; set; }
     }
 }

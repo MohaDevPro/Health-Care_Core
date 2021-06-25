@@ -50,6 +50,18 @@ namespace Health_Care.Controllers
 
             return chargeOrRechargeRequest;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<bool>> GetIsCharged(int id)
+        {
+            var chargeOrRechargeRequest = await _context.ChargeOrRechargeRequest.Where(c=>c.userId == id).FirstOrDefaultAsync();
+
+            if (chargeOrRechargeRequest == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         // PUT: api/ChargeOrRechargeRequests/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -66,6 +78,8 @@ namespace Health_Care.Controllers
 
             try
             {
+                var  user = _context.User.Where(u=>u.id == chargeOrRechargeRequest.userId).FirstOrDefault();
+                user.isActiveAccount = true;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

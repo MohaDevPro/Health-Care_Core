@@ -10,7 +10,7 @@ using Health_Care.Models;
 
 namespace Health_Care.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class FavoritesController : ControllerBase
     {
@@ -142,6 +142,7 @@ namespace Health_Care.Controllers
         [HttpPost]
         public async Task<ActionResult<Favorite>> PostFavorite(Favorite favorite)
         {
+            favorite.UserId = _context.Doctor.FirstOrDefault(x => x.id == favorite.UserId).Userid;
             _context.Favorite.Add(favorite);
             await _context.SaveChangesAsync();
 
@@ -153,6 +154,7 @@ namespace Health_Care.Controllers
         //[Route("api/Favorites/{patientId}/{userId}/{type}")]
         public async Task<ActionResult<Favorite>> DeleteFavorite(int patientId,int userId,string type)
         {
+            userId = _context.Doctor.FirstOrDefault(x => x.id == userId).Userid;
             var favorite = await _context.Favorite.Where(x=> x.PatientId==patientId && x.UserId==userId && x.type==type).SingleOrDefaultAsync();
             if (favorite == null)
             {

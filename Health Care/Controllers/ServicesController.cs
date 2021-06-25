@@ -23,34 +23,61 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Service>>> GetService()
         {
-            var service = await _context.Service.ToListAsync();
+            var service = await _context.Service.Where(s=>s.active==true).ToListAsync();
             return service;
         }
         // GET: api/Services
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)
         {
-            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == id);
+            var healthcareWorker = _context.HealthcareWorker.Where(h => h.userId == id).FirstOrDefault();
+            var choosingServices = _context.HealthcareWorker.Include(x => x.HealthcareWorkerServices).FirstOrDefault(x => x.id == healthcareWorker.id);
             var choosingIDs = new List<int>();
             if (choosingServices != null) {
                 choosingIDs = choosingServices.HealthcareWorkerServices.Select(x => x.serviceId).ToList();
             }
             var listService = new List<object>();
+            foreach(var service in _context.Service )
+            {
+                if (service.active == true) 
+                {
+                    var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
+                    var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id) : new HealthcareWorkerService();
+
+                    var services = new
+                    {
+                        service.id,
+                        service.serviceName,
+                        servicePrice = price,
+                        isSelected = choosingIDs.Contains(service.id),
+                        oldchoosing = oldservice
+                    };
+                    listService.Add(services);
+                }
+            }
+            return listService;
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllServiceByHealthWorker() { 
+
+
+            var choosingIDs = new List<int>();
+            
+            var listService = new List<object>();
             foreach(var service in _context.Service)
             {
-
-                var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
-                var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id):new HealthcareWorkerService();
-
-                var services = new
+                if (service.active == true)
                 {
-                    service.id,
-                    service.serviceName,
-                    servicePrice = price,
-                    isSelected = choosingIDs.Contains(service.id),
-                    oldchoosing=oldservice
-                };
-                listService.Add(services);
+                    var services = new
+                    {
+                        service.id,
+                        service.serviceName,
+                        servicePrice = 0,
+                        isSelected = false,
+                        oldchoosing = new HealthcareWorkerService()
+                    };
+                    listService.Add(services);  
+                }
             }
             return listService;
         }
@@ -68,6 +95,35 @@ namespace Health_Care.Controllers
 
             return service;
         }
+
+        public async Task<ActionResult<IEnumerable<Service>>> GetDisabled()
+        {
+            return await _context.Service.Where(a => a.active == false).ToListAsync();
+        }
+
+        [HttpPut]
+        //[Authorize(Roles = "admin, service")]
+        public async Task<IActionResult> RestoreService(List<Service> service)
+        {
+            if (service.Count == 0)
+                return NoContent();
+
+            try
+            {
+                foreach (Service item in service)
+                {
+                    var s = _context.Service.Where(s => s.id == item.id).FirstOrDefault();
+                    s.active = true;
+                    await _context.SaveChangesAsync();
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
 
         // PUT: api/Services/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -122,8 +178,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-
-            _context.Service.Remove(service);
+            service.active = false;
+            //_context.Service.Remove(service);
             await _context.SaveChangesAsync();
 
             return service;
