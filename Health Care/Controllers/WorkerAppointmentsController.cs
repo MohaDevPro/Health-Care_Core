@@ -104,9 +104,9 @@ namespace Health_Care.Controllers
             var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
             var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
 
-            li.ConfirmedAppointmentbyworker1.AddRange(ConfirmedAppointmentbyworker);
-            li.WorkerComeToAppointment1.AddRange(WorkerComeToAppointment);
-            li.cancelledAppointmentbyworker1.AddRange(cancelledAppointmentbyworker);
+            li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
+            li.WorkerComeToAppointment1 = WorkerComeToAppointment;
+            li.cancelledAppointmentbyworker1 = cancelledAppointmentbyworker;
 
             if (li == null) { return NotFound(); }
             return li;
