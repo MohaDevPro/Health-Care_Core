@@ -95,6 +95,41 @@ namespace Health_Care.Controllers
             return result;
         }
 
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentBasedOnStatusByUserId(int userId)
+        {
+            WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
+
+            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
+            var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
+            var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+
+            li.ConfirmedAppointmentbyworker1.AddRange(ConfirmedAppointmentbyworker);
+            li.WorkerComeToAppointment1.AddRange(WorkerComeToAppointment);
+            li.cancelledAppointmentbyworker1.AddRange(cancelledAppointmentbyworker);
+
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
+        //[HttpGet("{userId}")]
+        //public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentsBasedOnStatusByUserId(int userId)
+        //{
+        //    WorkerAppointmentsCategories obj = new WorkerAppointmentsCategories();
+
+        //    var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == true && x.cancelledByUser == false).ToListAsync();
+        //    var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == false && x.cancelledByUser == false).ToListAsync();
+        //    var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser == true).ToListAsync();
+
+        //    obj.
+
+        //    li.Add(unConfirmedAppointment);
+        //    li.Add(cancelledAppointment);
+
+        //    if (li == null) { return NotFound(); }
+        //    return li;
+        //}
+
         // PUT: api/WorkerAppointments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
@@ -159,5 +194,7 @@ namespace Health_Care.Controllers
         {
             return _context.WorkerAppointment.Any(e => e.id == id);
         }
+
+
     }
 }
