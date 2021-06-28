@@ -15,7 +15,7 @@ namespace Health_Care.Models
 
         public string Description { get; set; }
         public bool active { get; set; }
-        public int hospitalId { get; set; } //from user table
+        public int UserId { get; set; } //from user table
 
         public ICollection<HospitalDepartments> hospitalDepartments { get; set; }
     }

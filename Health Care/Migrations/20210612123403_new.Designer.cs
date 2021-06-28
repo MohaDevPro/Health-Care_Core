@@ -4,18 +4,20 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210612123403_new")]
+    partial class @new
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.15")
+                .HasAnnotation("ProductVersion", "3.1.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -747,11 +749,11 @@ namespace Health_Care.Migrations
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("active")
                         .HasColumnType("bit");
+
+                    b.Property<int>("hospitalId")
+                        .HasColumnType("int");
 
                     b.HasKey("id");
 
