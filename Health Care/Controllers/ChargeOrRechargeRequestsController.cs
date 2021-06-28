@@ -78,6 +78,8 @@ namespace Health_Care.Controllers
 
             try
             {
+                var  user = _context.User.Where(u=>u.id == chargeOrRechargeRequest.userId).FirstOrDefault();
+                user.isActiveAccount = true;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
