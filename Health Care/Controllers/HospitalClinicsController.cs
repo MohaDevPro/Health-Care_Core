@@ -34,7 +34,7 @@ namespace Health_Care.Controllers
             return await (from hospital in _context.Hospitals
                           select new
                           {
-                              id = hospital.hospitalId,
+                              id = hospital.UserId,
                               Name = hospital.Name,
                               Picture = hospital.Picture,
                               Backgroundimage=hospital.BackgoundImage,
@@ -50,7 +50,7 @@ namespace Health_Care.Controllers
             return await (from hospital in _context.Hospitals
                           select new
                           {
-                              id = hospital.hospitalId,
+                              id = hospital.UserId,
                               Name = hospital.Name,
 
                           }
@@ -62,7 +62,7 @@ namespace Health_Care.Controllers
         [HttpGet("{hospitalId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetClinicAndDoctorByHospitalID(int hospitalId)
         {
-            var hospital = await _context.Hospitals.Where(x => x.hospitalId == hospitalId).FirstOrDefaultAsync();
+            var hospital = await _context.Hospitals.Where(x => x.UserId == hospitalId).FirstOrDefaultAsync();
             var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
                                                  where hospitalObj.id == hospitalId
                                                  select new 
@@ -651,8 +651,8 @@ namespace Health_Care.Controllers
                     {
                         _context.Entry(Doctor).State = EntityState.Modified;
 
-                        await _context.SaveChangesAsync();
                     }
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception)
                 {

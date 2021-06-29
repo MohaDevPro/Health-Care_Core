@@ -747,11 +747,11 @@ namespace Health_Care.Migrations
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("active")
                         .HasColumnType("bit");
-
-                    b.Property<int>("hospitalId")
-                        .HasColumnType("int");
 
                     b.HasKey("id");
 
