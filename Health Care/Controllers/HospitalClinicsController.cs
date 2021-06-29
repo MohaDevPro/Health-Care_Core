@@ -184,7 +184,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Hospital>> GetHospitalClinicByuserID(int id)
         {
-            var hospitalClinic = await _context.Hospitals.FirstOrDefaultAsync(x=>x.hospitalId==id);
+            var hospitalClinic = await _context.Hospitals.FirstOrDefaultAsync(x=>x.UserId==id);
 
             if (hospitalClinic == null)
             {
