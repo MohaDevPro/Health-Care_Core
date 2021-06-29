@@ -151,7 +151,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult> FCMTokenSave(FCM_Tokens token)
         {
 
-            if (token.Token.Count() == 163 && token.Token.Split(':')[0].Count() == 22 && token.DeviceID == null)
+            if (token.Token.Count() == 163 && token.Token.Split(':')[0].Count() == 22 && token.DeviceID != null)
             {
                 var Token = _context.FCMTokens.Where(t => t.DeviceID == token.DeviceID).FirstOrDefault();
                 if (Token == null)

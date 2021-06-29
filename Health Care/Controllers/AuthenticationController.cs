@@ -155,6 +155,7 @@ namespace Health_Care.Controllers
                     {
                         userId = user.id,
                         active = true,
+                        Name = user.nameAR,
                     };
                     _context.HealthcareWorker.Add(healthcareWorker) ;
                     _context.SaveChanges();
@@ -167,6 +168,7 @@ namespace Health_Care.Controllers
                     {
                         userId = user.id,
                         active = true,
+                        Name = user.nameAR,
                     };
                     _context.ExternalClinic.Add(clinic);
                     _context.SaveChanges();
@@ -178,6 +180,7 @@ namespace Health_Care.Controllers
                     {
                         UserId = user.id,
                         active = true,
+                        Name = user.nameAR,
                     };
                     _context.Hospitals.Add(hospital);
                     _context.SaveChanges();
@@ -189,6 +192,7 @@ namespace Health_Care.Controllers
                     {
                         userId = user.id,
                         active = true,
+                        Name = user.nameAR,
                     };
                     _context.Patient.Add(patient);
                     _context.SaveChanges();
@@ -200,6 +204,7 @@ namespace Health_Care.Controllers
                     {
                         Userid = user.id,
                         active = true,
+                        name = user.nameAR,
                     };
                     _context.Doctor.Add(doctor);
                     _context.SaveChanges();
