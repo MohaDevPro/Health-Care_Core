@@ -30,17 +30,27 @@ namespace Health_Care.Controllers
 
         // GET: api/Hospitals/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Hospital>> GetHospital(int id)
+        public async Task<ActionResult<object>> GetHospital(int id)
         {
-            var hospital = await _context.Hospitals.FindAsync(id);
 
-            if (hospital == null)
+            var hospitalClinic = await _context.Hospitals.Where(x => x.id == id).FirstOrDefaultAsync();
+
+            if (hospitalClinic == null)
             {
                 return NotFound();
             }
 
-            return hospital;
+            return new
+            {
+                id = hospitalClinic.id,
+                Name = hospitalClinic.Name,
+                Picture = hospitalClinic.Picture,
+                Backgroundimage = hospitalClinic.BackgoundImage,
+                Description = hospitalClinic.Description
+
+            };
         }
+    
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Hospital>>> GetDisabled()
         {

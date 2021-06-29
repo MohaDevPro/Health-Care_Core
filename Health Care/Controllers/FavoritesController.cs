@@ -155,7 +155,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<Favorite>> DeleteFavorite(int patientId,int userId,string type)
         {
             userId = _context.Doctor.FirstOrDefault(x => x.id == userId).Userid;
-            var favorite = await _context.Favorite.Where(x=> x.PatientId==patientId && x.UserId==userId && x.type==type).SingleOrDefaultAsync();
+            var favorite = await _context.Favorite.Where(x=> x.PatientId==patientId && x.UserId==userId && x.type==type).FirstOrDefaultAsync();
             if (favorite == null)
             {
                 return NotFound();
