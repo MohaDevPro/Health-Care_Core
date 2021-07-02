@@ -145,6 +145,74 @@ namespace Health_Care.Controllers
             return Ok();
         }
 
+        [AllowAnonymous]
+        [HttpPost("{userIDTo}")]
+        public async Task<ActionResult> SendNotificationsToUser( int userIDTo, Notifications notifications)
+        {
+
+            var ToUser = _context.User.Where(u => u.id == userIDTo).FirstOrDefault();
+            if (userIDTo == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                string ToUserFCMToken = _context.FCMTokens.Where(t => t.UserID == userIDTo).FirstOrDefault().Token;
+
+                {
+                    var message = new Message()
+                    {
+                        Notification = new Notification()
+                        {
+                            Title = notifications.title,
+                            Body = notifications.body,
+                        },
+                        Data = new Dictionary<string, string>() {
+                        //{ "rout", rout },
+                        { "message", $"{ToUser.nameAR } " },
+                    },
+                        Android = new AndroidConfig()
+                        {
+                            Priority = Priority.High,
+
+                            //TimeToLive = TimeSpan.FromDays(7),
+                            Notification = new AndroidNotification()
+                            {
+                                Icon = "ic_launcher",
+                                Color = "#f45342",
+                            },
+                        },
+                        Apns = new ApnsConfig()
+                        {
+                            Aps = new Aps()
+                            {
+                                Alert = new ApsAlert() { Body = notifications.body, Title = notifications.title, },
+                                Sound = "",
+                                ContentAvailable = true,
+                                Badge = 42,
+                            },
+                            Headers = new Dictionary<string, string>() {
+                            { "apns-push-type", "background" },
+                            { "apns-priority", "5" }, // Must be `5` when `contentAvailable` is set to true.
+                            { "apns-topic", "io.flutter.plugins.firebase.messaging" } // bundle identifier
+                        },
+                        },
+
+                        Token = ToUserFCMToken,
+                    };
+
+
+                    var response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                    // See the BatchResponse reference documentation
+                    // for the contents of response.
+                    Console.WriteLine($"{response} messages were sent successfully");
+                }
+
+                return Ok();
+
+            }
+        }
+
 
         [HttpPost]
         [AllowAnonymous]
