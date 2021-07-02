@@ -89,6 +89,7 @@ namespace Health_Care.Data
         public DbSet<HealthCareWorkerAppWorkTime> HealthCareWorkerAppWorkTime { get; set; }
         public DbSet<HealthWorkerRequestByUser> HealthWorkerRequestByUser { get; set; }
         public DbSet<HospitalClinicAddress> HospitalClinicAddress { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
 
 

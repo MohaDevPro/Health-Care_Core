@@ -30,5 +30,6 @@ namespace Health_Care.Models
         public string appointmentDoctorClinicId { get; set; }
 
         public bool active { get; set; }
+        public string CodeConfirmation { get; set; }
     }
 }
