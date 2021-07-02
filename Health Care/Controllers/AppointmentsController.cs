@@ -218,12 +218,47 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
+
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ConfirmByPatient(int id)
+        {
+            Appointment appointment = _context.Appointment.Where(x => x.id == id).FirstOrDefault();
+            if (null == appointment)
+            {
+                return NotFound();
+            }
+            appointment.PatientComeToAppointment = true;
+            _context.Entry(appointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // POST: api/Appointments
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<Appointment>> PostAppointment(Appointment appointment)
         {
+            Random random = new Random();
+            DateTime d = DateTime.Now;
+            appointment.CodeConfirmation = $"{d.ToString("dd")}{d.ToString("MM")}{d.ToString("yyyy")}-{random.Next(1000000, 9999999)}";
             _context.Appointment.Add(appointment);
             await _context.SaveChangesAsync();
 

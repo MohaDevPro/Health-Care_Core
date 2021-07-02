@@ -127,13 +127,76 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ConfirmByPatient(int id)
+        {
+            WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+            if (null == workerAppointment)
+            {
+                return NotFound();
+            }
+            workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
+            _context.Entry(workerAppointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WorkerAppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+         [HttpPut("{id}")]
+        public async Task<IActionResult> ConfirmByWorker(int id)
+        {
+            WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+            if (null == workerAppointment)
+            {
+                return NotFound();
+            }
+            workerAppointment.ConfirmHealthWorkerCome_ByHimself = true;
+            _context.Entry(workerAppointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WorkerAppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // POST: api/WorkerAppointments
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<WorkerAppointment>> PostWorkerAppointment(WorkerAppointment workerAppointment)
         {
+            Random random = new Random();
+            DateTime d = DateTime.Now;
+            workerAppointment.CodeConfirmation = $"{d.ToString("dd")}{d.ToString("MM")}{d.ToString("yyyy")}-{random.Next(1000000, 9999999)}";
             _context.WorkerAppointment.Add(workerAppointment);
+            
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWorkerAppointment", new { id = workerAppointment.id }, workerAppointment);
