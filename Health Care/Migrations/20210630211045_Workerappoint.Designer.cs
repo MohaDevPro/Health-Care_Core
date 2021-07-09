@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210615183544_new")]
-    partial class @new
+    [Migration("20210630211045_Workerappoint")]
+    partial class Workerappoint
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -749,11 +749,11 @@ namespace Health_Care.Migrations
                     b.Property<string>("Picture")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("active")
                         .HasColumnType("bit");
-
-                    b.Property<int>("hospitalId")
-                        .HasColumnType("int");
 
                     b.HasKey("id");
 
@@ -911,6 +911,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("LastBalanceChargeDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("active")
@@ -1239,6 +1242,9 @@ namespace Health_Care.Migrations
 
                     b.Property<bool>("AcceptedByHealthWorker")
                         .HasColumnType("bit");
+
+                    b.Property<string>("CodeConfirmation")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ConfirmHealthWorkerCome_ByHimself")
                         .HasColumnType("bit");

@@ -12,6 +12,7 @@ namespace Mr.Delivery.Models
         public string nameEN { get; set; }
         public string phoneNumber { get; set; }
         public string address { get; set; }
+        public int SpecificId { get; set; }
         public int regionId { get; set; }
         public int roleid { get; set; }
         public string email { get; set; } 

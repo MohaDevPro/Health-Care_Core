@@ -96,7 +96,9 @@ namespace Health_Care.Controllers
         [HttpGet("{patientId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId)
         {
-            var favorite = (from PatientFavorite in _context.Favorite join doc in _context.Doctor on PatientFavorite.UserId equals doc.Userid where PatientFavorite.PatientId == patientId select PatientFavorite ).ToList();
+            var favorite = (from PatientFavorite in _context.Favorite 
+                            join doc in _context.Doctor on PatientFavorite.UserId equals doc.Userid 
+                            where PatientFavorite.PatientId == patientId select PatientFavorite ).ToList();
 
             
             
@@ -140,7 +142,8 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id)
         {
-            return await (from doctor in _context.Doctor where doctor.active == true join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+            return await (from doctor in _context.Doctor where doctor.active == true 
+                          join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           where Clinicdoctor.Clinicid==id
                           select new
                           {
@@ -216,7 +219,25 @@ namespace Health_Care.Controllers
 
             return doctor;
         }
+        public async Task<ActionResult<object>> GetDoctorBasedOnuserID(int id)
+        {
+            var Doctor = await _context.Doctor.FirstOrDefaultAsync(x=>x.Userid==id);
+            var doctor = new
+            {
+                id = id,
+                Name = Doctor.name,
+                Picture = Doctor.Picture,
+                Backgroundimage = Doctor.backgroundImage,
 
+            };
+
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+            return doctor;
+        }
         // PUT: api/Doctors/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.

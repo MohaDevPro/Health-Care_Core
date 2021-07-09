@@ -52,6 +52,27 @@ namespace Health_Care.Controllers
                 refreshRequest.RefreshToken = refreshToken.Token;
                 refreshRequest.AccessToken = GenerateAccessToken(user);
                 string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
+
+                int SpecificId;
+                var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
+                var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();
+                var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
+                var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
+                var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
+
+                if (hospital != null)
+                    SpecificId = hospital.id;
+                else if (healthcareWorker != null)
+                    SpecificId = healthcareWorker.id;
+                else if (patient != null)
+                    SpecificId = patient.id;
+                else if (clinic != null)
+                    SpecificId = clinic.id;
+                else if (doctor != null)
+                    SpecificId = doctor.id;
+                else SpecificId = 0;
+
+
                 return Ok(new UserWithToken()
                 {
                     id = user.id,
@@ -62,6 +83,7 @@ namespace Health_Care.Controllers
                     DeviceId=user.DeviceId,
                     email=user.email,
                     roleid = user.Roleid,
+                    SpecificId = SpecificId,
                     type = type,
                     isActiveAccount = user.isActiveAccount,
                     regionId =user.regionId,
@@ -120,6 +142,77 @@ namespace Health_Care.Controllers
                 refreshRequest.AccessToken = GenerateAccessToken(user);
                 refreshRequest.RefreshToken = refreshToken.Token;
                 string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
+                int SpecificId;
+                //var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
+                //var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();
+                //var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
+                //var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
+                //var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
+
+                 if (user.Roleid == 1)
+                {
+                    var healthcareWorker = new HealthcareWorker()
+                    {
+                        userId = user.id,
+                        active = true,
+                        Name = user.nameAR,
+                    };
+                    _context.HealthcareWorker.Add(healthcareWorker) ;
+                    _context.SaveChanges();
+                    SpecificId = healthcareWorker.id;
+                }
+                    
+                else if (user.Roleid == 2)
+                {
+                    var clinic = new ExternalClinic()
+                    {
+                        userId = user.id,
+                        active = true,
+                        Name = user.nameAR,
+                    };
+                    _context.ExternalClinic.Add(clinic);
+                    _context.SaveChanges();
+                    SpecificId = clinic.id;
+                }
+                else if (user.Roleid == 3)
+                {
+                    var hospital = new Hospital()
+                    {
+                        UserId = user.id,
+                        active = true,
+                        Name = user.nameAR,
+                    };
+                    _context.Hospitals.Add(hospital);
+                    _context.SaveChanges();
+                    SpecificId = hospital.id;
+                }
+                else if (user.Roleid == 4)
+                {
+                    var patient = new Patient()
+                    {
+                        userId = user.id,
+                        active = true,
+                        Name = user.nameAR,
+                    };
+                    _context.Patient.Add(patient);
+                    _context.SaveChanges();
+                    SpecificId = patient.id;
+                }
+                else if (user.Roleid == 5)
+                {
+                    var doctor = new Doctor()
+                    {
+                        Userid = user.id,
+                        active = true,
+                        name = user.nameAR,
+                    };
+                    _context.Doctor.Add(doctor);
+                    _context.SaveChanges();
+                    SpecificId = doctor.id;
+                }
+                else SpecificId = 0;
+
+
                 return Ok(new UserWithToken()
                 {
                     id = user.id,
@@ -129,7 +222,8 @@ namespace Health_Care.Controllers
                     DeviceId = user.DeviceId,
                     email = user.email,
                     type = type,
-                    roleid = user.Roleid, 
+                    roleid = user.Roleid,
+                    SpecificId = SpecificId, 
                     isActiveAccount=user.isActiveAccount,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
@@ -142,19 +236,20 @@ namespace Health_Care.Controllers
         //[Authorize(Roles = "admin, doctor")]
         public async Task<ActionResult<Doctor>> signUpDoctorDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
-            Doctor doctor = new Doctor();
-            User user = new User();
+            
+            User user = _context.User.Where(d => d.id == id).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            Doctor doctor = _context.Doctor.Where(d=>d.Userid == id).FirstOrDefault();
             if (ModelState.IsValid)
             {
                 if (idImage != null && certificateImage != null && Picture != null && bg != null)
                 {
                     try
                     {
-                        user = _context.User.Where(d => d.id == id).FirstOrDefault();
-                        if (user==null)
-                        {
-                            return NotFound();
-                        }
+                        
                         doctor.name = user.nameAR;
                         doctor.Userid = id;
                         string path = _environment.WebRootPath + @"\images\";
@@ -212,18 +307,18 @@ namespace Health_Care.Controllers
         //[Authorize(Roles = "admin, doctor")]
         public async Task<ActionResult<Doctor>> signUpHealthWorkerDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
-            HealthcareWorker healthcareWorker = new HealthcareWorker();
+            HealthcareWorker healthcareWorker = _context.HealthcareWorker.Where(d => d.userId == id).FirstOrDefault();
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
+
             if (ModelState.IsValid)
             {
                 if (idImage != null && certificateImage != null && Picture != null && bg != null)
                 {
                     try
                     {
-                        healthcareWorker = _context.HealthcareWorker.Where(d => d.userId == id).FirstOrDefault();
-                        if (healthcareWorker==null)
-                        {
-                            return NotFound();
-                        }
 
                         string path = _environment.WebRootPath + @"\images\";
                         FileStream fileStream;

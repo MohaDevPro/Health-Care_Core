@@ -32,9 +32,10 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic()
         {
             return await (from hospital in _context.Hospitals
+                          where hospital.active == true
                           select new
                           {
-                              id = hospital.hospitalId,
+                              id = hospital.id,
                               Name = hospital.Name,
                               Picture = hospital.Picture,
                               Backgroundimage=hospital.BackgoundImage,
@@ -48,9 +49,10 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinicForAdmin()
         {
             return await (from hospital in _context.Hospitals
+                          where hospital.active == true
                           select new
                           {
-                              id = hospital.hospitalId,
+                              id = hospital.id,
                               Name = hospital.Name,
 
                           }
@@ -62,7 +64,7 @@ namespace Health_Care.Controllers
         [HttpGet("{hospitalId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetClinicAndDoctorByHospitalID(int hospitalId)
         {
-            var hospital = await _context.Hospitals.Where(x => x.hospitalId == hospitalId).FirstOrDefaultAsync();
+            var hospital = await _context.Hospitals.Where(x => x.UserId == hospitalId && x.active ==true).FirstOrDefaultAsync();
             var hospitalinfo_clinicinfo = await (from hospitalObj in _context.User
                                                  where hospitalObj.id == hospitalId
                                                  select new 
@@ -85,6 +87,7 @@ namespace Health_Care.Controllers
                                                                            }
                                                                                   ).ToList(),
                                                      HospitalDoctorList = (from doctor in _context.Doctor
+                                                                           where doctor.active == true
                                                                            join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                                                                            join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
                                                                            where clinic.userId == hospitalId
@@ -173,6 +176,18 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<Hospital>> GetHospitalClinic(int id)
         {
             var hospitalClinic = await _context.Hospitals.FindAsync(id);
+
+            if (hospitalClinic == null)
+            {
+                return NotFound();
+            }
+
+            return hospitalClinic;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Hospital>> GetHospitalClinicByuserID(int id)
+        {
+            var hospitalClinic = await _context.Hospitals.FirstOrDefaultAsync(x=>x.UserId==id);
 
             if (hospitalClinic == null)
             {
@@ -639,8 +654,8 @@ namespace Health_Care.Controllers
                     {
                         _context.Entry(Doctor).State = EntityState.Modified;
 
-                        await _context.SaveChangesAsync();
                     }
+                    await _context.SaveChangesAsync();
                 }
                 catch (Exception)
                 {

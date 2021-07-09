@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210624142128_EditHospital")]
+    partial class EditHospital
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace Health_Care.Migrations
 
                     b.Property<bool>("Accepted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("CodeConfirmation")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Paid")
                         .HasColumnType("bit");
@@ -533,21 +532,6 @@ namespace Health_Care.Migrations
                     b.ToTable("Favorite");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.Feedback", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("feedback")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("id");
-
-                    b.ToTable("Feedbacks");
-                });
-
             modelBuilder.Entity("Health_Care.Models.Governorate", b =>
                 {
                     b.Property<int>("ID")
@@ -929,9 +913,6 @@ namespace Health_Care.Migrations
                     b.Property<string>("LastBalanceChargeDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("active")
                         .HasColumnType("bit");
 
@@ -1258,9 +1239,6 @@ namespace Health_Care.Migrations
 
                     b.Property<bool>("AcceptedByHealthWorker")
                         .HasColumnType("bit");
-
-                    b.Property<string>("CodeConfirmation")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("ConfirmHealthWorkerCome_ByHimself")
                         .HasColumnType("bit");
