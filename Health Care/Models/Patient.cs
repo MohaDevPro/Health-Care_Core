@@ -10,6 +10,7 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int userId { get; set; }
+        public string Name { get; set; }
         public string gender { get; set; }
         public string birthDate { get; set; }
         public int Balance { get; set; }

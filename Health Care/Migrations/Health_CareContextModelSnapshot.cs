@@ -911,6 +911,9 @@ namespace Health_Care.Migrations
                     b.Property<string>("LastBalanceChargeDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("active")
                         .HasColumnType("bit");
 

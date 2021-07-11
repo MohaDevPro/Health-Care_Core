@@ -47,9 +47,9 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<IEnumerable<AppWorktime>> GetAppWorktimeBasedOnDoctorID(int id)
         {
-            var doctor = await _context.Doctor.FindAsync(id);
-            var userid = doctor.Userid;
-            var appWorktimes = await _context.AppWorktime.Where(x => x.userId == userid).ToListAsync();
+            //var doctor = await _context.Doctor.FindAsync(id);
+            //var userid = doctor.Userid;
+            var appWorktimes = await _context.AppWorktime.Where(x => x.userId == id).ToListAsync();
             return appWorktimes;
         }
         [HttpGet("{id}")]

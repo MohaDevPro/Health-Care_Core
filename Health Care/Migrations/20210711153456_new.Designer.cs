@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210624142128_EditHospital")]
-    partial class EditHospital
+    [Migration("20210711153456_new")]
+    partial class @new
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -911,6 +911,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("LastBalanceChargeDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("active")
