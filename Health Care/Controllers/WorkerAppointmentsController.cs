@@ -95,6 +95,30 @@ namespace Health_Care.Controllers
             return result;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllPatintAndWorkerComeToAppointment(int workerId, string dateFrom, string dateTo)
+        {
+            var allorders = _context.WorkerAppointment.AsQueryable();
+            var splitStartDate = dateFrom.Split('/');
+            var splitfinishDate = dateTo.Split('/');
+            var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
+            allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate) && x.ConfirmHealthWorkerCome_ByHimself==true && x.ConfirmHealthWorkerCome_ByPatient==true && x.workerId==workerId);
+            var result = await allorders.ToListAsync(); 
+             var workerAppointment = from workerA in result
+                                     join patient in _context.Patient on workerA.patientId equals patient.id join user in _context.User on patient.userId equals user.id
+                                     select new
+                                     {
+                                         id=patient.id,
+                                         date = workerA.appointmentDate,
+                                         price=workerA.servicePrice,
+                                         name=patient.Name,
+                                         phone=user.phoneNumber,
+                                     };
+
+            //return await _context.WorkerAppointment.Where(a => a.ConfirmHealthWorkerCome_ByPatient == true && a.ConfirmHealthWorkerCome_ByHimself == true && Convert.ToDateTime(a.appointmentDate) >= Convert.ToDateTime(dateFrom) && Convert.ToDateTime(a.appointmentDate) <= Convert.ToDateTime(dateTo) && a.workerId == workerId).ToListAsync();
+            return workerAppointment.ToList();
+        }
+
         // PUT: api/WorkerAppointments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.

@@ -13,30 +13,6 @@
     <Content Remove=".config\**" />
     <EmbeddedResource Remove=".config\**" />
     <None Remove=".config\**" />
-    <None Remove="Migrations\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Migrations\20210518182105_EditDoctor.cs" />
-    <Compile Remove="Migrations\20210518182105_EditDoctor.Designer.cs" />
-    <Compile Remove="Migrations\20210521130127_Add_Region.cs" />
-    <Compile Remove="Migrations\20210521130127_Add_Region.Designer.cs" />
-    <!--<Compile Remove="Migrations\20210521130152_Add_Region.cs" />
-    <Compile Remove="Migrations\20210521130152_Add_Region.Designer.cs" />-->
-    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.cs" />
-    <Compile Remove="Migrations\20210522102921_Edit_HealthcareWorkerRegions.Designer.cs" />
-    <Compile Remove="Migrations\20210624162111_EditHospital2.cs" />
-    <Compile Remove="Migrations\20210624162111_EditHospital2.Designer.cs" />
-    <Compile Remove="Migrations\20210624162151_EditHospital2.cs" />
-    <Compile Remove="Migrations\20210624162151_EditHospital2.Designer.cs" />
-    <Compile Remove="Migrations\20210624162208_EditHospital2.cs" />
-    <Compile Remove="Migrations\20210624162208_EditHospital2.Designer.cs" />
-    <Compile Remove="Migrations\20210624164903_EditHospital3.cs" />
-    <Compile Remove="Migrations\20210624164903_EditHospital3.Designer.cs" />
-    <Compile Remove="Migrations\20210624164932_EditHospital2.cs" />
-    <Compile Remove="Migrations\20210624164932_EditHospital2.Designer.cs" />
-    <!--<Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.cs" />
-    <Compile Remove="Migrations\20210522103126_Edit_HealthcareWorkerRegions.Designer.cs" />-->
   </ItemGroup>
 
   <!--<ItemGroup>

@@ -441,7 +441,7 @@ namespace Health_Care.Migrations
                     BackgoundImage = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     active = table.Column<bool>(nullable: false),
-                    hospitalId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -485,6 +485,7 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     userId = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
                     gender = table.Column<string>(nullable: true),
                     birthDate = table.Column<string>(nullable: true),
                     Balance = table.Column<int>(nullable: false),
