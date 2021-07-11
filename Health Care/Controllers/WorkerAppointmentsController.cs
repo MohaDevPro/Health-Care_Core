@@ -95,29 +95,40 @@ namespace Health_Care.Controllers
             return result;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllPatintAndWorkerComeToAppointment(int workerId, string dateFrom, string dateTo)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentBasedOnStatusByUserId(int userId)
         {
-            var allorders = _context.WorkerAppointment.AsQueryable();
-            var splitStartDate = dateFrom.Split('/');
-            var splitfinishDate = dateTo.Split('/');
-            var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
-            allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate) && x.ConfirmHealthWorkerCome_ByHimself==true && x.ConfirmHealthWorkerCome_ByPatient==true && x.workerId==workerId);
-            var result = await allorders.ToListAsync(); 
-             var workerAppointment = from workerA in result
-                                     join patient in _context.Patient on workerA.patientId equals patient.id join user in _context.User on patient.userId equals user.id
-                                     select new
-                                     {
-                                         id=patient.id,
-                                         date = workerA.appointmentDate,
-                                         price=workerA.servicePrice,
-                                         name=patient.Name,
-                                         phone=user.phoneNumber,
-                                     };
+            WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
 
-            //return await _context.WorkerAppointment.Where(a => a.ConfirmHealthWorkerCome_ByPatient == true && a.ConfirmHealthWorkerCome_ByHimself == true && Convert.ToDateTime(a.appointmentDate) >= Convert.ToDateTime(dateFrom) && Convert.ToDateTime(a.appointmentDate) <= Convert.ToDateTime(dateTo) && a.workerId == workerId).ToListAsync();
-            return workerAppointment.ToList();
+            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
+            var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
+            var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+
+            li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
+            li.WorkerComeToAppointment1 = WorkerComeToAppointment;
+            li.cancelledAppointmentbyworker1 = cancelledAppointmentbyworker;
+
+            if (li == null) { return NotFound(); }
+            return li;
         }
+
+        //[HttpGet("{userId}")]
+        //public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentsBasedOnStatusByUserId(int userId)
+        //{
+        //    WorkerAppointmentsCategories obj = new WorkerAppointmentsCategories();
+
+        //    var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == true && x.cancelledByUser == false).ToListAsync();
+        //    var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == false && x.cancelledByUser == false).ToListAsync();
+        //    var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser == true).ToListAsync();
+
+        //    obj.
+
+        //    li.Add(unConfirmedAppointment);
+        //    li.Add(cancelledAppointment);
+
+        //    if (li == null) { return NotFound(); }
+        //    return li;
+        //}
 
         // PUT: api/WorkerAppointments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -151,13 +162,76 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ConfirmByPatient(int id)
+        {
+            WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+            if (null == workerAppointment)
+            {
+                return NotFound();
+            }
+            workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
+            _context.Entry(workerAppointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WorkerAppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+         [HttpPut("{id}")]
+        public async Task<IActionResult> ConfirmByWorker(int id)
+        {
+            WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+            if (null == workerAppointment)
+            {
+                return NotFound();
+            }
+            workerAppointment.ConfirmHealthWorkerCome_ByHimself = true;
+            _context.Entry(workerAppointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WorkerAppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
         // POST: api/WorkerAppointments
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
         public async Task<ActionResult<WorkerAppointment>> PostWorkerAppointment(WorkerAppointment workerAppointment)
         {
+            Random random = new Random();
+            DateTime d = DateTime.Now;
+            workerAppointment.CodeConfirmation = $"{d.ToString("dd")}{d.ToString("MM")}{d.ToString("yyyy")}-{random.Next(1000000, 9999999)}";
             _context.WorkerAppointment.Add(workerAppointment);
+            
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWorkerAppointment", new { id = workerAppointment.id }, workerAppointment);
@@ -183,5 +257,7 @@ namespace Health_Care.Controllers
         {
             return _context.WorkerAppointment.Any(e => e.id == id);
         }
+
+
     }
 }

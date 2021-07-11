@@ -47,6 +47,12 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(a => a.active == false).ToListAsync();
         }
+        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetNotActive()
+        {
+            return await _context.User.Where(a => a.isActiveAccount == false).ToListAsync();
+        }
 
         [HttpGet]
         public async Task<ActionResult<int>> GetNumberOfUsersByRegion(int regionId)
@@ -125,6 +131,7 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
+
         [HttpPut("{result}/{id}")]
         public async Task<IActionResult> PutUserCompleteData(bool reuslt,int id )
         {
@@ -140,6 +147,38 @@ namespace Health_Care.Controllers
             try
             {
                 user.completeData = true;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        
+        [HttpPut("{result}/{id}")]
+        public async Task<IActionResult> ActiveUser(bool reuslt,int id )
+        {
+
+            var user =_context.User.Where(u => u.id == id).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+
+
+            try
+            {
+                user.isActiveAccount = true;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

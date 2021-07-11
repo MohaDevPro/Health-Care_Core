@@ -184,6 +184,18 @@ namespace Health_Care.Controllers
 
             return hospitalClinic;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Hospital>> GetHospitalClinicByuserID(int id)
+        {
+            var hospitalClinic = await _context.Hospitals.FirstOrDefaultAsync(x=>x.UserId==id);
+
+            if (hospitalClinic == null)
+            {
+                return NotFound();
+            }
+
+            return hospitalClinic;
+        }
 
         // PUT: api/HospitalClinics/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
