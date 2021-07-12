@@ -32,7 +32,23 @@ namespace Health_Care.Controllers
         {
             return await _context.Appointment.Where(a=>a.active == false).ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAllPatintComeToAppointment(int doctorId,string dateFrom,string dateTo)
+        {
 
+            var allorders = _context.Appointment.AsQueryable();
+            var splitStartDate = dateFrom.Split('/');
+            var splitfinishDate = dateTo.Split('/');
+            var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
+            allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate));
+            var result = await allorders.ToListAsync();
+            var data = from appointment in result
+                       where appointment.PatientComeToAppointment == true && appointment.doctorId == doctorId
+                       select appointment;
+
+
+            return data.ToList();
+        }
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Appointment> appointement)

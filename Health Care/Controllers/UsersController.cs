@@ -54,6 +54,28 @@ namespace Health_Care.Controllers
             return await _context.User.Where(a => a.isActiveAccount == false).ToListAsync();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<int>> GetNumberOfUsersByRegion(int regionId)
+        {
+            return await _context.User.CountAsync(x => x.regionId==regionId);
+        }
+        [HttpGet]
+        public async Task<ActionResult<int>> GetNumberOfUsersByRegionAndRole(int regionId,int roleId)
+        {
+            return await _context.User.CountAsync(x => x.regionId == regionId && x.Roleid==roleId);
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRegion(int regionId)
+        {
+
+            return await _context.User.Where(a => a.regionId==regionId).ToListAsync();
+        }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRegionAndRole(int regionId,int roleId)
+        {
+            return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
+        }
+
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<User> users)

@@ -107,13 +107,13 @@ namespace Health_Care.Controllers
         // PUT: api/Regions/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut]
-        public async Task<IActionResult> PutRegion(Region region)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutRegion(int id, Region region)
         {
-            //if (id != region.ID)
-            //{
-            //    return BadRequest();
-            //}
+            if (id != region.ID)
+            {
+                return BadRequest();
+            }
 
             _context.Entry(region).State = EntityState.Modified;
 
@@ -124,19 +124,25 @@ namespace Health_Care.Controllers
             catch (DbUpdateConcurrencyException)
             {
 
-                return BadRequest();
-
+                if (!RegionExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             return NoContent();
         }
-        [HttpPut]
-        public async Task<IActionResult> PutGovernorate(Governorate governorate)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutGovernorate(int id,Governorate governorate)
         {
-            //if (id != governorate.ID)
-            //{
-            //    return BadRequest();
-            //}
+            if (id != governorate.ID)
+            {
+                return BadRequest();
+            }
 
             _context.Entry(governorate).State = EntityState.Modified;
 
@@ -147,19 +153,26 @@ namespace Health_Care.Controllers
             catch (DbUpdateConcurrencyException)
             {
 
-                return NotFound();
+                if (!GovernorateExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
 
             }
 
             return NoContent();
         }
-        [HttpPut]
-        public async Task<IActionResult> PutDistrict(District district)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutDistrict(int id,District district)
         {
-            //if (id != district.ID)
-            //{
-            //    return BadRequest();
-            //}
+            if (id != district.ID)
+            {
+                return BadRequest();
+            }
 
             _context.Entry(district).State = EntityState.Modified;
 
@@ -170,7 +183,14 @@ namespace Health_Care.Controllers
             catch (DbUpdateConcurrencyException)
             {
 
-                return NotFound();
+                if (!DistrictExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
             return NoContent();

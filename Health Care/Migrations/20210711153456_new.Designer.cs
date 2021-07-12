@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210629070555_AddName")]
-    partial class AddName
+    [Migration("20210711153456_new")]
+    partial class @new
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
