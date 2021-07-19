@@ -150,7 +150,7 @@ namespace Health_Care.Controllers
         }
 
         // DELETE: api/Favorites/5
-        [HttpDelete("{patientId}/{userId}/{type}")]
+        [HttpDelete]
         //[Route("api/Favorites/{patientId}/{userId}/{type}")]
         public async Task<ActionResult<Favorite>> DeleteFavorite(int patientId,int userId,string type)
         {
