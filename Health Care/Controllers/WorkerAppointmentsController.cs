@@ -94,8 +94,8 @@ namespace Health_Care.Controllers
             
             return result;
         }
-        [HttpGet("{Month}")]
-        public async Task<ActionResult<object>> GetServiceMonthRecords(int Month)
+        [HttpGet("{Month}/{HealthWorkerID}")]
+        public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
             var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
             var NoRepittedPatientAppointment = new List<WorkerAppointment>();
@@ -110,6 +110,10 @@ namespace Health_Care.Controllers
             var healthWorkers = _context.HealthcareWorker.Where(x => x.active);
             if (appointmentOfMonth.Count() > 0 && healthWorkers.Count() > 0)
             {
+                if (HealthWorkerID != 0)
+                {
+                    healthWorkers = healthWorkers.Where(x => x.id == HealthWorkerID);
+                }
                 var MonthRecords = new List<object>();
                 foreach (var healthworker in healthWorkers)
                 {

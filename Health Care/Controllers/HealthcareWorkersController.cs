@@ -104,6 +104,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
+                Description = healthcareWorker.Description,
                 Backgroundimage = healthcareWorker.BackGroundPicture,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
@@ -117,7 +118,7 @@ namespace Health_Care.Controllers
             };
 
 
-            return doctor;
+            return healthcareWorker;
         }
 
         [HttpGet("{serviceId}")]
