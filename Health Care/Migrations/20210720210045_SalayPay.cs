@@ -2,28 +2,30 @@
 
 namespace Health_Care.Migrations
 {
-    public partial class feedback : Migration
+    public partial class SalayPay : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Feedbacks",
+                name: "SalaryPaid",
                 columns: table => new
                 {
-                    id = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    feedback = table.Column<string>(nullable: true)
+                    userID = table.Column<int>(nullable: false),
+                    DateOfPay = table.Column<string>(nullable: true),
+                    AmountOfSalary = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Feedbacks", x => x.id);
+                    table.PrimaryKey("PK_SalaryPaid", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Feedbacks");
+                name: "SalaryPaid");
         }
     }
 }
