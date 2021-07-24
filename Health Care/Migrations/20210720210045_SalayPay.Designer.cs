@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210701212127_appoint")]
-    partial class appoint
+    [Migration("20210720210045_SalayPay")]
+    partial class SalayPay
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -535,6 +535,21 @@ namespace Health_Care.Migrations
                     b.ToTable("Favorite");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.Feedback", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("feedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Feedbacks");
+                });
+
             modelBuilder.Entity("Health_Care.Models.Governorate", b =>
                 {
                     b.Property<int>("ID")
@@ -617,6 +632,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("BackGroundPicture")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CountOfDoesNotCome")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -1080,6 +1098,27 @@ namespace Health_Care.Migrations
                     b.ToTable("Role");
                 });
 
+            modelBuilder.Entity("Health_Care.Models.SalaryPaid", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AmountOfSalary")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DateOfPay")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SalaryPaid");
+                });
+
             modelBuilder.Entity("Health_Care.Models.Service", b =>
                 {
                     b.Property<int>("id")
@@ -1269,6 +1308,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("cancelledByHealthWorker")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("doesNotCome")
                         .HasColumnType("bit");
 
                     b.Property<int>("patientId")
