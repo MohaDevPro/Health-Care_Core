@@ -78,9 +78,9 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkers()
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers()
         {
-            return await _context.HealthcareWorker.Where(a => a.active == true).ToListAsync();
+            return await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
         }
 
         [HttpGet]

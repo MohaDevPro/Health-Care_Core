@@ -204,11 +204,15 @@ namespace Health_Care.Controllers
         public async Task<IActionResult> ConfirmByPatient(int id)
         {
             WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+           
             if (null == workerAppointment)
             {
                 return NotFound();
             }
             workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
+            workerAppointment.reservedAmountUntilConfirm = true;
+            Patient patient = _context.Patient.Find(workerAppointment.patientId);
+            patient.Balance -= workerAppointment.servicePrice;
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try
@@ -229,6 +233,7 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
+        
          [HttpPut("{id}")]
         public async Task<IActionResult> ConfirmByWorker(int id)
         {
@@ -238,6 +243,53 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             workerAppointment.ConfirmHealthWorkerCome_ByHimself = true;
+            _context.Entry(workerAppointment).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WorkerAppointmentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> DoesNotCome(int id)
+        {
+            WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
+
+            if (null == workerAppointment)
+            {
+                return NotFound();
+            }
+            var date = workerAppointment.appointmentDate.Split("/");
+            var dateTime = new DateTime(int.Parse(date[0]), int.Parse(date[1]), int.Parse(date[2]));
+            
+            if (!(dateTime.AddHours(5) >= DateTime.Now) )
+            {
+                return BadRequest();
+            }
+            workerAppointment.doesNotCome = true;
+            workerAppointment.reservedAmountUntilConfirm = true;
+            HealthcareWorker worker = _context.HealthcareWorker.Find(workerAppointment.workerId);
+            worker.CountOfDoesNotCome += 1;
+            if (worker.CountOfDoesNotCome >= 3)
+            {
+                worker.active = false;
+                User user = _context.User.Find(worker.userId);
+                user.isActiveAccount = false;
+            }
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try

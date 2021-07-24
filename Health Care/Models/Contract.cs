@@ -14,7 +14,7 @@ namespace Health_Care.Models
         public int contractFor { get; set; } // حسب الroleid
 
         //public string contractPath { get; set; } // contract document
-
+        public string note { get; set; }
         public bool active { get; set; }
         public ICollection<ContractTerm> ContractTerms { get; set; }
     }
