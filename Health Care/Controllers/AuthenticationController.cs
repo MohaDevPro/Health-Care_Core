@@ -283,7 +283,7 @@ namespace Health_Care.Controllers
                         fileStream.Dispose();
                         doctor.graduationCertificateImage = @"\images\" + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1];
 
-                        _context.Doctor.Add(doctor);
+                        //_context.Doctor.Add(doctor);
                         await _context.SaveChangesAsync();
                     }
                     catch (Exception)
