@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class @new : Migration
+    public partial class All : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -33,7 +33,8 @@ namespace Health_Care.Migrations
                     cancelledByClinicSecretary = table.Column<bool>(nullable: false),
                     cancelReasonWrittenBySecretary = table.Column<string>(nullable: true),
                     appointmentDoctorClinicId = table.Column<string>(nullable: true),
-                    active = table.Column<bool>(nullable: false)
+                    active = table.Column<bool>(nullable: false),
+                    CodeConfirmation = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -290,6 +291,19 @@ namespace Health_Care.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FCMTokens", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Feedbacks",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    feedback = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedbacks", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -696,7 +710,8 @@ namespace Health_Care.Migrations
                     PercentageFromAppointmentPriceForApp = table.Column<int>(nullable: false),
                     AcceptedByHealthWorker = table.Column<bool>(nullable: false),
                     cancelledByHealthWorker = table.Column<bool>(nullable: false),
-                    cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true)
+                    cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true),
+                    CodeConfirmation = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -927,6 +942,9 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "FCMTokens");
+
+            migrationBuilder.DropTable(
+                name: "Feedbacks");
 
             migrationBuilder.DropTable(
                 name: "Governorate");

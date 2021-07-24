@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210630211045_Workerappoint")]
-    partial class Workerappoint
+    [Migration("20210714082711_All")]
+    partial class All
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,6 +66,9 @@ namespace Health_Care.Migrations
 
                     b.Property<bool>("Accepted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("CodeConfirmation")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Paid")
                         .HasColumnType("bit");
@@ -530,6 +533,21 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Favorite");
+                });
+
+            modelBuilder.Entity("Health_Care.Models.Feedback", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("feedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Governorate", b =>

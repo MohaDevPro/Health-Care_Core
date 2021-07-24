@@ -36,13 +36,14 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
         {
-            return await (from clinic in _context.ExternalClinic
+            return await (from clinic in _context.ExternalClinic join user in _context.User on clinic.userId equals user.id
                           where clinic.active == true
                           select new
                           {
                               id = clinic.id,
                               Name = clinic.Name,
                               Picture = clinic.Picture,
+                              user.regionId,
                               Backgroundimage=clinic.BackgoundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id

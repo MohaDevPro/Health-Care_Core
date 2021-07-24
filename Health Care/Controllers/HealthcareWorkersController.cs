@@ -139,6 +139,7 @@ namespace Health_Care.Controllers
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
                 Backgroundimage = healthcareWorker.BackGroundPicture,
+                healthcareWorker.active,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
                                   where healthcareWorkerServices.HealthcareWorkerid == id 
@@ -191,6 +192,36 @@ namespace Health_Care.Controllers
             }
 
             _context.Entry(healthcareWorker).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!HealthcareWorkerExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}/{status}")]
+        public async Task<IActionResult> PutWorkerStatus(int id, bool status)
+        {
+
+            var worker = _context.HealthcareWorker.Find(id);
+            if (worker == null)
+            {
+                return BadRequest();
+            }
+            worker.active = status;
+            _context.Entry(worker).State = EntityState.Modified;
 
             try
             {
