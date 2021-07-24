@@ -94,6 +94,44 @@ namespace Health_Care.Controllers
             
             return result;
         }
+        [HttpGet("{Month}")]
+        public async Task<ActionResult<object>> GetServiceMonthRecords(int Month)
+        {
+            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
+            var NoRepittedPatientAppointment = new List<WorkerAppointment>();
+            foreach (var i in appointmentOfMonth)
+            {
+                if (NoRepittedPatientAppointment.FirstOrDefault(x => x.patientId == i.patientId && x.workerId == i.workerId) == null)
+                {
+                    NoRepittedPatientAppointment.Add(i);
+                }
+
+            }
+            var healthWorkers = _context.HealthcareWorker.Where(x => x.active);
+            if (appointmentOfMonth.Count() > 0 && healthWorkers.Count() > 0)
+            {
+                var MonthRecords = new List<object>();
+                foreach (var healthworker in healthWorkers)
+                {
+                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.id && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
+                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.id && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
+                    MonthRecords.Add(new
+                    {
+                        healthWorkerid = healthworker.id,
+                        NumberOfServices = subAppointment.Count(),
+                        HealthWorkerName = healthworker.Name,
+                        NumberOfUsers = subNoRepittedPatientAppointment.Where(x => x.workerId == healthworker.id).Count(),
+                        TotalyPrice = subAppointment.Select(x => x.servicePrice).Sum(),
+                        BinefetOfApp = subAppointment.Select(x => x.servicePrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
+                        BinefetOfHealthWorker = subAppointment.Select(x => x.servicePrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum(),
+                    });
+                }
+
+                return MonthRecords;
+            }
+            return new List<object>();
+
+        }
 
         [HttpGet("{userId}")]
         public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentBasedOnStatusByUserId(int userId)
