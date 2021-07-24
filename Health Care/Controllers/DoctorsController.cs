@@ -205,7 +205,7 @@ namespace Health_Care.Controllers
                 Name = Doctor.name,
                 Picture=Doctor.Picture,
                 Backgroundimage = Doctor.backgroundImage,
-
+                Doctor.active,
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                  where specialitydoctor.Doctorid == id && specialitydoctor.Roleid == 0
@@ -249,6 +249,36 @@ namespace Health_Care.Controllers
                 return BadRequest();
             }
 
+            _context.Entry(doctor).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DoctorExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}/{status}")]
+        public async Task<IActionResult> PutDoctorStatus(int id, bool status)
+        {
+
+            var doctor = _context.Doctor.Find(id);
+            if (doctor == null)
+            {
+                return BadRequest();
+            }
+            doctor.active = status;
             _context.Entry(doctor).State = EntityState.Modified;
 
             try

@@ -32,15 +32,21 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic()
         {
             return await (from hospital in _context.Hospitals
+                          join user in _context.User on hospital.UserId equals user.id 
+                          
                           where hospital.active == true
                           select new
                           {
                               id = hospital.id,
                               Name = hospital.Name,
                               Picture = hospital.Picture,
-                              Backgroundimage=hospital.BackgoundImage,
+                              user.regionId,
+                              departmentsList = (from HospitalDep in _context.hospitalDepartments
+                                                join departments in _context.departmentsOfHospitals on HospitalDep.DepatmentsOfHospitalID equals departments.id
+                                                where HospitalDep.Hospitalid == hospital.id && departments.active == true 
+                                                select departments).ToList(),
+                              Backgroundimage =hospital.BackgoundImage,
                               Description = hospital.Description
-
                           }
 
                           ).ToListAsync();

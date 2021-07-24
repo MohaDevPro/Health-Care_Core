@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20210720194416_All_DoesNotCome_Worker.cs" />
-    <Compile Remove="Migrations\20210720194416_All_DoesNotCome_Worker.Designer.cs" />
+    <Compile Remove="Migrations\20210714082625_All.cs" />
+    <Compile Remove="Migrations\20210714082625_All.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
