@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210720194441_All_DoesNotCome_Worker")]
+    partial class All_DoesNotCome_Worker
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,9 +211,6 @@ namespace Health_Care.Migrations
                     b.Property<bool>("IsCanceled")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRestore")
-                        .HasColumnType("bit");
-
                     b.Property<string>("NumberOfReceipt")
                         .HasColumnType("nvarchar(max)");
 
@@ -297,9 +296,6 @@ namespace Health_Care.Migrations
 
                     b.Property<int>("contractFor")
                         .HasColumnType("int");
-
-                    b.Property<string>("note")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
@@ -1100,27 +1096,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Role");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.SalaryPaid", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AmountOfSalary")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DateOfPay")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("userID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SalaryPaid");
                 });
 
             modelBuilder.Entity("Health_Care.Models.Service", b =>

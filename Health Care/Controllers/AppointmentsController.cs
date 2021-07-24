@@ -205,6 +205,45 @@ namespace Health_Care.Controllers
             return appointmentList;
         }
 
+        [HttpGet("{Month}")]
+        public async Task<ActionResult<object>> GetAppointmentMonthRecords(int Month)
+        {
+            var appointmentOfMonth = _context.Appointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
+            var NoRepittedPatientAppointment = new List<Appointment>();
+            //foreach (var i in appointmentOfMonth)
+            //{
+            //    if (NoRepittedPatientAppointment.FirstOrDefault(x => x.patientId == i.patientId && x.workerId == i.workerId) == null)
+            //    {
+            //        NoRepittedPatientAppointment.Add(i);
+            //    }
+
+            //}
+            var doctors = _context.Doctor.Where(x => x.active);
+            if (appointmentOfMonth.Count() > 0 && doctors.Count() > 0)
+            {
+                var MonthRecords = new List<object>();
+                foreach (var healthworker in doctors)
+                {
+                    var subAppointment = appointmentOfMonth.Where(x => x.doctorId == healthworker.id &&x.PatientComeToAppointment);
+                    var subNoRepittedPatientAppointment= appointmentOfMonth.Where(x => x.doctorId == healthworker.id);
+                    MonthRecords.Add(new
+                    {
+                        healthWorkerid = healthworker.id,
+                        NumberOfServices = subNoRepittedPatientAppointment.Count(),
+                        HealthWorkerName = healthworker.name,
+                        NumberOfUsers = subAppointment.Count(),
+                        TotalyPrice = subAppointment.Select(x => x.appointmentPrice).Sum(),
+                        BinefetOfApp = subAppointment.Select(x => x.appointmentPrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
+                        BinefetOfHealthWorker = subAppointment.Select(x => x.appointmentPrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum(),
+                    });
+                }
+
+                return MonthRecords;
+            }
+            return new List<object>();
+
+        }
+
         // GET: api/Appointments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
@@ -282,7 +321,7 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
-
+         
         // POST: api/Appointments
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.

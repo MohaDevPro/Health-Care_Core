@@ -22,6 +22,7 @@ namespace Health_Care.Models
         public bool AcceptedByHealthWorker { get; set; }
         public bool cancelledByHealthWorker { get; set; }
         public string cancelReasonWrittenByHealthWorker { get; set; }
+        public bool doesNotCome { get; set; }
         public string CodeConfirmation { get; set; }
     }
 }

@@ -78,9 +78,9 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkers()
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers()
         {
-            return await _context.HealthcareWorker.Where(a => a.active == true).ToListAsync();
+            return await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
         }
 
         [HttpGet]
@@ -88,41 +88,7 @@ namespace Health_Care.Controllers
         {
             return await _context.HealthcareWorker.Where(a => a.active == true).Include(h => h.HealthcareWorkerRegions).ToListAsync();
         }
-        [HttpGet("{Month}")]
-        public async Task<ActionResult<object>> GetServiceMonthRecords(int Month)
-        {
-            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
-            var NoRepittedPatientAppointment = new List<WorkerAppointment>();
-            foreach(var i in appointmentOfMonth)
-            {
-                if(NoRepittedPatientAppointment.FirstOrDefault(x=>x.patientId==i.patientId && x.workerId == i.workerId) == null)
-                {
-                    NoRepittedPatientAppointment.Add(i);
-                }
-
-            }
-            var healthWorkers = _context.HealthcareWorker.Where(x => x.active);
-            if (appointmentOfMonth.Count() > 0 &&healthWorkers.Count()>0)
-            {
-                var MonthRecords = await (from healthworker in healthWorkers
-                                          select new
-                                          {
-                                              healthWorkerid = healthworker.id,
-                                              NumberOfServices = appointmentOfMonth.Where(x => x.workerId == healthworker.id).Count(),
-                                              HealthWorkerName = healthworker.Name,
-                                              NumberOfUsers = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.id).Count(),
-                                              TotalyPrice = appointmentOfMonth.Where(x => x.workerId == healthworker.id).Select(x => x.servicePrice).Sum(),
-                                              BinefetOfApp = appointmentOfMonth.Where(x => x.workerId == healthworker.id).Select(x => x.servicePrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
-                                              BinefetOfHealthWorker = appointmentOfMonth.Where(x => x.workerId == healthworker.id).Select(x => x.servicePrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum(),
-                                          }).ToListAsync()
-                                   ;
-
-                return MonthRecords;
-            }
-            return new List<object>();
-
-        }
-
+    
 
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
@@ -138,6 +104,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
+                Description = healthcareWorker.Description,
                 Backgroundimage = healthcareWorker.BackGroundPicture,
                 healthcareWorker.active,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
@@ -152,7 +119,7 @@ namespace Health_Care.Controllers
             };
 
 
-            return doctor;
+            return healthcareWorker;
         }
 
         [HttpGet("{serviceId}")]

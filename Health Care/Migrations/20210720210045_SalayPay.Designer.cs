@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210720210045_SalayPay")]
+    partial class SalayPay
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,9 +211,6 @@ namespace Health_Care.Migrations
                     b.Property<bool>("IsCanceled")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRestore")
-                        .HasColumnType("bit");
-
                     b.Property<string>("NumberOfReceipt")
                         .HasColumnType("nvarchar(max)");
 
@@ -297,9 +296,6 @@ namespace Health_Care.Migrations
 
                     b.Property<int>("contractFor")
                         .HasColumnType("int");
-
-                    b.Property<string>("note")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");
 
