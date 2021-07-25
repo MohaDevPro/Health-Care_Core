@@ -45,7 +45,7 @@ namespace Health_Care.Controllers
                 id = hospitalClinic.id,
                 Name = hospitalClinic.Name,
                 Picture = hospitalClinic.Picture,
-                Backgroundimage = hospitalClinic.BackgoundImage,
+                BackgroundImage = hospitalClinic.BackgoundImage,
                 Description = hospitalClinic.Description
 
             };
