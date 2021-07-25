@@ -54,7 +54,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Hospital>>> GetDisabled()
         {
-            return await _context.Hospitals.Where(a => a.active == false).ToListAsync();
+            return await (from hospital in _context.Hospitals
+                          join user in _context.User on hospital.UserId equals user.id
+                          where hospital.active == false && user.active == false
+                          select hospital).ToListAsync();
         }
 
         [HttpPut]

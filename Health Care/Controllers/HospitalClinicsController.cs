@@ -447,7 +447,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        ExternalClinic.BackgoundImage = @"\images\" + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        ExternalClinic.BackgroundImage = @"\images\" + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
@@ -508,7 +508,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        ExternalClinic.BackgoundImage = @"\images\" + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        ExternalClinic.BackgroundImage = @"\images\" + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
