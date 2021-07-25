@@ -191,6 +191,8 @@ namespace Health_Care.Controllers
                 foreach (ExternalClinic item in externalClinic)
                 {
                     ExternalClinic s = _context.ExternalClinic.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x => x.id == s.userId).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -307,6 +309,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == externalClinic.userId).FirstOrDefault();
+            user.active = false;
             externalClinic.active = false;
             //_context.ExternalClinic.Remove(externalClinic);
             await _context.SaveChangesAsync();

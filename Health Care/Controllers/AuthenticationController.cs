@@ -38,7 +38,7 @@ namespace Health_Care.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Login(User user)
         {
-            user = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password).FirstOrDefault();
+            user = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password && x.active == true).FirstOrDefault();
             if (user != null)
             {
                 RefreshToken refreshToken = user.RefreshTokens;

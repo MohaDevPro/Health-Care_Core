@@ -69,6 +69,8 @@ namespace Health_Care.Controllers
                 foreach (HealthcareWorker item in halthcareWorker)
                 {
                     var s = _context.HealthcareWorker.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x=>x.id == s.userId).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -320,6 +322,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == healthcareWorker.userId).FirstOrDefault();
+            user.active = false;
             healthcareWorker.active = false;
             //_context.HealthcareWorker.Remove(healthcareWorker);
             await _context.SaveChangesAsync();
