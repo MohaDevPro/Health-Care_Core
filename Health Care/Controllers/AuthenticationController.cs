@@ -54,23 +54,29 @@ namespace Health_Care.Controllers
                 string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
 
                 int SpecificId;
-                var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
-                var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();
-                var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
-                var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
-                var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
-
-                if (hospital != null)
-                    SpecificId = hospital.id;
-                else if (healthcareWorker != null)
+                if (user.Roleid == 1)
+                {
+                    var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();
                     SpecificId = healthcareWorker.id;
-                else if (patient != null)
+                }else if (user.Roleid == 2)
+                {
+                    var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
+                        SpecificId = clinic.id;
+                }else if (user.Roleid == 3)
+                {
+                    var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
+                        SpecificId = hospital.id;
+                }else if (user.Roleid == 4)
+                {
+                    var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
                     SpecificId = patient.id;
-                else if (clinic != null)
-                    SpecificId = clinic.id;
-                else if (doctor != null)
+                }
+                else
+                {
+                    var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
                     SpecificId = doctor.id;
-                else SpecificId = 0;
+                }
+
 
 
                 return Ok(new UserWithToken()
