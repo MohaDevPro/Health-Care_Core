@@ -51,7 +51,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetDisabled()
         {
-            return await _context.HealthcareWorker.Where(a => a.active == false).ToListAsync();
+            return await (from worker in _context.HealthcareWorker
+                          join user in _context.User on worker.userId equals user.id
+                          where worker.active == false && user.active == false
+                          select worker).ToListAsync();
         }
 
         [HttpPut]
@@ -119,6 +122,16 @@ namespace Health_Care.Controllers
             };
 
 
+            return healthcareWorker;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
             return healthcareWorker;
         }
 
