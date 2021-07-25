@@ -51,7 +51,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetDisabled()
         {
-            return await _context.HealthcareWorker.Where(a => a.active == false).ToListAsync();
+            return await (from worker in _context.HealthcareWorker
+                          join user in _context.User on worker.userId equals user.id
+                          where worker.active == false && user.active == false
+                          select worker).ToListAsync();
         }
 
         [HttpPut]
@@ -66,6 +69,8 @@ namespace Health_Care.Controllers
                 foreach (HealthcareWorker item in halthcareWorker)
                 {
                     var s = _context.HealthcareWorker.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x=>x.id == s.userId).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -119,6 +124,16 @@ namespace Health_Care.Controllers
             };
 
 
+            return healthcareWorker;
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
             return healthcareWorker;
         }
 
@@ -307,6 +322,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == healthcareWorker.userId).FirstOrDefault();
+            user.active = false;
             healthcareWorker.active = false;
             //_context.HealthcareWorker.Remove(healthcareWorker);
             await _context.SaveChangesAsync();

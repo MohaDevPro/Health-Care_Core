@@ -51,7 +51,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetDisabled()
         {
-            return await _context.Doctor.Where(a => a.active == false).ToListAsync();
+            return await (from doctor in _context.Doctor
+                                        join user in _context.User on doctor.Userid equals user.id
+                                        where doctor.active == false && user.active == false
+                                        select doctor).ToListAsync();
         }
 
 
@@ -67,6 +70,8 @@ namespace Health_Care.Controllers
                 foreach (Doctor item in doctor)
                 {
                     var s = _context.Doctor.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x => x.id == s.Userid).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -219,24 +224,25 @@ namespace Health_Care.Controllers
 
             return doctor;
         }
-        public async Task<ActionResult<object>> GetDoctorBasedOnuserID(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Doctor>> GetDoctorBasedOnuserID(int id)
         {
             var Doctor = await _context.Doctor.FirstOrDefaultAsync(x=>x.Userid==id);
-            var doctor = new
-            {
-                id = id,
-                Name = Doctor.name,
-                Picture = Doctor.Picture,
-                Backgroundimage = Doctor.backgroundImage,
+            //var doctor = new
+            //{
+            //    id = id,
+            //    Name = Doctor.name,
+            //    Picture = Doctor.Picture,
+            //    Backgroundimage = Doctor.backgroundImage,
 
-            };
+            //};
 
-            if (doctor == null)
+            if (Doctor == null)
             {
                 return NotFound();
             }
 
-            return doctor;
+            return Doctor;
         }
         // PUT: api/Doctors/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -321,6 +327,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == doctor.Userid).FirstOrDefault();
+            user.active = false;
             doctor.active = false;
             //_context.Doctor.Remove(doctor);
             await _context.SaveChangesAsync();

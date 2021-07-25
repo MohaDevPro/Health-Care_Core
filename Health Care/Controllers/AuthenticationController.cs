@@ -38,7 +38,7 @@ namespace Health_Care.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Login(User user)
         {
-            user = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password).FirstOrDefault();
+            user = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password && x.active == true).FirstOrDefault();
             if (user != null)
             {
                 RefreshToken refreshToken = user.RefreshTokens;
@@ -240,7 +240,7 @@ namespace Health_Care.Controllers
         }
         [HttpPost("{id}")]
         //[Authorize(Roles = "admin, doctor")]
-        public async Task<ActionResult<Doctor>> signUpDoctorDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
+        public async Task<ActionResult<Doctor>> signUpDoctorDetails(int id, [FromForm] Doctor doctor , IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
             
             User user = _context.User.Where(d => d.id == id).FirstOrDefault();
@@ -248,46 +248,51 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            Doctor doctor = _context.Doctor.Where(d=>d.Userid == id).FirstOrDefault();
+            Doctor doctor2 = _context.Doctor.Where(d=>d.Userid == id).FirstOrDefault();
             if (ModelState.IsValid)
             {
                 if (idImage != null && certificateImage != null && Picture != null && bg != null)
                 {
                     try
                     {
-                        
-                        doctor.name = user.nameAR;
-                        doctor.Userid = id;
+                        if(doctor != null)
+                        {
+                            doctor2.appointmentPrice = doctor.appointmentPrice;
+                            doctor2.numberOfAvailableAppointment = doctor.numberOfAvailableAppointment;
+                            doctor2.active = doctor.active;
+                        }
+                        doctor2.name = user.nameAR;
+                        doctor2.Userid = id;
                         string path = _environment.WebRootPath + @"\images\";
                         FileStream fileStream;
                         if (!Directory.Exists(path))
                         {
                             Directory.CreateDirectory(path);
                         }
-                        fileStream = System.IO.File.Create(path + "logo_doctor_" + doctor.id + "." + Picture.ContentType.Split('/')[1]);
+                        fileStream = System.IO.File.Create(path + "logo_doctor_" + doctor2.id + "." + Picture.ContentType.Split('/')[1]);
                         Picture.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
-                        doctor.Picture = @"\images\" + "logo_doctor_" + doctor.id + "." + Picture.ContentType.Split('/')[1];
+                        doctor2.Picture = @"\images\" + "logo_doctor_" + doctor2.id + "." + Picture.ContentType.Split('/')[1];
 
-                        fileStream = System.IO.File.Create(path + "bg_doctor_" + doctor.id + "." + bg.ContentType.Split('/')[1]);
+                        fileStream = System.IO.File.Create(path + "bg_doctor_" + doctor2.id + "." + bg.ContentType.Split('/')[1]);
                         bg.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
-                        doctor.backgroundImage = @"\images\" + "bg_doctor_" + doctor.id + "." + bg.ContentType.Split('/')[1];
+                        doctor2.backgroundImage = @"\images\" + "bg_doctor_" + doctor2.id + "." + bg.ContentType.Split('/')[1];
 
-                        fileStream = System.IO.File.Create(path + "idImage_doctor_" + doctor.id + "." + idImage.ContentType.Split('/')[1]);
+                        fileStream = System.IO.File.Create(path + "idImage_doctor_" + doctor2.id + "." + idImage.ContentType.Split('/')[1]);
                         idImage.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
-                        doctor.identificationImage = @"\images\" + "idImage_doctor_" + doctor.id + "." + idImage.ContentType.Split('/')[1];
+                        doctor2.identificationImage = @"\images\" + "idImage_doctor_" + doctor2.id + "." + idImage.ContentType.Split('/')[1];
 
-                        fileStream = System.IO.File.Create(path + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1]);
+                        fileStream = System.IO.File.Create(path + "certificateImage_doctor_" + doctor2.id + "." + certificateImage.ContentType.Split('/')[1]);
                         certificateImage.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        doctor.graduationCertificateImage = @"\images\" + "certificateImage_doctor_" + doctor.id + "." + certificateImage.ContentType.Split('/')[1];
+                        doctor2.graduationCertificateImage = @"\images\" + "certificateImage_doctor_" + doctor2.id + "." + certificateImage.ContentType.Split('/')[1];
 
                         //_context.Doctor.Add(doctor);
                         await _context.SaveChangesAsync();
@@ -307,7 +312,7 @@ namespace Health_Care.Controllers
 
             }
 
-            return CreatedAtAction("Getdoctor", new { id = doctor.id }, doctor);
+            return CreatedAtAction("Getdoctor", new { id = doctor2.id }, doctor2);
         }
         [HttpPost("{id}")]
         //[Authorize(Roles = "admin, doctor")]
