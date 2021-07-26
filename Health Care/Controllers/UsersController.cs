@@ -164,8 +164,8 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         
-        [HttpPut("{result}/{id}")]
-        public async Task<IActionResult> ActiveUser(bool reuslt,int id )
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActiveUser(int id )
         {
 
             var user =_context.User.Where(u => u.id == id).FirstOrDefault();
