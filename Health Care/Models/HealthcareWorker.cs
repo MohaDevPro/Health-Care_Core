@@ -18,6 +18,7 @@ namespace Health_Care.Models
         public string Gender { get; set; } // added
         public string WorkPlace { get; set; } // added
         public int specialityId { get; set; }
+        public int CountOfDoesNotCome { get; set; }
         public string Picture { get; set; }
         public string BackGroundPicture { get; set; }
         public string Description { get; set; } 

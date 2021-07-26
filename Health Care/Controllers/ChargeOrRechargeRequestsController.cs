@@ -37,12 +37,28 @@ namespace Health_Care.Controllers
         {
             return await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).ToListAsync();
         }
+        [HttpGet("{id}")]
+        public  bool IsRestorable(int id)
+        {
+            var p = _context.Patient.Where(x=>x.userId == id).FirstOrDefault();
+            var charges = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
+            var balance = 0;
+            var First = _context.ChargeOrRechargeRequest.Where(x=>x.IsRestore == true && x.userId == id).ToList();
+            foreach (var item in charges)
+            {
+                if(!item.IsCanceled && item.ConfirmToAddBalance)
+                    balance += item.BalanceReceipt;
+            }
+            var dateList = charges[0].rechargeDate.Split("/");
+            var date =new DateTime(Convert.ToInt32(dateList[2]), Convert.ToInt32(dateList[1]), Convert.ToInt32(dateList[0])) ;
+            return date.AddDays(6) >= DateTime.Now && p.Balance == balance && First.Count < 1;
+        }
+
         // GET: api/ChargeOrRechargeRequests/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ChargeOrRechargeRequest>> GetChargeOrRechargeRequest(int id)
         {
             var chargeOrRechargeRequest = await _context.ChargeOrRechargeRequest.FindAsync(id);
-
             if (chargeOrRechargeRequest == null)
             {
                 return NotFound();
@@ -97,6 +113,39 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
+        [HttpPost("{id}")]
+        public async Task<IActionResult> RestoreChargeOrRechargeRequest(int id)
+        {
+            //var c = _context.ChargeOrRechargeRequest.Where(x=>x.userId == id).ToList();
+            //if (c.Count>1)
+            //{
+            //    return BadRequest();
+            //}
+            
+
+            try
+            {
+               var charge = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).FirstOrDefault();
+                charge.IsRestore = true;
+                var p = _context.Patient.Where(x=> x.userId == id).FirstOrDefault();
+                p.Balance -= charge.BalanceReceipt;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ChargeOrRechargeRequestExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return Ok();
+        }
+
         // POST: api/ChargeOrRechargeRequests
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
@@ -105,10 +154,8 @@ namespace Health_Care.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 try
                 {
-
                     _context.ChargeOrRechargeRequest.Add(rechargeRequest);
                     await _context.SaveChangesAsync();
 

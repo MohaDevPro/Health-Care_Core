@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class @new : Migration
+    public partial class all : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -33,7 +33,8 @@ namespace Health_Care.Migrations
                     cancelledByClinicSecretary = table.Column<bool>(nullable: false),
                     cancelReasonWrittenBySecretary = table.Column<string>(nullable: true),
                     appointmentDoctorClinicId = table.Column<string>(nullable: true),
-                    active = table.Column<bool>(nullable: false)
+                    active = table.Column<bool>(nullable: false),
+                    CodeConfirmation = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,6 +109,7 @@ namespace Health_Care.Migrations
                     rechargeDate = table.Column<string>(nullable: true),
                     ConfirmToAddBalance = table.Column<bool>(nullable: false),
                     IsCanceled = table.Column<bool>(nullable: false),
+                    IsRestore = table.Column<bool>(nullable: false),
                     ResounOfCancel = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -150,6 +152,7 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     contractFor = table.Column<int>(nullable: false),
+                    note = table.Column<string>(nullable: true),
                     active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -235,7 +238,7 @@ namespace Health_Care.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     Picture = table.Column<string>(nullable: true),
-                    BackgoundImage = table.Column<string>(nullable: true),
+                    BackgroundImage = table.Column<string>(nullable: true),
                     ClinicTypeId = table.Column<int>(nullable: false),
                     userId = table.Column<int>(nullable: false),
                     doctorId = table.Column<int>(nullable: false),
@@ -293,6 +296,19 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Feedbacks",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    feedback = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedbacks", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Governorate",
                 columns: table => new
                 {
@@ -318,6 +334,7 @@ namespace Health_Care.Migrations
                     Gender = table.Column<string>(nullable: true),
                     WorkPlace = table.Column<string>(nullable: true),
                     specialityId = table.Column<int>(nullable: false),
+                    CountOfDoesNotCome = table.Column<int>(nullable: false),
                     Picture = table.Column<string>(nullable: true),
                     BackGroundPicture = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -578,6 +595,21 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SalaryPaid",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userID = table.Column<int>(nullable: false),
+                    DateOfPay = table.Column<string>(nullable: true),
+                    AmountOfSalary = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SalaryPaid", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Service",
                 columns: table => new
                 {
@@ -696,7 +728,9 @@ namespace Health_Care.Migrations
                     PercentageFromAppointmentPriceForApp = table.Column<int>(nullable: false),
                     AcceptedByHealthWorker = table.Column<bool>(nullable: false),
                     cancelledByHealthWorker = table.Column<bool>(nullable: false),
-                    cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true)
+                    cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true),
+                    doesNotCome = table.Column<bool>(nullable: false),
+                    CodeConfirmation = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -929,6 +963,9 @@ namespace Health_Care.Migrations
                 name: "FCMTokens");
 
             migrationBuilder.DropTable(
+                name: "Feedbacks");
+
+            migrationBuilder.DropTable(
                 name: "Governorate");
 
             migrationBuilder.DropTable(
@@ -981,6 +1018,9 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "SalaryPaid");
 
             migrationBuilder.DropTable(
                 name: "Service");
