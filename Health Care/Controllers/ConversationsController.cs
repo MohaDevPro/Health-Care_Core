@@ -29,6 +29,11 @@ namespace Health_Care.Controllers
         {
             return await _context.Conversation.Where(c=>c.isRecived == false).ToListAsync();
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Conversation>>> GetConversationByUserId(int id)
+        {
+            return await _context.Conversation.Where(c=>c.isRecived == false && c.userIdFrom == id).ToListAsync();
+        }
 
         // GET: api/Conversations/5
         [HttpGet("{id}")]
@@ -113,6 +118,60 @@ namespace Health_Care.Controllers
 
             _context.Entry(conversation).State = EntityState.Modified;
 
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ConversationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> messageReceived(int id)
+        {
+            var converstion =  _context.Conversation.Where(x => x.id == id).FirstOrDefault();
+            if (converstion == null)
+            {
+                return NotFound();
+            }
+            converstion.isRecived = true;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ConversationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> messageReaded(int id)
+        {
+            var converstion =  _context.Conversation.Where(x => x.id == id).FirstOrDefault();
+            if (converstion == null)
+            {
+                return NotFound();
+            }
+            converstion.isReaded = true;
             try
             {
                 await _context.SaveChangesAsync();
