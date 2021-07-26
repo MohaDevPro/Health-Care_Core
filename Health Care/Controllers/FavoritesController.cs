@@ -81,8 +81,7 @@ namespace Health_Care.Controllers
                               isFavorite = true,
 
 
-                          }
-                          ).ToListAsync();
+                          }).ToListAsync();
         }
 
         [HttpGet("{patientId}")]
