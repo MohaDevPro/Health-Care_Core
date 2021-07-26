@@ -229,10 +229,10 @@ namespace Health_Care.Controllers
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
-                User user = _context.User.Where(u => u.DeviceId == token.DeviceID).FirstOrDefault();
+                var user = _context.User.Where(u => u.DeviceId == token.DeviceID).ToList();
                 if (user != null)
                 {
-                    token.UserID = user.id;
+                    token.UserID = user[user.Count-1].id;
                 }
                 Token.Token = token.Token;
                 Token.DeviceID = token.DeviceID;

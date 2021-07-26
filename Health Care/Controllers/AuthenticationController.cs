@@ -38,61 +38,66 @@ namespace Health_Care.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> Login(User user)
         {
-            user = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password && x.active == true).FirstOrDefault();
-            if (user != null)
+            User user2 = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password && x.active == true).FirstOrDefault();
+            user2.DeviceId = user.DeviceId;
+            if (user2 != null)
             {
-                RefreshToken refreshToken = user.RefreshTokens;
+                RefreshToken refreshToken = user2.RefreshTokens;
                 if (refreshToken.ExpiryDate < DateTime.UtcNow)
                 {
                     refreshToken = GenerateRefreshToken();
-                    user.RefreshTokens = refreshToken;
+                    user2.RefreshTokens = refreshToken;
                     await _context.SaveChangesAsync();
                 }
                 RefreshRequest refreshRequest = new RefreshRequest();
                 refreshRequest.RefreshToken = refreshToken.Token;
-                refreshRequest.AccessToken = GenerateAccessToken(user);
-                string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
-
+                refreshRequest.AccessToken = GenerateAccessToken(user2);
+                string type = _context.Role.Where(r => r.id == user2.Roleid).FirstOrDefault().RoleName;
+                FCM_Tokens fCM_Token = _context.FCMTokens.Where(t => t.DeviceID == user2.DeviceId).FirstOrDefault();
+                if (fCM_Token != null)
+                {
+                    fCM_Token.UserID = user2.id;
+                }
                 int SpecificId;
-                if (user.Roleid == 1)
+                if (user2.Roleid == 1)
                 {
-                    var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();
+                    var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user2.id).FirstOrDefault();
                     SpecificId = healthcareWorker.id;
-                }else if (user.Roleid == 2)
+                }else if (user2.Roleid == 2)
                 {
-                    var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
+                    var clinic = _context.ExternalClinic.Where(x => x.userId == user2.id).FirstOrDefault();
                         SpecificId = clinic.id;
-                }else if (user.Roleid == 3)
+                }else if (user2.Roleid == 3)
                 {
-                    var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
+                    var hospital = _context.Hospitals.Where(x => x.UserId == user2.id).FirstOrDefault();
                         SpecificId = hospital.id;
-                }else if (user.Roleid == 4)
+                }else if (user2.Roleid == 4)
                 {
-                    var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
+                    var patient = _context.Patient.Where(x => x.userId == user2.id).FirstOrDefault();
                     SpecificId = patient.id;
                 }
                 else
                 {
-                    var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
+                    var doctor = _context.Doctor.Where(x => x.Userid == user2.id).FirstOrDefault();
                     SpecificId = doctor.id;
                 }
 
 
-
+                _context.SaveChanges();
                 return Ok(new UserWithToken()
                 {
-                    id = user.id,
-                    nameAR = user.nameAR,
-                    nameEN = user.nameEN,
-                    phoneNumber = user.phoneNumber,
-                    address=user.address,
-                    DeviceId=user.DeviceId,
-                    email=user.email,
-                    roleid = user.Roleid,
+                    id = user2.id,
+                    nameAR = user2.nameAR,
+                    nameEN = user2.nameEN,
+                    phoneNumber = user2.phoneNumber,
+                    address=user2.address,
+                    DeviceId=user2.DeviceId,
+                    email=user2.email,
+                    roleid = user2.Roleid,
                     SpecificId = SpecificId,
                     type = type,
-                    isActiveAccount = user.isActiveAccount,
-                    regionId =user.regionId,
+                    isActiveAccount = user2.isActiveAccount,
+                    regionId =user2.regionId,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
                 }) ;

@@ -45,7 +45,7 @@ namespace Health_Care.Controllers
                                                 join departments in _context.departmentsOfHospitals on HospitalDep.DepatmentsOfHospitalID equals departments.id
                                                 where HospitalDep.Hospitalid == hospital.id && departments.active == true 
                                                 select departments).ToList(),
-                              Backgroundimage =hospital.BackgoundImage,
+                              BackgroundImage =hospital.BackgoundImage,
                               Description = hospital.Description
                           }
 

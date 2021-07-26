@@ -32,7 +32,7 @@ namespace Health_Care.Controllers
                               id = HealthWorker.id,
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
-                              Backgroundimage=HealthWorker.BackGroundPicture,
+                              BackgroundImage=HealthWorker.BackGroundPicture,
                               Description = HealthWorker.Description,
                               Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                           join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
@@ -110,7 +110,7 @@ namespace Health_Care.Controllers
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
                 Description = healthcareWorker.Description,
-                Backgroundimage = healthcareWorker.BackGroundPicture,
+                BackgroundImage = healthcareWorker.BackGroundPicture,
                 healthcareWorker.active,
                 Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                   join service in _context.Service on healthcareWorkerServices.serviceId equals service.id

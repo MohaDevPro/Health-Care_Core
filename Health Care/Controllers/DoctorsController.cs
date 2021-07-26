@@ -36,7 +36,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage = doctor.backgroundImage,
+                              BackgroundImage = doctor.backgroundImage,
                               identificationImage = doctor.identificationImage,
                               graduationCertificateImage = doctor.graduationCertificateImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -155,7 +155,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage=doctor.backgroundImage,
+                              BackgroundImage=doctor.backgroundImage,
                               AppointmentPrice = doctor.appointmentPrice,
                               NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -179,7 +179,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage = doctor.backgroundImage,
+                              BackgroundImage = doctor.backgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -209,7 +209,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = Doctor.name,
                 Picture=Doctor.Picture,
-                Backgroundimage = Doctor.backgroundImage,
+                BackgroundImage = Doctor.backgroundImage,
                 Doctor.active,
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
@@ -233,7 +233,7 @@ namespace Health_Care.Controllers
             //    id = id,
             //    Name = Doctor.name,
             //    Picture = Doctor.Picture,
-            //    Backgroundimage = Doctor.backgroundImage,
+            //    BackgroundImage = Doctor.backgroundImage,
 
             //};
 
