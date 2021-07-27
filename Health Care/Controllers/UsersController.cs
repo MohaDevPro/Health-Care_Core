@@ -164,8 +164,8 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         
-        [HttpPut("{result}/{id}")]
-        public async Task<IActionResult> ActiveUser(bool reuslt,int id )
+        [HttpPut("{id}")]
+        public async Task<IActionResult> ActiveUser(int id )
         {
 
             var user =_context.User.Where(u => u.id == id).FirstOrDefault();
@@ -174,7 +174,26 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
 
-
+            if (user.Roleid == 1)
+            {
+                var worker = _context.HealthcareWorker.Where(x => x.userId == id).FirstOrDefault();
+                worker.active = true;
+            }
+            else if (user.Roleid == 2)
+            {
+                var clinic = _context.ExternalClinic.Where(x => x.userId == id).FirstOrDefault();
+                clinic.active = true;
+            }
+            else if (user.Roleid == 3)
+            {
+                var hospital = _context.Hospitals.Where(x => x.UserId == id).FirstOrDefault();
+                hospital.active = true;
+            }
+            else if (user.Roleid == 5)
+            {
+                var doctor = _context.Doctor.Where(x => x.Userid == id).FirstOrDefault();
+                doctor.active = true;
+            }
 
             try
             {

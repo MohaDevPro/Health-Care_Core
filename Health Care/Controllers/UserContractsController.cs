@@ -113,12 +113,13 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<bool>> GetIsUserAcceptContract(int id)
         {
             var userContract = await _context.UserContract.Where(u=>u.userId == id).FirstOrDefaultAsync();
-
             if (userContract == null)
             {
                 return false;
             }
-            if (Convert.ToDateTime(userContract.contractEndDate) < Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd")))
+            var splitEndDate = userContract.contractEndDate.Split('/');
+            var enddate = new DateTime(Convert.ToInt32(splitEndDate[0]), Convert.ToInt32(splitEndDate[1]), Convert.ToInt32(splitEndDate[2]));
+            if ( enddate< Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd")))
             {
                 return false;
             }

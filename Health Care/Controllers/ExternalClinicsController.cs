@@ -36,14 +36,15 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
         {
-            return await (from clinic in _context.ExternalClinic
+            return await (from clinic in _context.ExternalClinic join user in _context.User on clinic.userId equals user.id
                           where clinic.active == true
                           select new
                           {
                               id = clinic.id,
                               Name = clinic.Name,
                               Picture = clinic.Picture,
-                              Backgroundimage=clinic.BackgoundImage,
+                              user.regionId,
+                              BackgroundImage=clinic.BackgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
@@ -78,7 +79,7 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
-                                            Backgroundimage = clinic.BackgoundImage,
+                                            BackgroundImage = clinic.BackgroundImage,
 
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
@@ -100,7 +101,7 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
-                                            Backgroundimage = clinic.BackgoundImage,
+                                            BackgroundImage = clinic.BackgroundImage,
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                               where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
@@ -121,7 +122,7 @@ namespace Health_Care.Controllers
                                             id = clinic.id,
                                             Name = clinic.Name,
                                             Picture = clinic.Picture,
-                                            Backgroundimage = clinic.BackgoundImage,
+                                            BackgroundImage = clinic.BackgroundImage,
                                             specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                               join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                               where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
@@ -141,7 +142,7 @@ namespace Health_Care.Controllers
                 id = clinic.id,
                 Name = clinic.Name,
                 Picture = clinic.Picture,
-                Backgroundimage = clinic.BackgoundImage,
+                BackgroundImage = clinic.BackgroundImage,
                 specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                   join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                   where specialitydoctor.Doctorid == clinic.id && specialitydoctor.Roleid == 1
@@ -150,23 +151,32 @@ namespace Health_Care.Controllers
 
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetExternalClinicByuserID(int id)
+        public async Task<ActionResult<ExternalClinic>> GetExternalClinicByuserID(int id)
         {
             var clinic = await _context.ExternalClinic.FirstOrDefaultAsync(x=>x.userId==id);
-            return new
+            if (clinic == null)
             {
-                id = clinic.id,
-                Name = clinic.Name,
-                Picture = clinic.Picture,
-                Backgroundimage = clinic.BackgoundImage,
+                return NotFound();
+            }
+            return clinic;
+            //return new
+            //{
+            //    id = clinic.id,
+            //    Name = clinic.Name,
+            //    Picture = clinic.Picture,
+            //    BackgroundImage = clinic.BackgoundImage,
 
-            };
+            //};
 
         }
 
         public async Task<ActionResult<IEnumerable<ExternalClinic>>> GetDisabled()
         {
-            return await _context.ExternalClinic.Where(x => x.active == false).ToListAsync();
+            
+            return await (from clinic in _context.ExternalClinic
+                          join user in _context.User on clinic.userId equals user.id
+                          where clinic.active == false && user.active == false
+                          select clinic).ToListAsync();
         }
 
         [HttpPut]
@@ -181,6 +191,8 @@ namespace Health_Care.Controllers
                 foreach (ExternalClinic item in externalClinic)
                 {
                     ExternalClinic s = _context.ExternalClinic.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x => x.id == s.userId).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -266,7 +278,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        externalClinic.BackgoundImage = @"\images\" + "bg_externalClinic_" + externalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        externalClinic.BackgroundImage = @"\images\" + "bg_externalClinic_" + externalClinic.id + "." + bg.ContentType.Split('/')[1];
                         _context.Entry(externalClinic).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                     }
@@ -297,6 +309,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == externalClinic.userId).FirstOrDefault();
+            user.active = false;
             externalClinic.active = false;
             //_context.ExternalClinic.Remove(externalClinic);
             await _context.SaveChangesAsync();

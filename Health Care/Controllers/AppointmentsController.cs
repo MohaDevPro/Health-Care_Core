@@ -41,14 +41,31 @@ namespace Health_Care.Controllers
             var splitfinishDate = dateTo.Split('/');
             var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
             allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate));
-            var result = await allorders.ToListAsync();
+            var result =await  allorders.ToListAsync();
             var data = from appointment in result
                        where appointment.PatientComeToAppointment == true && appointment.doctorId == doctorId
+                       select appointment;
+            return data.ToList();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetAllPatintComeToAppointmentForDoctorClinic(int doctorId,int clinicId, string dateFrom, string dateTo)
+        {
+
+            var allorders = _context.Appointment.AsQueryable();
+            var splitStartDate = dateFrom.Split('/');
+            var splitfinishDate = dateTo.Split('/');
+            var requestDates = HelpCalcolator.getListOfDays(new List<int>() { Convert.ToInt32(splitStartDate[0]), Convert.ToInt32(splitStartDate[1]), Convert.ToInt32(splitStartDate[2]) }, new List<int>() { Convert.ToInt32(splitfinishDate[0]), Convert.ToInt32(splitfinishDate[1]), Convert.ToInt32(splitfinishDate[2]) });
+            allorders = allorders.Where(x => requestDates.Contains(x.appointmentDate));
+            var result = await allorders.ToListAsync();
+            var data = from appointment in result
+                       where appointment.PatientComeToAppointment == true && appointment.doctorId == doctorId && appointment.distnationClinicId==clinicId
                        select appointment;
 
 
             return data.ToList();
         }
+
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Appointment> appointement)
@@ -115,31 +132,69 @@ namespace Health_Care.Controllers
 
 
         // GET: api/Appointments/5
-        [HttpGet("{clinicId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId)
+        [HttpGet("{clinicId}/{status}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId,int status)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();
 
-            var ConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x=> x.appointmentDate).ToListAsync();
+            var appointment = await _context.Appointment.ToListAsync();
 
-            var unConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var ConfirmedAppointment = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x=> x.appointmentDate).ToList();
 
-            var cancelledAppointmentByUser = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var unConfirmedAppointment = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentByUser = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
             
-            var cancelledAppointmentBySecretary = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var cancelledAppointmentBySecretary = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
             
             li.Add(ConfirmedAppointment);
             li.Add(unConfirmedAppointment);
             li.Add(cancelledAppointmentByUser);
             li.Add(cancelledAppointmentBySecretary);
+            if (status != 5)
+            {
+               return li[status];
+            }
 
             if (li == null) { return NotFound(); }
             return li;
         }
+        [HttpGet("{clinicId}/{status}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status)
+        {
+            List<List<Appointment>> li = new List<List<Appointment>>();
+
+            var appointment = await _context.Appointment.ToListAsync();
+
+            var ConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var unConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentByUser = appointment.Where(x => x.doctorId == doctorid
+            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentBySecretary = appointment.Where(x => x.doctorId == doctorid
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            li.Add(ConfirmedAppointment);
+            li.Add(unConfirmedAppointment);
+            li.Add(cancelledAppointmentByUser);
+            li.Add(cancelledAppointmentBySecretary);
+            if (status != 5)
+            {
+                return li[status];
+            }
+
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
 
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
@@ -304,7 +359,7 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
-
+         
         // POST: api/Appointments
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
