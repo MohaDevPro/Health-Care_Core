@@ -45,7 +45,7 @@ namespace Health_Care.Controllers
                                                 join departments in _context.departmentsOfHospitals on HospitalDep.DepatmentsOfHospitalID equals departments.id
                                                 where HospitalDep.Hospitalid == hospital.id && departments.active == true 
                                                 select departments).ToList(),
-                              Backgroundimage =hospital.BackgoundImage,
+                              BackgroundImage =hospital.BackgoundImage,
                               Description = hospital.Description
                           }
 
@@ -447,7 +447,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        ExternalClinic.BackgoundImage = @"\images\" + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        ExternalClinic.BackgroundImage = @"\images\" + "bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
@@ -508,7 +508,7 @@ namespace Health_Care.Controllers
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        ExternalClinic.BackgoundImage = @"\images\" + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
+                        ExternalClinic.BackgroundImage = @"\images\" + "ExternalClinic_bg_" + ExternalClinic.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {

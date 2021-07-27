@@ -29,6 +29,11 @@ namespace Health_Care.Controllers
         {
             return await _context.Conversation.Where(c=>c.isRecived == false).ToListAsync();
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Conversation>>> GetConversationByUserId(int id)
+        {
+            return await _context.Conversation.Where(c=>c.isRecived == false && c.userIdFrom == id).ToListAsync();
+        }
 
         // GET: api/Conversations/5
         [HttpGet("{id}")]
@@ -44,7 +49,7 @@ namespace Health_Care.Controllers
             return conversation;
         }
         [HttpPost]
-        public async Task<ActionResult> SendMessage(Conversation conversation)
+        public async Task<ActionResult<Conversation>> SendMessage(Conversation conversation)
         {
             _context.Conversation.Add(conversation);
             await _context.SaveChangesAsync();
@@ -55,8 +60,8 @@ namespace Health_Care.Controllers
             {
                 Notification = new Notification()
                 {
-                    Body = FromUser.nameAR,
-                    Title = conversation.message
+                    Body = conversation.message,
+                    Title = FromUser.nameAR,
                 },
                 Data = new Dictionary<string, string>() {
                     { "id", conversation.id.ToString() },
@@ -96,7 +101,7 @@ namespace Health_Care.Controllers
                 // for the contents of response.
                 Console.WriteLine($"{response} messages were sent successfully");
 
-            return Ok();
+            return conversation;
         }
 
 
@@ -113,6 +118,60 @@ namespace Health_Care.Controllers
 
             _context.Entry(conversation).State = EntityState.Modified;
 
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ConversationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> messageReceived(int id)
+        {
+            var converstion =  _context.Conversation.Where(x => x.id == id).FirstOrDefault();
+            if (converstion == null)
+            {
+                return NotFound();
+            }
+            converstion.isRecived = true;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ConversationExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> messageReaded(int id)
+        {
+            var converstion =  _context.Conversation.Where(x => x.id == id).FirstOrDefault();
+            if (converstion == null)
+            {
+                return NotFound();
+            }
+            converstion.isReaded = true;
             try
             {
                 await _context.SaveChangesAsync();

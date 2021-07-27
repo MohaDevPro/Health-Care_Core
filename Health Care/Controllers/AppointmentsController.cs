@@ -132,31 +132,69 @@ namespace Health_Care.Controllers
 
 
         // GET: api/Appointments/5
-        [HttpGet("{clinicId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId)
+        [HttpGet("{clinicId}/{status}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId,int status)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();
 
-            var ConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x=> x.appointmentDate).ToListAsync();
+            var appointment = await _context.Appointment.ToListAsync();
 
-            var unConfirmedAppointment = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var ConfirmedAppointment = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x=> x.appointmentDate).ToList();
 
-            var cancelledAppointmentByUser = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var unConfirmedAppointment = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary== false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentByUser = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
             
-            var cancelledAppointmentBySecretary = await _context.Appointment.Where(x => x.distnationClinicId == clinicId
-            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToListAsync();
+            var cancelledAppointmentBySecretary = appointment.Where(x => x.distnationClinicId == clinicId
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
             
             li.Add(ConfirmedAppointment);
             li.Add(unConfirmedAppointment);
             li.Add(cancelledAppointmentByUser);
             li.Add(cancelledAppointmentBySecretary);
+            if (status != 5)
+            {
+               return li[status];
+            }
 
             if (li == null) { return NotFound(); }
             return li;
         }
+        [HttpGet("{clinicId}/{status}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status)
+        {
+            List<List<Appointment>> li = new List<List<Appointment>>();
+
+            var appointment = await _context.Appointment.ToListAsync();
+
+            var ConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var unConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentByUser = appointment.Where(x => x.doctorId == doctorid
+            && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            var cancelledAppointmentBySecretary = appointment.Where(x => x.doctorId == doctorid
+            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+
+            li.Add(ConfirmedAppointment);
+            li.Add(unConfirmedAppointment);
+            li.Add(cancelledAppointmentByUser);
+            li.Add(cancelledAppointmentBySecretary);
+            if (status != 5)
+            {
+                return li[status];
+            }
+
+            if (li == null) { return NotFound(); }
+            return li;
+        }
+
 
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)

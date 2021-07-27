@@ -36,7 +36,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage = doctor.backgroundImage,
+                              BackgroundImage = doctor.backgroundImage,
                               identificationImage = doctor.identificationImage,
                               graduationCertificateImage = doctor.graduationCertificateImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -51,7 +51,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetDisabled()
         {
-            return await _context.Doctor.Where(a => a.active == false).ToListAsync();
+            return await (from doctor in _context.Doctor
+                                        join user in _context.User on doctor.Userid equals user.id
+                                        where doctor.active == false && user.active == false
+                                        select doctor).ToListAsync();
         }
 
 
@@ -67,6 +70,8 @@ namespace Health_Care.Controllers
                 foreach (Doctor item in doctor)
                 {
                     var s = _context.Doctor.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x => x.id == s.Userid).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -150,7 +155,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage=doctor.backgroundImage,
+                              BackgroundImage=doctor.backgroundImage,
                               AppointmentPrice = doctor.appointmentPrice,
                               NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
@@ -174,7 +179,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
-                              Backgroundimage = doctor.backgroundImage,
+                              BackgroundImage = doctor.backgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -204,7 +209,7 @@ namespace Health_Care.Controllers
                 id = id,
                 Name = Doctor.name,
                 Picture=Doctor.Picture,
-                Backgroundimage = Doctor.backgroundImage,
+                BackgroundImage = Doctor.backgroundImage,
                 Doctor.active,
                 specialitylist =  (from specialitydoctor in _context.SpeciallyDoctors
                                  join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
@@ -219,24 +224,25 @@ namespace Health_Care.Controllers
 
             return doctor;
         }
-        public async Task<ActionResult<object>> GetDoctorBasedOnuserID(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Doctor>> GetDoctorBasedOnuserID(int id)
         {
             var Doctor = await _context.Doctor.FirstOrDefaultAsync(x=>x.Userid==id);
-            var doctor = new
-            {
-                id = id,
-                Name = Doctor.name,
-                Picture = Doctor.Picture,
-                Backgroundimage = Doctor.backgroundImage,
+            //var doctor = new
+            //{
+            //    id = id,
+            //    Name = Doctor.name,
+            //    Picture = Doctor.Picture,
+            //    BackgroundImage = Doctor.backgroundImage,
 
-            };
+            //};
 
-            if (doctor == null)
+            if (Doctor == null)
             {
                 return NotFound();
             }
 
-            return doctor;
+            return Doctor;
         }
         // PUT: api/Doctors/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -321,6 +327,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == doctor.Userid).FirstOrDefault();
+            user.active = false;
             doctor.active = false;
             //_context.Doctor.Remove(doctor);
             await _context.SaveChangesAsync();
