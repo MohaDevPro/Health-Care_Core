@@ -49,7 +49,7 @@ namespace Health_Care.Controllers
             return conversation;
         }
         [HttpPost]
-        public async Task<ActionResult> SendMessage(Conversation conversation)
+        public async Task<ActionResult<Conversation>> SendMessage(Conversation conversation)
         {
             _context.Conversation.Add(conversation);
             await _context.SaveChangesAsync();
@@ -60,8 +60,8 @@ namespace Health_Care.Controllers
             {
                 Notification = new Notification()
                 {
-                    Body = FromUser.nameAR,
-                    Title = conversation.message
+                    Body = conversation.message,
+                    Title = FromUser.nameAR,
                 },
                 Data = new Dictionary<string, string>() {
                     { "id", conversation.id.ToString() },
@@ -101,7 +101,7 @@ namespace Health_Care.Controllers
                 // for the contents of response.
                 Console.WriteLine($"{response} messages were sent successfully");
 
-            return Ok();
+            return conversation;
         }
 
 
