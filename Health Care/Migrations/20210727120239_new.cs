@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class All : Migration
+    public partial class @new : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -71,6 +71,7 @@ namespace Health_Care.Migrations
                     day = table.Column<int>(nullable: false),
                     startTime = table.Column<int>(nullable: false),
                     endTime = table.Column<int>(nullable: false),
+                    IsAdditional = table.Column<bool>(nullable: false),
                     RealOpenTime = table.Column<string>(nullable: true),
                     RealClossTime = table.Column<string>(nullable: true)
                 },
@@ -109,6 +110,7 @@ namespace Health_Care.Migrations
                     rechargeDate = table.Column<string>(nullable: true),
                     ConfirmToAddBalance = table.Column<bool>(nullable: false),
                     IsCanceled = table.Column<bool>(nullable: false),
+                    IsRestore = table.Column<bool>(nullable: false),
                     ResounOfCancel = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -151,6 +153,7 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     contractFor = table.Column<int>(nullable: false),
+                    note = table.Column<string>(nullable: true),
                     active = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
@@ -332,6 +335,7 @@ namespace Health_Care.Migrations
                     Gender = table.Column<string>(nullable: true),
                     WorkPlace = table.Column<string>(nullable: true),
                     specialityId = table.Column<int>(nullable: false),
+                    CountOfDoesNotCome = table.Column<int>(nullable: false),
                     Picture = table.Column<string>(nullable: true),
                     BackGroundPicture = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -592,6 +596,21 @@ namespace Health_Care.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SalaryPaid",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    userID = table.Column<int>(nullable: false),
+                    DateOfPay = table.Column<string>(nullable: true),
+                    AmountOfSalary = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SalaryPaid", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Service",
                 columns: table => new
                 {
@@ -711,6 +730,7 @@ namespace Health_Care.Migrations
                     AcceptedByHealthWorker = table.Column<bool>(nullable: false),
                     cancelledByHealthWorker = table.Column<bool>(nullable: false),
                     cancelReasonWrittenByHealthWorker = table.Column<string>(nullable: true),
+                    doesNotCome = table.Column<bool>(nullable: false),
                     CodeConfirmation = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -999,6 +1019,9 @@ namespace Health_Care.Migrations
 
             migrationBuilder.DropTable(
                 name: "Role");
+
+            migrationBuilder.DropTable(
+                name: "SalaryPaid");
 
             migrationBuilder.DropTable(
                 name: "Service");

@@ -121,6 +121,31 @@ namespace Health_Care.Controllers
 
             return healthcareWorker;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
+            var worker = new
+            {
+                id = id,
+                Name = healthcareWorker.Name,
+                Picture = healthcareWorker.Picture,
+                Description = healthcareWorker.Description,
+                Backgroundimage = healthcareWorker.BackGroundPicture,
+                healthcareWorker.active,
+                services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                            join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                            where healthcareWorkerServices.HealthcareWorkerid == id
+                            select service).ToList(),
+            };
+
+
+            return worker;
+        }
 
         [HttpGet("{serviceId}")]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
@@ -222,6 +247,8 @@ namespace Health_Care.Controllers
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
                                      userId = HealthWorker.userId,
+                                     services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
+                                                 where workerService.HealthcareWorkerid == HealthWorker.id select service).ToList(),
                                      Description = HealthWorker.Description
                                  }
                           ).ToListAsync();
@@ -240,6 +267,8 @@ namespace Health_Care.Controllers
                     i.Name,
                     i.Picture,
                     i.Description,
+                    i.userId,
+                    i.services,
                     isFavorite = flag ? true : false,
                 };
                 listFinalResult.Add(docrotwithfavorite);
