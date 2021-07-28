@@ -13,6 +13,7 @@ namespace Health_Care.Models
         public int day { get; set; }
         public int startTime { get; set; }
         public int endTime { get; set; }
+        public bool IsAdditional { get; set; }
         public string RealOpenTime { get; set; }
         public string RealClossTime { get; set; }
     }
