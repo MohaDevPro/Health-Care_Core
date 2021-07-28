@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210728080955_new")]
+    partial class @new
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ExternalClinicId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsAdditional")
                         .HasColumnType("bit");
 
@@ -37,6 +36,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("RealOpenTime")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("clinicId")
+                        .HasColumnType("int");
 
                     b.Property<int>("day")
                         .HasColumnType("int");
@@ -54,8 +56,6 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("id");
-
-                    b.HasIndex("ExternalClinicId");
 
                     b.ToTable("AppWorktime");
                 });
@@ -1367,15 +1367,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("WorkerSalary");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.AppWorktime", b =>
-                {
-                    b.HasOne("Health_Care.Models.ExternalClinic", "ExternalClinic")
-                        .WithMany()
-                        .HasForeignKey("ExternalClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Health_Care.Models.ChronicDisease", b =>
