@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class all : Migration
+    public partial class @new : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -71,6 +71,7 @@ namespace Health_Care.Migrations
                     day = table.Column<int>(nullable: false),
                     startTime = table.Column<int>(nullable: false),
                     endTime = table.Column<int>(nullable: false),
+                    IsAdditional = table.Column<bool>(nullable: false),
                     RealOpenTime = table.Column<string>(nullable: true),
                     RealClossTime = table.Column<string>(nullable: true)
                 },
@@ -358,6 +359,7 @@ namespace Health_Care.Migrations
                     day = table.Column<int>(nullable: false),
                     startTime = table.Column<int>(nullable: false),
                     endTime = table.Column<int>(nullable: false),
+                    IsAdditional = table.Column<bool>(nullable: false),
                     RealOpenTime = table.Column<string>(nullable: true),
                     RealClossTime = table.Column<string>(nullable: true)
                 },

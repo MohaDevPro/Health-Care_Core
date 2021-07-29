@@ -9,14 +9,15 @@ namespace Health_Care.Models
     {
         public int id { get; set; }
         public int userId { get; set; } // doctor id
-        public int clinicId { get; set; }
+        public int ExternalClinicId { get; set; }
         public string shiftAM_PM { get; set; }
         public int day { get; set; }
         public int startTime { get; set; }
         public int endTime { get; set; }
+        public bool IsAdditional { get; set; }
         public string RealOpenTime { get; set; }
         public string RealClossTime { get; set; }
 
-
+        public virtual ExternalClinic ExternalClinic { get; set; }
     }
 }

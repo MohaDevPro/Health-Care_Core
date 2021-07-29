@@ -567,6 +567,10 @@ namespace Health_Care.Controllers
 
                 try
                 {
+                    var d = _context.Doctor.Find(id);
+                    d.appointmentPrice = Doctor.appointmentPrice;
+                    d.name = Doctor.name;
+                    d.numberOfAvailableAppointment = Doctor.numberOfAvailableAppointment;
                     string path = _environment.WebRootPath + @"\images\";
                     FileStream fileStream;
                     if (!Directory.Exists(path))
@@ -579,7 +583,7 @@ namespace Health_Care.Controllers
                         Picture.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
-                        Doctor.Picture = @"\images\" + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1];
+                        d.Picture = @"\images\" + "Doctor_logo_" + Doctor.id + "." + Picture.ContentType.Split('/')[1];
                         if (bg == null)
                         {
                             fileStream.Dispose();
@@ -587,16 +591,16 @@ namespace Health_Care.Controllers
                     }
                     if (bg != null)
                     {
-                        fileStream = System.IO.File.Create(path + "bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1]);
+                        fileStream = System.IO.File.Create(path + "bg_doctor_" + Doctor.id + "." + bg.ContentType.Split('/')[1]);
                         bg.CopyTo(fileStream);
                         fileStream.Flush();
                         fileStream.Close();
                         fileStream.Dispose();
-                        Doctor.backgroundImage = @"\images\" + "bg_" + Doctor.id + "." + bg.ContentType.Split('/')[1];
+                        d.backgroundImage = @"\images\" + "bg_doctor_" + Doctor.id + "." + bg.ContentType.Split('/')[1];
                     }
                     if (Picture != null || bg != null)
                     {
-                        _context.Entry(Doctor).State = EntityState.Modified;
+                        //_context.Entry(Doctor).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                     }
 
