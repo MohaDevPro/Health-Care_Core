@@ -27,11 +27,11 @@ namespace Health_Care.Controllers
         private readonly Health_CareContext _context;
         private readonly JWTSettings _jwtsettings;
         private readonly IWebHostEnvironment _environment;
-            
-            public AuthenticationController(Health_CareContext context, IOptions<JWTSettings> jwtsettings, IWebHostEnvironment environment)
+
+        public AuthenticationController(Health_CareContext context, IOptions<JWTSettings> jwtsettings, IWebHostEnvironment environment)
         {
             _context = context;
-            _jwtsettings = jwtsettings.Value;_environment = environment;
+            _jwtsettings = jwtsettings.Value; _environment = environment;
         }
 
         [HttpPost]
@@ -63,15 +63,18 @@ namespace Health_Care.Controllers
                 {
                     var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user2.id).FirstOrDefault();
                     SpecificId = healthcareWorker.id;
-                }else if (user2.Roleid == 2)
+                }
+                else if (user2.Roleid == 2)
                 {
                     var clinic = _context.ExternalClinic.Where(x => x.userId == user2.id).FirstOrDefault();
-                        SpecificId = clinic.id;
-                }else if (user2.Roleid == 3)
+                    SpecificId = clinic.id;
+                }
+                else if (user2.Roleid == 3)
                 {
                     var hospital = _context.Hospitals.Where(x => x.UserId == user2.id).FirstOrDefault();
-                        SpecificId = hospital.id;
-                }else if (user2.Roleid == 4)
+                    SpecificId = hospital.id;
+                }
+                else if (user2.Roleid == 4)
                 {
                     var patient = _context.Patient.Where(x => x.userId == user2.id).FirstOrDefault();
                     SpecificId = patient.id;
@@ -90,22 +93,22 @@ namespace Health_Care.Controllers
                     nameAR = user2.nameAR,
                     nameEN = user2.nameEN,
                     phoneNumber = user2.phoneNumber,
-                    address=user2.address,
-                    DeviceId=user2.DeviceId,
-                    email=user2.email,
+                    address = user2.address,
+                    DeviceId = user2.DeviceId,
+                    email = user2.email,
                     roleid = user2.Roleid,
                     SpecificId = SpecificId,
                     type = type,
                     isActiveAccount = user2.isActiveAccount,
-                    regionId =user2.regionId,
+                    regionId = user2.regionId,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
-                }) ;
+                });
             }
 
             return NotFound();
-        }       
-        
+        }
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> Logout(User user)
@@ -135,8 +138,8 @@ namespace Health_Care.Controllers
                 {
                     fCM_Token.UserID = user.id;
                 }
-                
-                user =  _context.User.Where(u => u.phoneNumber == user.phoneNumber).FirstOrDefault();
+
+                user = _context.User.Where(u => u.phoneNumber == user.phoneNumber).FirstOrDefault();
 
                 //if (user != null)
                 //{
@@ -160,7 +163,7 @@ namespace Health_Care.Controllers
                 //var clinic = _context.ExternalClinic.Where(x => x.userId == user.id).FirstOrDefault();
                 //var doctor = _context.Doctor.Where(x => x.Userid == user.id).FirstOrDefault();
 
-                 if (user.Roleid == 1)
+                if (user.Roleid == 1)
                 {
                     var healthcareWorker = new HealthcareWorker()
                     {
@@ -168,11 +171,11 @@ namespace Health_Care.Controllers
                         active = true,
                         Name = user.nameAR,
                     };
-                    _context.HealthcareWorker.Add(healthcareWorker) ;
+                    _context.HealthcareWorker.Add(healthcareWorker);
                     _context.SaveChanges();
                     SpecificId = healthcareWorker.id;
                 }
-                    
+
                 else if (user.Roleid == 2)
                 {
                     var clinic = new ExternalClinic()
@@ -234,8 +237,8 @@ namespace Health_Care.Controllers
                     email = user.email,
                     type = type,
                     roleid = user.Roleid,
-                    SpecificId = SpecificId, 
-                    isActiveAccount=user.isActiveAccount,
+                    SpecificId = SpecificId,
+                    isActiveAccount = user.isActiveAccount,
                     AccessToken = refreshRequest.AccessToken,
                     RefreshToken = refreshRequest.RefreshToken
                 });
@@ -245,22 +248,22 @@ namespace Health_Care.Controllers
         }
         [HttpPost("{id}")]
         //[Authorize(Roles = "admin, doctor")]
-        public async Task<ActionResult<Doctor>> signUpDoctorDetails(int id, [FromForm] Doctor doctor , IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
+        public async Task<ActionResult<Doctor>> signUpDoctorDetails(int id, [FromForm] Doctor doctor, IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
-            
+
             User user = _context.User.Where(d => d.id == id).FirstOrDefault();
             if (user == null)
             {
                 return NotFound();
             }
-            Doctor doctor2 = _context.Doctor.Where(d=>d.Userid == id).FirstOrDefault();
+            Doctor doctor2 = _context.Doctor.Where(d => d.Userid == id).FirstOrDefault();
             if (ModelState.IsValid)
             {
                 if (idImage != null && certificateImage != null && Picture != null && bg != null)
                 {
                     try
                     {
-                        if(doctor != null)
+                        if (doctor != null)
                         {
                             doctor2.appointmentPrice = doctor.appointmentPrice;
                             doctor2.numberOfAvailableAppointment = doctor.numberOfAvailableAppointment;
@@ -319,9 +322,9 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("Getdoctor", new { id = doctor2.id }, doctor2);
         }
-        [HttpPost("{id}")]
+        [HttpPost("{id}/{edit}")]
         //[Authorize(Roles = "admin, doctor")]
-        public async Task<ActionResult<Doctor>> signUpHealthWorkerDetails( int id,[FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
+        public async Task<ActionResult<Doctor>> signUpHealthWorkerDetails(int id, bool edit, [FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
             HealthcareWorker healthcareWorker = _context.HealthcareWorker.Where(d => d.userId == id).FirstOrDefault();
             if (healthcareWorker == null)
@@ -331,52 +334,60 @@ namespace Health_Care.Controllers
 
             if (ModelState.IsValid)
             {
-                if (idImage != null && certificateImage != null && Picture != null && bg != null)
+                if (Picture != null && bg != null)
                 {
-                    try
+                    if (idImage != null && certificateImage != null || edit)
                     {
-
-                        string path = _environment.WebRootPath + @"\images\";
-                        FileStream fileStream;
-                        if (!Directory.Exists(path))
+                        try
                         {
-                            Directory.CreateDirectory(path);
+                            string path = _environment.WebRootPath + @"\images\";
+                            FileStream fileStream;
+                            if (!Directory.Exists(path))
+                            {
+                                Directory.CreateDirectory(path);
+                            }
+                            fileStream = System.IO.File.Create(path + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1]);
+                            Picture.CopyTo(fileStream);
+                            fileStream.Flush();
+                            fileStream.Close();
+                            healthcareWorker.Picture = @"\images\" + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1];
+
+                            fileStream = System.IO.File.Create(path + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1]);
+                            bg.CopyTo(fileStream);
+                            fileStream.Flush();
+                            fileStream.Close();
+                            healthcareWorker.BackGroundPicture = @"\images\" + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1];
+
+                            if (!edit)
+                            {
+                                fileStream = System.IO.File.Create(path + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1]);
+                                idImage.CopyTo(fileStream);
+                                fileStream.Flush();
+                                fileStream.Close();
+                                healthcareWorker.identificationImage = @"\images\" + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1];
+
+                                fileStream = System.IO.File.Create(path + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1]);
+                                certificateImage.CopyTo(fileStream);
+                                fileStream.Flush();
+                                fileStream.Close();
+                                fileStream.Dispose();
+                                healthcareWorker.graduationCertificateImage = @"\images\" + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1];
+
+                            }
+                            _context.Entry(healthcareWorker).State = EntityState.Modified;
+                            await _context.SaveChangesAsync();
                         }
-                        fileStream = System.IO.File.Create(path + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1]);
-                        Picture.CopyTo(fileStream);
-                        fileStream.Flush();
-                        fileStream.Close();
-                        healthcareWorker.Picture = @"\images\" + "logo_healthcareWorker" + healthcareWorker.id + "." + Picture.ContentType.Split('/')[1];
+                        catch (Exception)
+                        {
 
-                        fileStream = System.IO.File.Create(path + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1]);
-                        bg.CopyTo(fileStream);
-                        fileStream.Flush();
-                        fileStream.Close();
-                        healthcareWorker.BackGroundPicture = @"\images\" + "bg_healthcareWorker" + healthcareWorker.id + "." + bg.ContentType.Split('/')[1];
 
-                        fileStream = System.IO.File.Create(path + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1]);
-                        idImage.CopyTo(fileStream);
-                        fileStream.Flush();
-                        fileStream.Close();
-                        healthcareWorker.identificationImage = @"\images\" + "idImage_healthcareWorker" + healthcareWorker.id + "." + idImage.ContentType.Split('/')[1];
-
-                        fileStream = System.IO.File.Create(path + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1]);
-                        certificateImage.CopyTo(fileStream);
-                        fileStream.Flush();
-                        fileStream.Close();
-                        fileStream.Dispose();
-                        healthcareWorker.graduationCertificateImage = @"\images\" + "certificateImage_healthcareWorker" + healthcareWorker.id + "." + certificateImage.ContentType.Split('/')[1];
-                        
-                        _context.Entry(healthcareWorker).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
+                            throw;
+                        }
                     }
-                    catch (Exception)
+                    else
                     {
-
-
-                        throw;
+                        return BadRequest();
                     }
-
                 }
                 else
                 {
@@ -507,6 +518,6 @@ namespace Health_Care.Controllers
             return tokenWithPrifix;
         }
 
-        
+
     }
 }

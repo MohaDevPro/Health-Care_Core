@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210727185247_regions")]
+    partial class regions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -685,10 +687,10 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("HealthcareWorkerid")
+                    b.Property<int?>("HealthcareWorkerid")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegionID")
+                    b.Property<int?>("RegionID")
                         .HasColumnType("int");
 
                     b.HasKey("id");
@@ -1383,15 +1385,11 @@ namespace Health_Care.Migrations
                 {
                     b.HasOne("Health_Care.Models.HealthcareWorker", "HealthcareWorker")
                         .WithMany("HealthcareWorkerRegions")
-                        .HasForeignKey("HealthcareWorkerid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HealthcareWorkerid");
 
                     b.HasOne("Health_Care.Models.Region", "Region")
                         .WithMany()
-                        .HasForeignKey("RegionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegionID");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>

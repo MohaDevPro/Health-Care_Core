@@ -94,7 +94,6 @@ namespace Health_Care.Controllers
             return await _context.HealthcareWorker.Where(a => a.active == true).Include(h => h.HealthcareWorkerRegions).ToListAsync();
         }
     
-
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
