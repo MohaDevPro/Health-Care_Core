@@ -135,6 +135,7 @@ namespace Health_Care.Controllers
                     i.id,
                     i.Name,
                     i.Picture,
+                    i.userId,
                     i.specialitylist,
                     isFavorite = flag ? true : false,
                 };

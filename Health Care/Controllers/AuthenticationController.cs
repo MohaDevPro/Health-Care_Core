@@ -145,7 +145,7 @@ namespace Health_Care.Controllers
                 await _context.SaveChangesAsync();
 
                 //}
-
+                
 
                 //sign your token here here..
 
@@ -431,7 +431,19 @@ namespace Health_Care.Controllers
 
             return false;
         }
+        [HttpGet("{id}/{passWord}")]
+        public async Task<ActionResult> CheckUserPassword(int id,string passWord)
+        {
+            var user = await _context.User.FindAsync(id);
 
+            if (user == null)
+            {
+                return NotFound();
+            }
+            if (user.Password == passWord)
+                return Ok();
+            else return NotFound();
+        }
         private async Task<User> GetUserFromAccessToken(string accessToken)
         {
             try

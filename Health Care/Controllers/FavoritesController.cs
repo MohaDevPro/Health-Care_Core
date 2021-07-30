@@ -74,6 +74,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              userId=doctor.Userid,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -95,10 +96,14 @@ namespace Health_Care.Controllers
                           select new
                           {
                               id = worker.id,
-                              userid = worker.userId,
+                              userId = worker.userId,
                               Name = worker.Name,
                               Picture = worker.Picture,
                               Description = worker.Description,
+                              services = (from workerService in _context.HealthcareWorkerService
+                                          join service in _context.Service on workerService.serviceId equals service.id
+                                          where workerService.HealthcareWorkerid == worker.id
+                                          select service).ToList(),
                               isFavorite = true,
                           }
                           ).ToListAsync();
