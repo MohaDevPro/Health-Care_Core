@@ -17,17 +17,17 @@ namespace Health_Care.Controllers
     {
         //To Get 5 Days
         [HttpGet("{month}/{day}/{year}")]
-        public List<String> GetDatesBetween(string month, string day, string year)
+        public List<String> GetDatesBetween(string day, string month, string year)
         {
             string startDate = month + "/" + day + "/" + year  ;
-            DateTime sd = DateTime.ParseExact(startDate, "M/d/yyyy", null);
+            DateTime sd = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), Convert.ToInt32(day));
             List<DateTime> allDates = new List<DateTime>();
             List<String> allDatesString = new List<String>();
 
             for (DateTime date = sd ; date <= sd.AddDays(5) ; date = date.AddDays(1))
             {   
                 allDates.Add(date.Date);
-                var x = date.Date.Month + "/" + date.Date.Day + "/" + date.Date.Year ;
+                var x = date.Date.Day + "/" + date.Date.Month + "/" + date.Date.Year ;
                 allDatesString.Add(x);
             }
 
