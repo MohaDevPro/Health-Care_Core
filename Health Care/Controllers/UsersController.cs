@@ -75,6 +75,11 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRole( int roleId)
+        {
+            return await _context.User.Where(a => a.Roleid == roleId).ToListAsync();
+        }
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
