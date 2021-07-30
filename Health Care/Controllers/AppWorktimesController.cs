@@ -9,6 +9,7 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Health_Care.Controllers
 {
@@ -45,15 +46,15 @@ namespace Health_Care.Controllers
             return appWorktime;
         }
         [HttpGet("{id}")]
-        public async Task<IEnumerable<AppWorktime>> GetAppWorktimeBasedOnDoctorID(int id)
+        public async Task<IEnumerable<object>> GetAppWorktimeBasedOnDoctorID(int id)
         {
             //var doctor = await _context.Doctor.FindAsync(id);
             //var userid = doctor.Userid;
-            var appWorktimes = await _context.AppWorktime.Where(x => x.userId == id).ToListAsync();
+            var appWorktimes = await _context.AppWorktime.Where(x => x.userId == id).Include(x=>x.ExternalClinic).Select(x=> new {x.id,x.IsAdditional,x.RealClossTime,x.RealOpenTime,x.shiftAM_PM,x.startTime,x.userId, clinicId=x.ExternalClinicId,x.endTime,x.day,clinicname=x.ExternalClinic.Name }).ToListAsync();
             return appWorktimes;
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Object>> GetAppWorktimeAsGroup(int id)
+        [HttpGet("{id}/{clinicid}")]
+        public async Task<ActionResult<Object>> GetAppWorktimeAsGroup(int id,int clinicid)
         {
             var AvailableIfEdit = new AvailableWorkTimeVM
             {
@@ -66,7 +67,7 @@ namespace Health_Care.Controllers
                 fri = false,
                 userId = id,
             };
-            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id && Available.IsAdditional==false select Available).ToListAsync();
+            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id && Available.IsAdditional==false &&Available.ExternalClinicId== clinicid select Available).ToListAsync();
             foreach (var items in GetAll)
             {
                 if (items.day == 1)
@@ -97,13 +98,13 @@ namespace Health_Care.Controllers
             };
             return Result;
         }
-        [HttpGet("{id}/{AM_PM}")]
-        public async Task<ActionResult<Object>> GetAppWorktimeByIdAndPeriod(int id,string AM_PM)
+        [HttpGet("{id}/{AM_PM}/{clinicid}")]
+        public async Task<ActionResult<Object>> GetAppWorktimeByIdAndPeriod(int id,string AM_PM,int clinicid)
         {
             bool isSelected=false;
             var Open = "";
             var Close = "";
-            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id && Available.shiftAM_PM==AM_PM select Available).FirstOrDefaultAsync();
+            var GetAll = await (from Available in _context.AppWorktime where Available.userId == id && Available.shiftAM_PM==AM_PM &&Available.ExternalClinicId==clinicid select Available).FirstOrDefaultAsync();
             if (GetAll != null)
             {
                 isSelected = true;
@@ -184,7 +185,7 @@ namespace Health_Care.Controllers
         {
             if (availableWorkTimeVM.shiftAMPM == "nothing")
             {
-                DeleteAllAppWorktimeByUserId(availableWorkTimeVM.userId);
+                DeleteAllAppWorktimeByUserId(availableWorkTimeVM.userId,availableWorkTimeVM.clinicid);
                 return Ok();
             }
             else
@@ -201,7 +202,7 @@ namespace Health_Care.Controllers
                     shiftAMPM = availableWorkTimeVM.shiftAMPM,
                     userId = availableWorkTimeVM.userId,
                 };
-                var checkIfEdit = (from Available in _context.AppWorktime where Available.userId == availableWorkTimeVM.userId && Available.shiftAM_PM == availableWorkTimeVM.shiftAMPM select Available).ToList();
+                var checkIfEdit = (from Available in _context.AppWorktime where Available.userId == availableWorkTimeVM.userId && Available.shiftAM_PM == availableWorkTimeVM.shiftAMPM &&Available.ExternalClinicId==availableWorkTimeVM.clinicid select Available).ToList();
                 foreach (var items in checkIfEdit)
                 {
                     if (items.day == 1)
@@ -229,43 +230,43 @@ namespace Health_Care.Controllers
                 {
                     if (AvailableIfEdit.startTime != availableWorkTimeVM.startTime || AvailableIfEdit.endTime != availableWorkTimeVM.endTime)
                     {
-                        DeleteAppWorktimeAsGroup(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM);
+                        DeleteAppWorktimeAsGroup(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM,availableWorkTimeVM.clinicid);
                     }
                     else
                     {
                         if (AvailableIfEdit.sat == true && availableWorkTimeVM.sat == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 6);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 6, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.sun == true && availableWorkTimeVM.sun == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 7);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 7, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.mon == true && availableWorkTimeVM.mon == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 1);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 1, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.tue == true && availableWorkTimeVM.tue == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 2);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 2, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.wed == true && availableWorkTimeVM.wed == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 3);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 3, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.thur == true && availableWorkTimeVM.thur == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 4);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 4, availableWorkTimeVM.clinicid);
 
                         }
                         if (AvailableIfEdit.fri == true && availableWorkTimeVM.fri == false)
                         {
-                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 5);
+                            DeleteAppWorktimeByDayAndPeriod(availableWorkTimeVM.userId, availableWorkTimeVM.shiftAMPM, 5, availableWorkTimeVM.clinicid);
                         }
                     }
                 }
@@ -277,6 +278,7 @@ namespace Health_Care.Controllers
                 appworktime.shiftAM_PM = availableWorkTimeVM.shiftAMPM;
                 appworktime.RealOpenTime = availableWorkTimeVM.RealOpenTime;
                 appworktime.RealClossTime = availableWorkTimeVM.RealClossTime;
+                appworktime.ExternalClinicId = availableWorkTimeVM.clinicid;
 
                 try
                 {
@@ -487,25 +489,25 @@ namespace Health_Care.Controllers
             _context.SaveChanges();
             availableWork.id = 0;
         }
-        public  void DeleteAppWorktimeByDayAndPeriod(int userId,string AM_PM,int day)
+        public  void DeleteAppWorktimeByDayAndPeriod(int userId,string AM_PM,int day,int clinicid)
         {
-            var getappWorktime =  _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM && x.day == day).SingleOrDefault();
+            var getappWorktime =  _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM && x.day == day && x.ExternalClinicId == clinicid).SingleOrDefault();
             var appWorktime =  _context.AppWorktime.Find(getappWorktime.id);
             _context.AppWorktime.Remove(appWorktime);
            
              _context.SaveChanges();
         }
-        public void DeleteAppWorktimeAsGroup(int userId, string AM_PM)
+        public void DeleteAppWorktimeAsGroup(int userId, string AM_PM,int clinicid)
         {
-            var appWorktimes = _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM);
+            var appWorktimes = _context.AppWorktime.Where(x => x.userId == userId && x.shiftAM_PM == AM_PM&&x.ExternalClinicId==clinicid);
            
            
             _context.AppWorktime.RemoveRange(appWorktimes);
             _context.SaveChangesAsync();
         }
-        public void DeleteAllAppWorktimeByUserId(int userId)
+        public void DeleteAllAppWorktimeByUserId(int userId,int clinicid)
         {
-            var appWorktimes = _context.AppWorktime.Where(x => x.userId == userId).ToList();
+            var appWorktimes = _context.AppWorktime.Where(x => x.userId == userId &&x.ExternalClinicId==clinicid ).ToList();
             foreach(var i in appWorktimes)
             {
                 _context.AppWorktime.Remove(i);

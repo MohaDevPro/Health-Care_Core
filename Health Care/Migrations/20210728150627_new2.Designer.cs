@@ -4,14 +4,16 @@ using Health_Care.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    partial class Health_CareContextModelSnapshot : ModelSnapshot
+    [Migration("20210728150627_new2")]
+    partial class new2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ExternalClinicId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsAdditional")
                         .HasColumnType("bit");
 
@@ -37,6 +36,9 @@ namespace Health_Care.Migrations
 
                     b.Property<string>("RealOpenTime")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("clinicId")
+                        .HasColumnType("int");
 
                     b.Property<int>("day")
                         .HasColumnType("int");
@@ -54,8 +56,6 @@ namespace Health_Care.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("id");
-
-                    b.HasIndex("ExternalClinicId");
 
                     b.ToTable("AppWorktime");
                 });
@@ -445,36 +445,6 @@ namespace Health_Care.Migrations
                     b.ToTable("Doctor");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.DoctorClinicReqeust", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CancelResoun")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ClinicID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FromID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsAccepted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ToID")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("DoctorClinicReqeusts");
-                });
-
             modelBuilder.Entity("Health_Care.Models.ExternalClinic", b =>
                 {
                     b.Property<int>("id")
@@ -722,17 +692,15 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("HealthcareWorkerid")
+                    b.Property<int?>("HealthcareWorkerid")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegionID")
+                    b.Property<int>("RegionId")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
                     b.HasIndex("HealthcareWorkerid");
-
-                    b.HasIndex("RegionID");
 
                     b.ToTable("HealthcareWorkerRegions");
                 });
@@ -1400,15 +1368,6 @@ namespace Health_Care.Migrations
                     b.ToTable("WorkerSalary");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.AppWorktime", b =>
-                {
-                    b.HasOne("Health_Care.Models.ExternalClinic", "ExternalClinic")
-                        .WithMany()
-                        .HasForeignKey("ExternalClinicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Health_Care.Models.ChronicDisease", b =>
                 {
                     b.HasOne("Health_Care.Models.Patient", "Patient")
@@ -1429,15 +1388,7 @@ namespace Health_Care.Migrations
                 {
                     b.HasOne("Health_Care.Models.HealthcareWorker", "HealthcareWorker")
                         .WithMany("HealthcareWorkerRegions")
-                        .HasForeignKey("HealthcareWorkerid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Health_Care.Models.Region", "Region")
-                        .WithMany()
-                        .HasForeignKey("RegionID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HealthcareWorkerid");
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>
