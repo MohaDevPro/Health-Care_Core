@@ -117,7 +117,7 @@ namespace Health_Care.Controllers
                               userId=doctor.Userid,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
-                                                where specialitydoctor.Doctorid == doctor.id && specialit.isBasic==true && specialitydoctor.Roleid == 0
+                                                where specialitydoctor.Doctorid == doctor.id && specialitydoctor.Roleid == 0
                                                 select specialit).ToList(),
                           }
                           ).ToListAsync();
