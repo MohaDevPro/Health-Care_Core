@@ -47,7 +47,7 @@ namespace Health_Care.Controllers
                               BackgroundImage=clinic.BackgroundImage,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
-                                                where specialitydoctor.Doctorid == clinic.id && specialit.isBasic == true && specialitydoctor.Roleid == 1
+                                                where specialitydoctor.Doctorid == clinic.id  && specialitydoctor.Roleid == 1
                                                 select specialit).ToList(),
                           }
 
