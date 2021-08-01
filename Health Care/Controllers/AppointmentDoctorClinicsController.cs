@@ -67,7 +67,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<List<DateAppointmentClinicDoctorViewModel>>> GetAppointmentDoctorClinicBasedOnDateAndClinic(string month, string day, string year, int clinicId,int doctorId)
         {
             //List<> = List<>();
-            List<String> DatesListFor5Days = GetDatesBetween(month, day, year);
+            List<String> DatesListFor5Days = GetDatesBetween(day,month,  year);
             List<DateAppointmentClinicDoctorViewModel> li = new List<DateAppointmentClinicDoctorViewModel>();
 
             for(var x = 0; x< DatesListFor5Days.Count; x++)
