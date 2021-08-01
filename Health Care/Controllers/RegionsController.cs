@@ -82,7 +82,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegionBasedOnDistrictId(int id)
         {
-            return await _context.Region.Where(x => x.DistrictID == id).ToListAsync();
+            return await _context.Region.Where(x => x.DistrictID == id && x.active==true).ToListAsync();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
@@ -97,7 +97,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<District>>> GetDistrictBasedOnGovernorateId(int id)
         {
-            return await _context.District.Where(x => x.GovernorateID == id).ToListAsync();
+            return await _context.District.Where(x => x.GovernorateID == id && x.active==true).ToListAsync();
         }
 
         [HttpGet("{id}")]

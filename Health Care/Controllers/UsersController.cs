@@ -75,6 +75,61 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
         }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllUsersByRole( int roleId)
+        {
+            if (roleId == 2) {
+                
+                return await
+                (from clinic in _context.ExternalClinic
+                 join user in _context.User on clinic.userId equals user.id
+                 where clinic.active == true
+                 select new
+                 {
+                     
+                     user.id,
+                     user.nameAR,
+                     user.nameEN,
+                     user.phoneNumber,
+                     user.regionId,
+                     user.Roleid,
+                     user.isActiveAccount,
+                     user.email,
+                     user.DeviceId,
+                     user.completeData,
+                     user.address,
+                     specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                       join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                       where specialitydoctor.Doctorid == clinic.id  && specialitydoctor.Roleid == 1
+                                       select specialit).ToList(),
+                 }
+                              ).ToListAsync();
+            }
+            else return await
+               (from doctor in _context.Doctor
+                join user in _context.User on doctor.Userid equals user.id
+                where doctor.active == true
+                select new
+                {
+                    user.id,
+                    user.nameAR,
+                    user.nameEN,
+                    user.phoneNumber,
+                    user.regionId,
+                    user.Roleid,
+                    user.isActiveAccount,
+                    user.email,
+                    user.DeviceId,
+                    user.completeData,
+                    user.address,
+                    specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                      join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                      where specialitydoctor.Doctorid == doctor.id && specialitydoctor.Roleid == 0
+                                      select specialit).ToList(),
+                }
+                             ).ToListAsync();
+
+        }
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
