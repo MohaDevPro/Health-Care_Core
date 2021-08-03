@@ -168,7 +168,7 @@ namespace Health_Care.Controllers
                     var healthcareWorker = new HealthcareWorker()
                     {
                         userId = user.id,
-                        active = true,
+                        active = false,
                         Name = user.nameAR,
                     };
                     _context.HealthcareWorker.Add(healthcareWorker);
@@ -181,7 +181,7 @@ namespace Health_Care.Controllers
                     var clinic = new ExternalClinic()
                     {
                         userId = user.id,
-                        active = true,
+                        active = false,
                         Name = user.nameAR,
                     };
                     _context.ExternalClinic.Add(clinic);
@@ -193,7 +193,7 @@ namespace Health_Care.Controllers
                     var hospital = new Hospital()
                     {
                         UserId = user.id,
-                        active = true,
+                        active = false,
                         Name = user.nameAR,
                     };
                     _context.Hospitals.Add(hospital);
@@ -205,7 +205,7 @@ namespace Health_Care.Controllers
                     var patient = new Patient()
                     {
                         userId = user.id,
-                        active = true,
+                        active = false,
                         Name = user.nameAR,
                     };
                     _context.Patient.Add(patient);
@@ -217,7 +217,7 @@ namespace Health_Care.Controllers
                     var doctor = new Doctor()
                     {
                         Userid = user.id,
-                        active = true,
+                        active = false,
                         name = user.nameAR,
                     };
                     _context.Doctor.Add(doctor);
