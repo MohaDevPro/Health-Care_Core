@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 
 namespace Health_Care.Controllers
 {
@@ -15,10 +17,12 @@ namespace Health_Care.Controllers
     public class HospitalsController : ControllerBase
     {
         private readonly Health_CareContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public HospitalsController(Health_CareContext context)
+        public HospitalsController(Health_CareContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: api/Hospitals
@@ -50,7 +54,7 @@ namespace Health_Care.Controllers
 
             };
         }
-    
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Hospital>>> GetDisabled()
         {
@@ -114,6 +118,66 @@ namespace Health_Care.Controllers
                 }
             }
 
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutHospitalWithImages(int id, [FromForm] Hospital hospital, IFormFile Picture, IFormFile bg)
+        {
+
+            User user = _context.User.Where(d => d.id == hospital.UserId).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            Hospital hospital2 = _context.Hospitals.Where(d => d.id == id).FirstOrDefault();
+            if (ModelState.IsValid)
+            {
+                if (hospital2 == null)
+                {
+                    return NotFound();
+                }
+                hospital2.Name = hospital.Name;
+                hospital2.Description = hospital.Description;
+                user.nameAR = hospital2.Name;
+                if (Picture != null && bg != null)
+                {
+                    
+                    try
+                    {
+                        
+                        string path = _environment.WebRootPath + @"\images\";
+                        FileStream fileStream;
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        fileStream = System.IO.File.Create(path + "logo_hospital_" + hospital2.id + "." + Picture.ContentType.Split('/')[1]);
+                        Picture.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        hospital2.Picture = @"\images\" + "logo_hospital_" + hospital2.id + "." + Picture.ContentType.Split('/')[1];
+
+                        fileStream = System.IO.File.Create(path + "bg_hospital_" + hospital2.id + "." + bg.ContentType.Split('/')[1]);
+                        bg.CopyTo(fileStream);
+                        fileStream.Flush();
+                        fileStream.Close();
+                        hospital2.BackgoundImage = @"\images\" + "bg_hospital_" + hospital2.id + "." + bg.ContentType.Split('/')[1];
+
+
+                        //_context.hospital.Add(hospital);
+                        
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+
+                }
+               
+
+            }
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
