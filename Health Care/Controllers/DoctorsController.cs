@@ -101,33 +101,37 @@ namespace Health_Care.Controllers
         [HttpGet("{patientId}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId)
         {
-            var favorite = (from PatientFavorite in _context.Favorite 
-                            join doc in _context.Doctor on PatientFavorite.UserId equals doc.Userid 
-                            where PatientFavorite.PatientId == patientId select PatientFavorite ).ToList();
+            var favorite = (from PatientFavorite in _context.Favorite
+                            where PatientFavorite.PatientId == patientId
+                            select PatientFavorite).ToList();
 
-            
-            
-            var doctors= await(from doctor in _context.Doctor
-                               where doctor.active == true
-                          select new
-                          {
-                              id = doctor.id,
-                              Name = doctor.name,
-                              Picture = doctor.Picture,
-                              userId=doctor.Userid,
-                              specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
-                                                join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
-                                                where specialitydoctor.Doctorid == doctor.id && specialitydoctor.Roleid == 0
-                                                select specialit).ToList(),
-                          }
+
+
+            var doctors = await (from doctor in _context.Doctor
+                                 join user in _context.User on doctor.Userid equals user.id
+                                 where doctor.active == true
+                                 select new
+                                 {
+                                     id = doctor.id,
+                                     Name = doctor.name,
+                                     Picture = doctor.Picture,
+                                     user.regionId,
+                                     userId = doctor.Userid,
+                                     specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                       join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                       where specialitydoctor.Doctorid == doctor.id && specialitydoctor.Roleid == 0
+                                                       select specialit).ToList(),
+                                 }
                           ).ToListAsync();
-            var listFinalResult =new List<object>();
+            var listFinalResult = new List<object>();
             bool flag = false;
-            foreach(var i in doctors)
+            foreach (var i in doctors)
             {
-                foreach(var j in favorite)
+                
+               
+                foreach (var j in favorite)
                 {
-                    if (j.UserId == i.userId)
+                    if (j.UserId == i.id)
                         flag = true;
                 }
                 var docrotwithfavorite = new
@@ -135,6 +139,8 @@ namespace Health_Care.Controllers
                     i.id,
                     i.Name,
                     i.Picture,
+                    i.regionId,
+                    
                     i.userId,
                     i.specialitylist,
                     isFavorite = flag ? true : false,
