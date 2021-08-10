@@ -37,6 +37,14 @@ namespace Health_Care.Controllers
         {
             return await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).ToListAsync();
         }
+
+        [HttpGet("{id}")]
+        public List<string> GetChargeOrRechargeRequestByUserI(int id)
+        {
+            var x = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
+            var dateList = x[0].rechargeDate.Split("/");
+            return dateList.ToList();
+        }
         [HttpGet("{id}")]
         public  bool IsRestorable(int id)
         {

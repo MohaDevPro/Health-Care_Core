@@ -227,10 +227,10 @@ namespace Health_Care.Controllers
             return appointmentList;
         }
 
-        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
-        public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDateToCancelbyClinic(string month, string day, string year, int clinicId, int doctorId)
+        [HttpGet("{day}/{month}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDateToCancelbyClinic(string day, string month, string year, int clinicId, int doctorId)
         {
-            string searchDate = month + "/" + day + "/" + year;
+            string searchDate = day + "/" + month + "/" + year;
 
             var appointmentList = await _context.Appointment
                 .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId 
@@ -389,6 +389,31 @@ namespace Health_Care.Controllers
             await _context.SaveChangesAsync();
 
             return appointment;
+        }
+
+        [HttpGet("{day}/{month}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<List<Appointment>>> DeleteAppointmentBasedOnDate(string day, string month, string year, int clinicId, int doctorId)
+        {
+            string searchDate = day + "/" + month + "/" + year;
+            var appointmentList = await _context.Appointment.Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId
+                && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
+            appointmentDoctorClinicObj.numberOfRealAppointment-= appointmentList.Count;
+
+            foreach (var appointment in appointmentList)
+            {
+                appointment.active = false;
+                
+                await _context.SaveChangesAsync();
+                
+            }
+
+            return appointmentList;
         }
 
         private bool AppointmentExists(int id)
