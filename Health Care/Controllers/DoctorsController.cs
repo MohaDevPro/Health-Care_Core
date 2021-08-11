@@ -215,6 +215,7 @@ namespace Health_Care.Controllers
             var doctor =new {
                 id = id,
                 Name = Doctor.name,
+                Doctor.appointmentPrice,
                 Picture=Doctor.Picture,
                 BackgroundImage = Doctor.backgroundImage,
                 Doctor.active,
