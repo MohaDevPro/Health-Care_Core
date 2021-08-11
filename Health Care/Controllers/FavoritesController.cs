@@ -74,6 +74,7 @@ namespace Health_Care.Controllers
                               id = doctor.id,
                               Name = doctor.name,
                               Picture = doctor.Picture,
+                              userId=doctor.Userid,
                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
@@ -95,9 +96,14 @@ namespace Health_Care.Controllers
                           select new
                           {
                               id = worker.id,
+                              userId = worker.userId,
                               Name = worker.Name,
                               Picture = worker.Picture,
-                              Description=worker.Description,
+                              Description = worker.Description,
+                              services = (from workerService in _context.HealthcareWorkerService
+                                          join service in _context.Service on workerService.serviceId equals service.id
+                                          where workerService.HealthcareWorkerid == worker.id
+                                          select service).ToList(),
                               isFavorite = true,
                           }
                           ).ToListAsync();
@@ -141,7 +147,6 @@ namespace Health_Care.Controllers
         [HttpPost]
         public async Task<ActionResult<Favorite>> PostFavorite(Favorite favorite)
         {
-            favorite.UserId = _context.Doctor.FirstOrDefault(x => x.id == favorite.UserId).Userid;
             _context.Favorite.Add(favorite);
             await _context.SaveChangesAsync();
 
@@ -153,7 +158,6 @@ namespace Health_Care.Controllers
         //[Route("api/Favorites/{patientId}/{userId}/{type}")]
         public async Task<ActionResult<Favorite>> DeleteFavorite(int patientId,int userId,string type)
         {
-            userId = _context.Doctor.FirstOrDefault(x => x.id == userId).Userid;
             var favorite = await _context.Favorite.Where(x=> x.PatientId==patientId && x.UserId==userId && x.type==type).FirstOrDefaultAsync();
             if (favorite == null)
             {

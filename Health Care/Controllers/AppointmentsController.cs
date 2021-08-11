@@ -163,7 +163,7 @@ namespace Health_Care.Controllers
             if (li == null) { return NotFound(); }
             return li;
         }
-        [HttpGet("{clinicId}/{status}")]
+        [HttpGet("{doctorid}/{status}")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();

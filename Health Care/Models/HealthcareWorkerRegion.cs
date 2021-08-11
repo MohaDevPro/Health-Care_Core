@@ -8,8 +8,10 @@ namespace Health_Care.Models
     public class HealthcareWorkerRegion
     {
         public int id { get; set; }
-        
+        public int HealthcareWorkerid { get; set; }
+        public int RegionID { get; set; }
         public HealthcareWorker HealthcareWorker { get; set; }
-        public int RegionId { get; set; }
+        public Region Region { get; set; }
+        
     }
 }

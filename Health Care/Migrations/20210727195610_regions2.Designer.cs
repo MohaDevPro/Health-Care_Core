@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Health_Care.Migrations
 {
     [DbContext(typeof(Health_CareContext))]
-    [Migration("20210725091505_all")]
-    partial class all
+    [Migration("20210727195610_regions2")]
+    partial class regions2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -687,15 +687,17 @@ namespace Health_Care.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("HealthcareWorkerid")
+                    b.Property<int>("HealthcareWorkerid")
                         .HasColumnType("int");
 
-                    b.Property<int>("RegionId")
+                    b.Property<int>("RegionID")
                         .HasColumnType("int");
 
                     b.HasKey("id");
 
                     b.HasIndex("HealthcareWorkerid");
+
+                    b.HasIndex("RegionID");
 
                     b.ToTable("HealthcareWorkerRegions");
                 });
@@ -1383,7 +1385,15 @@ namespace Health_Care.Migrations
                 {
                     b.HasOne("Health_Care.Models.HealthcareWorker", "HealthcareWorker")
                         .WithMany("HealthcareWorkerRegions")
-                        .HasForeignKey("HealthcareWorkerid");
+                        .HasForeignKey("HealthcareWorkerid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Health_Care.Models.Region", "Region")
+                        .WithMany()
+                        .HasForeignKey("RegionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Health_Care.Models.HealthcareWorkerService", b =>

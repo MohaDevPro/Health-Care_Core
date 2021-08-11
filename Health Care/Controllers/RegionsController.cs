@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegion()
         {
-            return await _context.Region.Where(a=>a.active == true).ToListAsync();
+            return await _context.Region.Where(a => a.active == true).ToListAsync();
         }
 
         //[HttpGet]
@@ -70,10 +70,19 @@ namespace Health_Care.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Region>>> GetHealthWorkerRegionsByWorkerID(int id)
+        {
+            var workerRegions = await _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == id).Select(x => x.Region).ToListAsync();
+            return workerRegions;
+        }
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Region>>> GetRegionBasedOnDistrictId(int id)
         {
-            return await _context.Region.Where(x => x.DistrictID == id).ToListAsync();
+            return await _context.Region.Where(x => x.DistrictID == id && x.active==true).ToListAsync();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
@@ -88,7 +97,7 @@ namespace Health_Care.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<District>>> GetDistrictBasedOnGovernorateId(int id)
         {
-            return await _context.District.Where(x => x.GovernorateID == id).ToListAsync();
+            return await _context.District.Where(x => x.GovernorateID == id && x.active==true).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -207,6 +216,20 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetRegion", new { id = region.ID }, region);
         }
+        [HttpPost("{regionID}/{WorkerID}")]
+        public async Task<ActionResult> PostWorkerRegion(int regionID,int WorkerID)
+        {
+            var h1 = _context.HealthcareWorkerRegions.Where(x=>x.HealthcareWorkerid == WorkerID && x.RegionID == regionID).FirstOrDefault();
+            
+            if (h1 != null)
+            {
+                return Ok();
+            }
+            var h = new HealthcareWorkerRegion() { RegionID = regionID, HealthcareWorkerid = WorkerID };
+            _context.HealthcareWorkerRegions.Add(h);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
         [HttpPost]
         public async Task<ActionResult<Governorate>> PostGovernorate(Governorate governorate)
@@ -270,6 +293,20 @@ namespace Health_Care.Controllers
             await _context.SaveChangesAsync();
 
             return district;
+        }
+        [HttpDelete("{id}/{workerID}")]
+        public async Task<ActionResult> DeleteWorkerRegion(int id,int workerID)
+        {
+            var region =  _context.HealthcareWorkerRegions.Where(x=>x.RegionID == id && x.HealthcareWorkerid == workerID).FirstOrDefault();
+            if (region == null)
+            {
+                return NotFound();
+            }
+
+            _context.HealthcareWorkerRegions.Remove(region);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         private bool RegionExists(int id)

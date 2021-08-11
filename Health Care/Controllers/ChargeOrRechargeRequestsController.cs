@@ -51,15 +51,15 @@ namespace Health_Care.Controllers
             var p = _context.Patient.Where(x=>x.userId == id).FirstOrDefault();
             var charges = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
             var balance = 0;
-            var First = _context.ChargeOrRechargeRequest.Where(x=>x.IsRestore == true && x.userId == id).ToList();
+            //var First = _context.ChargeOrRechargeRequest.Where(x=>x.IsRestore == true && x.userId == id).ToList();
             foreach (var item in charges)
             {
                 if(!item.IsCanceled && item.ConfirmToAddBalance)
                     balance += item.BalanceReceipt;
             }
             var dateList = charges[0].rechargeDate.Split("/");
-            var date =new DateTime(Convert.ToInt32(dateList[2]), Convert.ToInt32(dateList[1]), Convert.ToInt32(dateList[0])) ;
-            return date.AddDays(6) >= DateTime.Now && p.Balance == balance && First.Count < 1;
+            var date =new DateTime(Convert.ToInt32(dateList[2]), Convert.ToInt32(dateList[1]), Convert.ToInt32(dateList[0])).AddDays(5) ;
+            return date >= DateTime.Now && p.Balance == balance;
         }
 
         // GET: api/ChargeOrRechargeRequests/5
@@ -103,6 +103,12 @@ namespace Health_Care.Controllers
             try
             {
                 var  user = _context.User.Where(u=>u.id == chargeOrRechargeRequest.userId).FirstOrDefault();
+                if (!chargeOrRechargeRequest.IsCanceled)
+                {
+                    var patient = _context.Patient.Where(x => x.userId == user.id).FirstOrDefault();
+                    patient.Balance += chargeOrRechargeRequest.BalanceReceipt;
+                    patient.LastBalanceChargeDate = DateTime.Now.ToString("dd/MM/yyyy");
+                }
                 user.isActiveAccount = true;
                 await _context.SaveChangesAsync();
             }
@@ -164,6 +170,11 @@ namespace Health_Care.Controllers
             {
                 try
                 {
+                    var charges = _context.ChargeOrRechargeRequest.Where(x => x.userId == rechargeRequest.userId).ToList();
+                    if (charges.Count==0)
+                    {
+                        rechargeRequest.IsRestore = true;
+                    }
                     _context.ChargeOrRechargeRequest.Add(rechargeRequest);
                     await _context.SaveChangesAsync();
 

@@ -92,6 +92,9 @@ namespace Health_Care.Data
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Health_Care.Models.SalaryPaid> SalaryPaid { get; set; }
 
+        public DbSet<Health_Care.Models.DoctorClinicReqeust> DoctorClinicReqeusts { get; set; }
+
+
 
 
     }
