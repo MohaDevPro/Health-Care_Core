@@ -83,14 +83,18 @@ namespace Health_Care.Controllers
             foreach (var item in workerAppointmentList)
             {
                 var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate == TodayDate && x.appointmentId == item.id);
-                result.Add(new WorkerAppointmentViewModel()
+                if (workerAppointmentRequest != null)
                 {
-                    workerAppointment = item,
-                    healthWorkerRequestByUser = workerAppointmentRequest,
-                });
+                    result.Add(new WorkerAppointmentViewModel()
+                    {
+                        workerAppointment = item,
+                        healthWorkerRequestByUser = workerAppointmentRequest,
+                    });
+                }
+
             }
 
-            if (result == null) { return NotFound(); }
+            //if (result == null) { return NotFound(); }
             
             return result;
         }
@@ -215,8 +219,8 @@ namespace Health_Care.Controllers
             }
             workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
             workerAppointment.reservedAmountUntilConfirm = true;
-            Patient patient = _context.Patient.Find(workerAppointment.patientId);
-            patient.Balance -= workerAppointment.servicePrice;
+            Patient patient = _context.Patient.Where(x=>x.userId == workerAppointment.patientId).FirstOrDefault();
+            //patient.Balance -= workerAppointment.servicePrice;
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try
