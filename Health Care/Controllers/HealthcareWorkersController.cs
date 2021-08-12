@@ -118,7 +118,7 @@ namespace Health_Care.Controllers
             };
 
 
-            return healthcareWorker;
+            return doctor;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
