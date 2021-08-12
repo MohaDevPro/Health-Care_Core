@@ -88,15 +88,15 @@ namespace Health_Care.Controllers
                  {
                      
                      user.id,
-                     user.nameAR,
+                     nameAR= clinic.Name,
                      user.nameEN,
                      user.phoneNumber,
                      user.regionId,
                      user.Roleid,
-                     user.isActiveAccount,
-                     user.email,
-                     user.DeviceId,
-                     user.completeData,
+                     //user.isActiveAccount,
+                     //user.email,
+                     //user.DeviceId,
+                     //user.completeData,
                      user.address,
                      specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                        join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
@@ -108,19 +108,19 @@ namespace Health_Care.Controllers
             else return await
                (from doctor in _context.Doctor
                 join user in _context.User on doctor.Userid equals user.id
-                where doctor.active == true
+                where doctor.active == true && user.Roleid==5
                 select new
                 {
                     user.id,
-                    user.nameAR,
+                    nameAR=doctor.name,
                     user.nameEN,
                     user.phoneNumber,
                     user.regionId,
                     user.Roleid,
-                    user.isActiveAccount,
-                    user.email,
-                    user.DeviceId,
-                    user.completeData,
+                    //user.isActiveAccount,
+                    //user.email,
+                    //user.DeviceId,
+                    //user.completeData,
                     user.address,
                     specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                       join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
