@@ -181,8 +181,17 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(healthcareWorker).State = EntityState.Modified;
+            HealthcareWorker worker = _context.HealthcareWorker.Find(healthcareWorker.id);
+            worker.Name = healthcareWorker.Name ?? worker.Name;
+            worker.ReagionID = healthcareWorker.ReagionID != 0 ? healthcareWorker.ReagionID :  worker.ReagionID;
+            worker.active = worker.active;
+            worker.CountOfDoesNotCome = healthcareWorker.CountOfDoesNotCome != 0 ? healthcareWorker.CountOfDoesNotCome: worker.CountOfDoesNotCome;
+            worker.Description = healthcareWorker.Description ?? worker.Description;
+            worker.Gender = healthcareWorker.Gender ?? worker.Gender;
+            worker.specialityId = healthcareWorker.specialityId != 0 ? healthcareWorker.specialityId : worker.specialityId;
+            worker.userId = healthcareWorker.userId != 0 ? healthcareWorker.userId : worker.userId;
+            worker.WorkPlace = healthcareWorker.WorkPlace ?? worker.WorkPlace;
+            //_context.Entry(healthcareWorker).State = EntityState.Modified;
 
             try
             {
