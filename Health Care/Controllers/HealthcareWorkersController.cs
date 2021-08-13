@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Health_Care.Controllers
 {
@@ -104,23 +105,24 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            //var doctor = new
-            //{
-            //    id = id,
-            //    Name = healthcareWorker.Name,
-            //    Picture = healthcareWorker.Picture,
-            //    Description = healthcareWorker.Description,
-            //    BackgroundImage = healthcareWorker.BackGroundPicture,
-            //    healthcareWorker.active,
-            //    //Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-            //    //                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-            //    //                  where healthcareWorkerServices.HealthcareWorkerid == id 
-            //    //                  select new { 
-            //    //                  id=service.id,
-            //    //                  serviceName=service.serviceName,
-            //    //                  servicePrice= healthcareWorkerServices.Price
-            //    //                  }).ToList(),
-            //};
+            var doctor = new
+            {
+                id = id,
+                Name = healthcareWorker.Name,
+                Picture = healthcareWorker.Picture,
+                Description = healthcareWorker.Description,
+                Backgroundimage = healthcareWorker.BackGroundPicture,
+                healthcareWorker.active,
+                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                                  where healthcareWorkerServices.HealthcareWorkerid == id 
+                                  select new { 
+                                  id=service.id,
+                                  serviceName=service.serviceName,
+                                  servicePrice= healthcareWorkerServices.Price
+
+                                  }).ToList(),
+            };
 
             return healthcareWorker;
         }
@@ -244,6 +246,8 @@ namespace Health_Care.Controllers
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
                                      userId = HealthWorker.userId,
+                                     services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
+                                                 where workerService.HealthcareWorkerid == HealthWorker.id select service).ToList(),
                                      Description = HealthWorker.Description
                                  }
                           ).ToListAsync();
@@ -262,6 +266,8 @@ namespace Health_Care.Controllers
                     i.Name,
                     i.Picture,
                     i.Description,
+                    i.userId,
+                    i.services,
                     isFavorite = flag ? true : false,
                 };
                 listFinalResult.Add(docrotwithfavorite);

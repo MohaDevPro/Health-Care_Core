@@ -42,18 +42,18 @@ namespace Health_Care.Controllers
             return hospitalClinicAddress;
         }
 
-        //[HttpGet("{userId}")]
-        //public async Task<ActionResult<HospitalClinicAddress>> GetHospitalClinicAddressBasedOnId(int userId)
-        //{
-        //    var hospitalClinicAddress = await _context.HospitalClinicAddress.FirstOrDefaultAsync(x => x.hospitalOrClinicId == userId);
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<HospitalClinicAddress>> GetHospitalClinicAddressBasedOnId(int userId)
+        {
+            var hospitalClinicAddress = await _context.HospitalClinicAddress.FirstOrDefaultAsync(x => x.hospitalOrClinicId == userId);
 
-        //    if (hospitalClinicAddress == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (hospitalClinicAddress == null)
+            {
+                return NotFound();
+            }
 
-        //    return hospitalClinicAddress;
-        //}
+            return hospitalClinicAddress;
+        }
 
         // PUT: api/HospitalClinicAddresses/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
