@@ -172,6 +172,7 @@ namespace Health_Care.Controllers
                         userId = user.id,
                         active = false,
                         Name = user.nameAR,
+                        ReagionID = user.regionId,
                     };
                     _context.HealthcareWorker.Add(healthcareWorker);
                     _context.SaveChanges();

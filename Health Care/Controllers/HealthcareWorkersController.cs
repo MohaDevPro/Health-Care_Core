@@ -32,7 +32,7 @@ namespace Health_Care.Controllers
                               id = HealthWorker.id,
                               Name = HealthWorker.Name,
                               Picture = HealthWorker.Picture,
-                              Backgroundimage=HealthWorker.BackGroundPicture,
+                              BackgroundImage=HealthWorker.BackGroundPicture,
                               Description = HealthWorker.Description,
                               Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                           join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
@@ -51,7 +51,10 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetDisabled()
         {
-            return await _context.HealthcareWorker.Where(a => a.active == false).ToListAsync();
+            return await (from worker in _context.HealthcareWorker
+                          join user in _context.User on worker.userId equals user.id
+                          where worker.active == false && user.active == false
+                          select worker).ToListAsync();
         }
 
         [HttpPut]
@@ -66,6 +69,8 @@ namespace Health_Care.Controllers
                 foreach (HealthcareWorker item in halthcareWorker)
                 {
                     var s = _context.HealthcareWorker.Where(s => s.id == item.id).FirstOrDefault();
+                    var user = _context.User.Where(x=>x.id == s.userId).FirstOrDefault();
+                    user.active = true;
                     s.active = true;
                     await _context.SaveChangesAsync();
                 }
@@ -89,6 +94,7 @@ namespace Health_Care.Controllers
             return await _context.HealthcareWorker.Where(a => a.active == true).Include(h => h.HealthcareWorkerRegions).ToListAsync();
         }
     
+
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
@@ -98,52 +104,35 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            var doctor = new
-            {
-                id = id,
-                Name = healthcareWorker.Name,
-                Picture = healthcareWorker.Picture,
-                Description = healthcareWorker.Description,
-                Backgroundimage = healthcareWorker.BackGroundPicture,
-                healthcareWorker.active,
-                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                                  where healthcareWorkerServices.HealthcareWorkerid == id 
-                                  select new { 
-                                  id=service.id,
-                                  serviceName=service.serviceName,
-                                  servicePrice= healthcareWorkerServices.Price
+            //var doctor = new
+            //{
+            //    id = id,
+            //    Name = healthcareWorker.Name,
+            //    Picture = healthcareWorker.Picture,
+            //    Description = healthcareWorker.Description,
+            //    BackgroundImage = healthcareWorker.BackGroundPicture,
+            //    healthcareWorker.active,
+            //    //Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+            //    //                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+            //    //                  where healthcareWorkerServices.HealthcareWorkerid == id 
+            //    //                  select new { 
+            //    //                  id=service.id,
+            //    //                  serviceName=service.serviceName,
+            //    //                  servicePrice= healthcareWorkerServices.Price
+            //    //                  }).ToList(),
+            //};
 
-                                  }).ToList(),
-            };
-
-
-            return healthcareWorker;
+            return doctor;
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
+        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
         {
-            var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
+            var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
             if (healthcareWorker == null)
             {
                 return NotFound();
             }
-            var worker = new
-            {
-                id = id,
-                Name = healthcareWorker.Name,
-                Picture = healthcareWorker.Picture,
-                Description = healthcareWorker.Description,
-                Backgroundimage = healthcareWorker.BackGroundPicture,
-                healthcareWorker.active,
-                services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-                            join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                            where healthcareWorkerServices.HealthcareWorkerid == id
-                            select service).ToList(),
-            };
-
-
-            return worker;
+            return healthcareWorker;
         }
 
         [HttpGet("{serviceId}")]
@@ -181,8 +170,17 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-
-            _context.Entry(healthcareWorker).State = EntityState.Modified;
+            HealthcareWorker worker = _context.HealthcareWorker.Find(healthcareWorker.id);
+            worker.Name = healthcareWorker.Name ?? worker.Name;
+            worker.ReagionID = healthcareWorker.ReagionID != 0 ? healthcareWorker.ReagionID :  worker.ReagionID;
+            worker.active = worker.active;
+            worker.CountOfDoesNotCome = healthcareWorker.CountOfDoesNotCome != 0 ? healthcareWorker.CountOfDoesNotCome: worker.CountOfDoesNotCome;
+            worker.Description = healthcareWorker.Description ?? worker.Description;
+            worker.Gender = healthcareWorker.Gender ?? worker.Gender;
+            worker.specialityId = healthcareWorker.specialityId != 0 ? healthcareWorker.specialityId : worker.specialityId;
+            worker.userId = healthcareWorker.userId != 0 ? healthcareWorker.userId : worker.userId;
+            worker.WorkPlace = healthcareWorker.WorkPlace ?? worker.WorkPlace;
+            //_context.Entry(healthcareWorker).State = EntityState.Modified;
 
             try
             {
@@ -246,8 +244,6 @@ namespace Health_Care.Controllers
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
                                      userId = HealthWorker.userId,
-                                     services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
-                                                 where workerService.HealthcareWorkerid == HealthWorker.id select service).ToList(),
                                      Description = HealthWorker.Description
                                  }
                           ).ToListAsync();
@@ -266,8 +262,6 @@ namespace Health_Care.Controllers
                     i.Name,
                     i.Picture,
                     i.Description,
-                    i.userId,
-                    i.services,
                     isFavorite = flag ? true : false,
                 };
                 listFinalResult.Add(docrotwithfavorite);
@@ -335,6 +329,8 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            var user = _context.User.Where(x => x.id == healthcareWorker.userId).FirstOrDefault();
+            user.active = false;
             healthcareWorker.active = false;
             //_context.HealthcareWorker.Remove(healthcareWorker);
             await _context.SaveChangesAsync();
