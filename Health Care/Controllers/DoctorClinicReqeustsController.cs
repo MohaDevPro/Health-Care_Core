@@ -29,19 +29,67 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}/{isfrom}")]
-        public async Task<ActionResult<IEnumerable<User>>> GetDoctorClinicReqeustsByuserID(int id,bool isfrom)
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorClinicReqeustsByuserID(int id,bool isfrom)
         {
+
+            var users = new List<UserRequestVM>();
             if (isfrom)
             {
-                return await (from request in _context.DoctorClinicReqeusts
-                              join user in _context.User on request.ToID equals user.id
-                              where request.FromID == id && request.IsAccepted==false && request.IsCanceled==false 
-                              select user).ToListAsync();
+                users = await (from request in _context.DoctorClinicReqeusts
+                               join user in _context.User on request.ToID equals user.id
+                               where request.FromID == id
+                               select new UserRequestVM
+                               {
+                                   user = user,
+                                   request = request
+                               }).ToListAsync();
             }
-            return await (from request in _context.DoctorClinicReqeusts 
-                          join user in _context.User on request.FromID equals user.id 
-                          where request.ToID== id && request.IsAccepted == false && request.IsCanceled == false
-                          select user).ToListAsync();
+            else
+            {
+                users = await (from request in _context.DoctorClinicReqeusts
+                               join user in _context.User on request.FromID equals user.id
+                               where request.ToID == id
+                               select new UserRequestVM
+                               {
+                                   user = user,
+                                   request = request,
+                               }).ToListAsync();
+            }
+            var finalusers = new List<object>();
+            var doctors = _context.Doctor.ToList();
+            var clinics = _context.ExternalClinic.ToList();
+            for (int i = 0; i < users.Count; i++)
+            {
+                var clinicid = 0;
+                if (users[i].user.Roleid == 2)
+                {
+                    users[i].user.nameAR = clinics.FirstOrDefault(x => x.userId == users[i].user.id).Name;
+
+                }
+                else if (users[i].user.Roleid == 3)
+                {
+                    users[i].user.nameAR = clinics.FirstOrDefault(x => x.id == users[i].request.ClinicID).Name;
+                    clinicid = clinics.FirstOrDefault(x => x.id == users[i].request.ClinicID).id;
+                }
+                else if (users[i].user.Roleid == 5)
+                {
+                    users[i].user.nameAR = doctors.FirstOrDefault(x => x.Userid == users[i].user.id).name;
+                }
+                finalusers.Add(new
+                {
+                    users[i].user.id,
+                    users[i].user.nameAR,
+                    users[i].user.phoneNumber,
+                    users[i].user.address,
+                    users[i].request.IsAccepted,
+                    users[i].request.IsCanceled,
+                    users[i].request.CancelResoun,
+                    users[i].user.Roleid,
+                    clinicID = clinicid
+                }) ;
+            }
+            return finalusers;
+
         }
         // GET: api/DoctorClinicReqeusts/5
         [HttpGet("{id}")]
@@ -99,7 +147,33 @@ namespace Health_Care.Controllers
             var doctorClinicReqeust = _context.DoctorClinicReqeusts.FirstOrDefault(x => x.FromID == fromID && x.ToID == ToID);
 
             doctorClinicReqeust.IsCanceled = true;
+            doctorClinicReqeust.IsAccepted = false;
             doctorClinicReqeust.CancelResoun = Resoun;
+            var listid = new List<int>() { fromID, ToID };
+            int Clinicid = 0;
+            int Doctorid = 0;
+            foreach (var i in listid)
+            {
+                var tt = _context.User.FirstOrDefault(x => x.id == i);
+                if (tt.Roleid == 2)
+                {
+                    Clinicid = _context.ExternalClinic.FirstOrDefault(x => x.userId == tt.id).id;
+
+                }
+                else if (tt.Roleid == 5)
+                {
+                    Doctorid = _context.Doctor.FirstOrDefault(x => x.Userid == tt.id).id;
+                }
+                else
+                {
+                    Clinicid = _context.ExternalClinic.FirstOrDefault(x => x.id == doctorClinicReqeust.ClinicID).id;
+                }
+            }
+            var doctorclinic = _context.clinicDoctors.FirstOrDefault(x => x.Doctorid == Doctorid && x.Clinicid == Clinicid);
+            if (doctorclinic != null)
+            {
+                _context.Remove(doctorclinic);
+            }
             await _context.SaveChangesAsync();
 
             return NoContent();

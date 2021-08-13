@@ -93,6 +93,7 @@ namespace Health_Care.Controllers
                      user.phoneNumber,
                      user.regionId,
                      user.Roleid,
+                     clinicID=clinic.id,
                      //user.isActiveAccount,
                      //user.email,
                      //user.DeviceId,
@@ -253,6 +254,60 @@ namespace Health_Care.Controllers
             try
             {
                 user.isActiveAccount = true;
+                user.active = true;
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> InactiveUser(int id )
+        {
+
+            var user =_context.User.Where(u => u.id == id).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            if (user.Roleid == 1)
+            {
+                var worker = _context.HealthcareWorker.Where(x => x.userId == id).FirstOrDefault();
+                worker.active = false;
+            }
+            else if (user.Roleid == 2)
+            {
+                var clinic = _context.ExternalClinic.Where(x => x.userId == id).FirstOrDefault();
+                clinic.active = false;
+            }
+            else if (user.Roleid == 3)
+            {
+                var hospital = _context.Hospitals.Where(x => x.UserId == id).FirstOrDefault();
+                hospital.active = false;
+            }
+            else if (user.Roleid == 5)
+            {
+                var doctor = _context.Doctor.Where(x => x.Userid == id).FirstOrDefault();
+                doctor.active = false;
+            }
+
+            try
+            {
+                user.active = false;
+                user.isActiveAccount = false;
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

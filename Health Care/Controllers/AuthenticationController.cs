@@ -84,7 +84,8 @@ namespace Health_Care.Controllers
                     var doctor = _context.Doctor.Where(x => x.Userid == user2.id).FirstOrDefault();
                     SpecificId = doctor.id;
                 }
-                else SpecificId = 0;
+                else
+                    SpecificId = 0;
 
 
                 _context.SaveChanges();
@@ -171,6 +172,7 @@ namespace Health_Care.Controllers
                         userId = user.id,
                         active = false,
                         Name = user.nameAR,
+                        ReagionID = user.regionId,
                     };
                     _context.HealthcareWorker.Add(healthcareWorker);
                     _context.SaveChanges();
