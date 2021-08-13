@@ -122,7 +122,7 @@ namespace Health_Care.Controllers
             //    //                  }).ToList(),
             //};
 
-            return healthcareWorker;
+            return doctor;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
