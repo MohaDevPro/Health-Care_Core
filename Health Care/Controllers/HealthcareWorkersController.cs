@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Health_Care.Controllers
 {
@@ -88,8 +89,24 @@ namespace Health_Care.Controllers
         {
             return await _context.HealthcareWorker.Where(a => a.active == true).Include(h => h.HealthcareWorkerRegions).ToListAsync();
         }
-    
-        // GET: api/HealthcareWorkers/5
+        [HttpGet("{id}")]
+
+        public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
+        {
+            var worker = await  _context.HealthcareWorker.Where(a => a.userId==id).FirstOrDefaultAsync();
+
+            if (worker == null)
+            {
+                return NotFound();
+            }
+
+            return worker;
+        }
+        
+
+
+
+        // GET: api/HealthcareWorkers/5 GetHealthcareWorkerByUserId
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
         {
