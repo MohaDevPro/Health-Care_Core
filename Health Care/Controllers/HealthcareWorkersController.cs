@@ -105,26 +105,26 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            var doctor = new
-            {
-                id = id,
-                Name = healthcareWorker.Name,
-                Picture = healthcareWorker.Picture,
-                Description = healthcareWorker.Description,
-                Backgroundimage = healthcareWorker.BackGroundPicture,
-                healthcareWorker.active,
-                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                                  where healthcareWorkerServices.HealthcareWorkerid == id 
-                                  select new { 
-                                  id=service.id,
-                                  serviceName=service.serviceName,
-                                  servicePrice= healthcareWorkerServices.Price
+            //var doctor = new
+            //{
+            //    id = id,
+            //    Name = healthcareWorker.Name,
+            //    Picture = healthcareWorker.Picture,
+            //    Description = healthcareWorker.Description,
+            //    Backgroundimage = healthcareWorker.BackGroundPicture,
+            //    healthcareWorker.active,
+            //    Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+            //                      join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+            //                      where healthcareWorkerServices.HealthcareWorkerid == id 
+            //                      select new { 
+            //                      id=service.id,
+            //                      serviceName=service.serviceName,
+            //                      servicePrice= healthcareWorkerServices.Price
 
-                                  }).ToList(),
-            };
+            //                      }).ToList(),
+            //};
 
-            return doctor;
+            return healthcareWorker;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
