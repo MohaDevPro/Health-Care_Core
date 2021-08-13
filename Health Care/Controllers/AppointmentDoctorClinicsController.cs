@@ -216,7 +216,172 @@ namespace Health_Care.Controllers
             return _context.AppointmentDoctorClinic.Any(e => e.id == id);
         }
 
+        //[HttpGet("{clinicId}/{doctorId}")]
+        //public async Task<ActionResult<object>> GetProfitBasedOnClinicAndDoctor(int clinicId , int doctorId)
+        //{
 
-        
+        //    var userContractObj = await _context.UserContract.FirstOrDefaultAsync(x => x.userId == clinicId);
+            
+        //    DateTime contractstartdate = DateTime.ParseExact(userContractObj.contractStartDate, "d/M/yyyy", null);
+
+        //    var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic
+        //        .Where(x => x.clinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+
+        //    //var appointmentDoctorClinicObj = await (from contract in _context.UserContract
+        //    //                                        join appointmentdoctorclinic in _context.AppointmentDoctorClinic on contract.userId equals appointmentdoctorclinic.clinicId
+        //    //                                        where contract.userId == clinicId
+        //    //                                        //select new
+        //    //                                        //{
+        //    //                                        //    contract = contract,
+        //    //                                        //    appointmentdoctorclinic = appointmentdoctorclinic
+        //    //                                        //}
+        //    //                                        ).ToListAsync();
+        //    int profitSum=0;
+        //    foreach (var item in appointmentDoctorClinicObj)
+        //    {
+        //        profitSum += item.totalProfitFromRealAppointment;
+        //    };
+        //    int appointmentSum=0;
+        //    foreach (var item in appointmentDoctorClinicObj)
+        //    {
+        //        appointmentSum += item.numberOfRealAppointment;
+        //    };
+        //    var appointmentDoctorClinicObj2 = new
+        //    {
+        //        contractDate = userContractObj.contractStartDate,
+        //        profitUntilNow = profitSum,
+        //        numberOfRealAppointmentUntilNow = appointmentSum,
+        //        //contract = userContractObj,
+        //        //appointmentdoctorclinic = appointmentDoctorClinicObj
+        //    };
+
+        //    if (appointmentDoctorClinicObj2 == null) { return NotFound(); }
+        //    return appointmentDoctorClinicObj2;
+        //}
+
+        [HttpGet("{hospitalId}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<object>> GetProfitBasedOnClinicAndDoctor(int hospitalId, int clinicId,int doctorId)
+        {
+            var appointmentDoctorClinicObjs = await _context.AppointmentDoctorClinic.ToListAsync();
+            if (hospitalId != 0)
+            {
+                //userid = hospitalId --- id = clinicId
+                var clinicOnHospitalIDS = _context.ExternalClinic.Where(x => x.userId == hospitalId).Select(x => x.id).ToList();
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => clinicOnHospitalIDS.Contains(x.clinicId)).ToList();
+            }
+            if (clinicId != 0)
+            {
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => x.clinicId == clinicId).ToList();
+            }
+            if (doctorId != 0)
+            {
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => x.doctorId == doctorId).ToList();
+            }
+            //final user id
+            int final_userId = (hospitalId != 0) ? hospitalId : clinicId;
+
+            var userContractObj = await _context.UserContract.FirstOrDefaultAsync(x => x.userId == final_userId);
+            DateTime contractstartdate = DateTime.ParseExact(userContractObj.contractStartDate, "d/M/yyyy", null);
+
+            //var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic
+            //    .Where(x => x.clinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+
+            List<AppointmentDoctorClinic> newAppointmentDoctorClinicObj = new List<AppointmentDoctorClinic>();
+            foreach (var item in appointmentDoctorClinicObjs)
+            {
+                DateTime appointmentDoctorClinicObjDate = DateTime.ParseExact(item.appointmentDate, "d/M/yyyy", null);
+
+                if (appointmentDoctorClinicObjDate.CompareTo(contractstartdate)>=0)
+                    newAppointmentDoctorClinicObj.Add(item);
+            }
+
+            int profitSum = 0;
+            foreach (var item in newAppointmentDoctorClinicObj)
+            {
+                profitSum += item.totalProfitFromRealAppointment;
+            };
+            int appointmentSum = 0;
+            foreach (var item in newAppointmentDoctorClinicObj)
+            {
+                appointmentSum += item.numberOfRealAppointment;
+            };
+            var appointmentDoctorClinicObj2 = new
+            {
+                contractDate = userContractObj.contractStartDate,
+                profitUntilNow = profitSum,
+                numberOfRealAppointmentUntilNow = appointmentSum,
+                //contract = userContractObj,
+                //appointmentdoctorclinic = appointmentDoctorClinicObj
+            };
+
+            if (appointmentDoctorClinicObj2 == null) { return NotFound(); }
+            return appointmentDoctorClinicObj2;
+
+            ////return contractstartdate.ToShortDateString();
+            //if (newAppointmentDoctorClinicObj == null) { return Content("bbbb"); }
+            //return newAppointmentDoctorClinicObj;
+        }
+
+        [HttpGet("{hospitalId}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<object>> GetProfitBasedOnClinicAndDoctor2(int hospitalId, int clinicId, int doctorId)
+        {
+            var appointmentDoctorClinicObjs = await _context.AppointmentDoctorClinic.ToListAsync();
+            
+            if (hospitalId != 0)
+            {
+                //userid = hospitalId --- id = clinicId
+                var clinicOnHospitalIDS = _context.ExternalClinic.Where(x => x.userId == hospitalId).Select(x => x.id).ToList();
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => clinicOnHospitalIDS.Contains(x.clinicId)).ToList();
+            }
+            if (clinicId != 0)
+            {
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => x.clinicId == clinicId).ToList();
+            }
+            if (doctorId != 0)
+            {
+                appointmentDoctorClinicObjs = appointmentDoctorClinicObjs.Where(x => x.doctorId == doctorId).ToList();
+            }
+
+            var userContractObj = await _context.UserContract.FirstOrDefaultAsync(x => x.userId == clinicId);
+            DateTime contractstartdate = DateTime.ParseExact(userContractObj.contractStartDate, "d/M/yyyy", null);
+
+            //var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic
+            //    .Where(x => x.clinicId == clinicId && x.doctorId == doctorId).ToListAsync();
+
+            List<AppointmentDoctorClinic> newAppointmentDoctorClinicObj = new List<AppointmentDoctorClinic>();
+            foreach (var item in appointmentDoctorClinicObjs)
+            {
+                DateTime appointmentDoctorClinicObjDate = DateTime.ParseExact(item.appointmentDate, "d/M/yyyy", null);
+
+                if (appointmentDoctorClinicObjDate.CompareTo(contractstartdate) >= 0)
+                    newAppointmentDoctorClinicObj.Add(item);
+            }
+
+            int profitSum = 0;
+            foreach (var item in newAppointmentDoctorClinicObj)
+            {
+                profitSum += item.totalProfitFromRealAppointment;
+            };
+            int appointmentSum = 0;
+            foreach (var item in newAppointmentDoctorClinicObj)
+            {
+                appointmentSum += item.numberOfRealAppointment;
+            };
+            var appointmentDoctorClinicObj2 = new
+            {
+                contractDate = userContractObj.contractStartDate,
+                profitUntilNow = profitSum,
+                numberOfRealAppointmentUntilNow = appointmentSum,
+                //contract = userContractObj,
+                //appointmentdoctorclinic = appointmentDoctorClinicObj
+            };
+
+            if (appointmentDoctorClinicObj2 == null) { return NotFound(); }
+            return appointmentDoctorClinicObj2;
+
+            ////return contractstartdate.ToShortDateString();
+            //if (newAppointmentDoctorClinicObj == null) { return Content("bbbb"); }
+            //return newAppointmentDoctorClinicObj;
+        }
     }
 }
