@@ -427,8 +427,9 @@ namespace Health_Care.Controllers
                 profitSumforAppAdmin += item.totalProfitFromRealAppointment;
             };
 
-            int profitSumforuser = profitSumforAppAdmin*100/ medicalExaminationPercentage;
-            
+            int totalAmount = profitSumforAppAdmin * 100 / medicalExaminationPercentage;
+            int profitSumforuser = totalAmount - profitSumforAppAdmin;
+
 
             int appointmentSum = 0;
             foreach (var item in newAppointmentDoctorClinicObj)
@@ -440,6 +441,7 @@ namespace Health_Care.Controllers
                 contractDate = userContractObj.contractStartDate,
                 profitforAppUntilNow = profitSumforAppAdmin,
                 profitforUserUntilNow = profitSumforuser,
+                TotalAmountUntilNow = totalAmount,
                 numberOfRealAppointmentUntilNow = appointmentSum,
                 //contract = userContractObj,
                 //appointmentdoctorclinic = appointmentDoctorClinicObj
