@@ -79,11 +79,13 @@ namespace Health_Care.Controllers
                     var patient = _context.Patient.Where(x => x.userId == user2.id).FirstOrDefault();
                     SpecificId = patient.id;
                 }
-                else
+                else if (user2.Roleid == 5)
                 {
                     var doctor = _context.Doctor.Where(x => x.Userid == user2.id).FirstOrDefault();
                     SpecificId = doctor.id;
                 }
+                else
+                    SpecificId = 0;
 
 
                 _context.SaveChanges();
