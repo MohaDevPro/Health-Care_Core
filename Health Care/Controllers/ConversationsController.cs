@@ -53,8 +53,8 @@ namespace Health_Care.Controllers
         {
             _context.Conversation.Add(conversation);
             await _context.SaveChangesAsync();
-            var FromUser = _context.User.Where(u => u.id == conversation.userIdFrom).FirstOrDefault();
             string ToUserFCMToken = _context.FCMTokens.Where(t => t.UserID == conversation.userIdTo).FirstOrDefault().Token;
+            User FromUser = _context.User.Where(u => u.id == conversation.userIdFrom).FirstOrDefault();
 
             var message = new Message()
             {
