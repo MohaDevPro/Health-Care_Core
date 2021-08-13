@@ -17,17 +17,17 @@ namespace Health_Care.Controllers
     {
         //To Get 5 Days
         [HttpGet("{month}/{day}/{year}")]
-        public List<String> GetDatesBetween(string day, string month, string year)
+        public List<String> GetDatesBetween(string month, string day, string year)
         {
             string startDate = month + "/" + day + "/" + year  ;
-            DateTime sd = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), Convert.ToInt32(day));
+            DateTime sd = DateTime.ParseExact(startDate, "M/d/yyyy", null);
             List<DateTime> allDates = new List<DateTime>();
             List<String> allDatesString = new List<String>();
 
             for (DateTime date = sd ; date <= sd.AddDays(5) ; date = date.AddDays(1))
             {   
                 allDates.Add(date.Date);
-                var x = date.Date.Day + "/" + date.Date.Month + "/" + date.Date.Year ;
+                var x = date.Date.Month + "/" + date.Date.Day + "/" + date.Date.Year ;
                 allDatesString.Add(x);
             }
 
@@ -62,29 +62,39 @@ namespace Health_Care.Controllers
             }
             return appointmentDoctorClinic;
         }
+        //remove
+        //[HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        //public async Task<ActionResult<List<DateAppointmentClinicDoctorViewModel>>> GetAppointmentDoctorClinicBasedOnDateAndClinic(string month, string day, string year, int clinicId,int doctorId)
+        //{
+        //    //List<> = List<>();
+        //    List<String> DatesListFor5Days = GetDatesBetween(month, day, year);
+        //    List<DateAppointmentClinicDoctorViewModel> li = new List<DateAppointmentClinicDoctorViewModel>();
 
-        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
-        public async Task<ActionResult<List<DateAppointmentClinicDoctorViewModel>>> GetAppointmentDoctorClinicBasedOnDateAndClinic(string month, string day, string year, int clinicId,int doctorId)
+        //    for(var x = 0; x< DatesListFor5Days.Count; x++)
+        //    {
+        //        var splittedDate = DatesListFor5Days[x].Split('/');
+        //        string searchDate = splittedDate[0] + "/" + splittedDate[1] + "/" + splittedDate[2];
+
+        //        var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
+
+        //        li.Add(new DateAppointmentClinicDoctorViewModel(){ date = searchDate , appointmentDoctorClinicObj = appointmentDoctorClinicObj });
+        //    }
+
+            
+            
+        //    if (li == null) { return NotFound(); }
+        //    return li;
+        //}
+        //new one
+        [HttpGet("{day}/{month}/{year}/{clinicId}/{doctorId}")]
+        public async Task<ActionResult<AppointmentDoctorClinic>> GetAppointmentDoctorClinicBasedOnDateAndClinic(string day, string month, string year, int clinicId, int doctorId)
         {
-            //List<> = List<>();
-            List<String> DatesListFor5Days = GetDatesBetween(day,month,  year);
-            List<DateAppointmentClinicDoctorViewModel> li = new List<DateAppointmentClinicDoctorViewModel>();
-
-            for(var x = 0; x< DatesListFor5Days.Count; x++)
-            {
-                var splittedDate = DatesListFor5Days[x].Split('/');
-                string searchDate = splittedDate[0] + "/" + splittedDate[1] + "/" + splittedDate[2];
-
-                var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
-
-                li.Add(new DateAppointmentClinicDoctorViewModel(){ date = searchDate , appointmentDoctorClinicObj = appointmentDoctorClinicObj });
-            }
-
-            
-            
-            if (li == null) { return NotFound(); }
-            return li;
+            string searchDate = day + "/" + month + "/" + year;
+            var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
+            if (appointmentDoctorClinicObj == null) { return NotFound(); }
+            return appointmentDoctorClinicObj;
         }
+
         [HttpGet("{hospitalid}/{clinicid}/{doctorid}/{startdate}/{finishdate}")]
         public async Task<ActionResult<IEnumerable<object>>> GetOrderByQuery(int hospitalid, int clinicid, int doctorid, string startdate, string finishdate)
         {
