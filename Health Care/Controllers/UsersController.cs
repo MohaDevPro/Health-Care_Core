@@ -93,6 +93,7 @@ namespace Health_Care.Controllers
                      user.phoneNumber,
                      user.regionId,
                      user.Roleid,
+                     clinicID=clinic.id,
                      //user.isActiveAccount,
                      //user.email,
                      //user.DeviceId,
