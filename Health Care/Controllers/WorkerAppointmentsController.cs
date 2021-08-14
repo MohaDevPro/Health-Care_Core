@@ -105,7 +105,7 @@ namespace Health_Care.Controllers
             //List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
 
             //string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
-            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false)
+            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false && x.cancelledByHealthWorker == false)
                 .OrderBy(x => x.appointmentDate).ToListAsync();
 
             List<Service> servicesList = new List<Service>();
