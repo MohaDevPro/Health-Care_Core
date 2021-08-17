@@ -98,6 +98,39 @@ namespace Health_Care.Controllers
             
             return result;
         }
+
+        [HttpGet("{workerId}")]
+        public async Task<ActionResult<object>> GetWorkerCofirmedAppointmentBasedOnWorkerId(int workerId)
+        {
+            //List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            //string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
+            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false && x.cancelledByHealthWorker == false)
+                .OrderBy(x => x.appointmentDate).ToListAsync();
+
+            List<Service> servicesList = new List<Service>();
+            List<Service> servicesListBasedOnAppointmentList = await _context.Service.ToListAsync();
+            
+            List<User> patienList = new List<User>();
+            List<User> patientInfo = await _context.User.ToListAsync();
+
+            foreach (var item in ConfirmedAppointmentbyworker)
+            {
+                servicesList.Add(servicesListBasedOnAppointmentList.FirstOrDefault(e => e.id == item.serviceId));
+                patienList.Add(patientInfo.FirstOrDefault(e => e.id == item.patientId));
+            }
+
+            var result = new
+            {
+                ConfirmedAppointmentbyworker = ConfirmedAppointmentbyworker,
+                servicesListBasedOnAppointmentList = servicesList,
+                patientInfo = patienList,
+            };
+            if (result == null) { return NotFound(); }
+
+            return result;
+        }
+
         [HttpGet("{Month}/{HealthWorkerID}")]
         public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
@@ -218,6 +251,14 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
+            
+            if (workerAppointment.ConfirmHealthWorkerCome_ByHimself)
+            {
+                AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
+                appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
+                _context.Entry(appointmentWorker).State = EntityState.Modified;
+            }
+
             workerAppointment.reservedAmountUntilConfirm = true;
             Patient patient = _context.Patient.Where(x=>x.userId == workerAppointment.patientId).FirstOrDefault();
             //patient.Balance -= workerAppointment.servicePrice;
@@ -251,7 +292,15 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             workerAppointment.ConfirmHealthWorkerCome_ByHimself = true;
+
+            if (workerAppointment.ConfirmHealthWorkerCome_ByPatient)
+            {
+                AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
+                appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
+                _context.Entry(appointmentWorker).State = EntityState.Modified;
+            }
             _context.Entry(workerAppointment).State = EntityState.Modified;
+            
 
             try
             {

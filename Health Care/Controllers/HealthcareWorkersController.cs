@@ -111,17 +111,16 @@ namespace Health_Care.Controllers
                 Name = healthcareWorker.Name,
                 Picture = healthcareWorker.Picture,
                 Description = healthcareWorker.Description,
-                Backgroundimage = healthcareWorker.BackGroundPicture,
+                BackgroundImage = healthcareWorker.BackGroundPicture,
                 healthcareWorker.active,
-                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
-                                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
-                                  where healthcareWorkerServices.HealthcareWorkerid == id 
-                                  select new { 
-                                  id=service.id,
-                                  serviceName=service.serviceName,
-                                  servicePrice= healthcareWorkerServices.Price
-
-                                  }).ToList(),
+                //Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                //                  join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                //                  where healthcareWorkerServices.HealthcareWorkerid == id 
+                //                  select new { 
+                //                  id=service.id,
+                //                  serviceName=service.serviceName,
+                //                  servicePrice= healthcareWorkerServices.Price
+                //                  }).ToList(),
             };
 
             return healthcareWorker;
