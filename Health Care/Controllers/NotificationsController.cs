@@ -230,9 +230,9 @@ namespace Health_Care.Controllers
                     return Ok();
                 }
                 var user = _context.User.Where(u => u.DeviceId == token.DeviceID).ToList();
-                if (user != null)
+                if (user.Count != 0)
                 {
-                    token.UserID = user[user.Count-1].id;
+                    token.UserID = user.Last().id;
                 }
                 Token.Token = token.Token;
                 Token.DeviceID = token.DeviceID;
