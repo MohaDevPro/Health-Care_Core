@@ -25,7 +25,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            return await _context.User.Where(s => s.active == true).ToListAsync();
+            return await _context.User.Where(s => s.active == true && s.Roleid !=6).ToListAsync();
         }
 
         // GET: api/Users/5
@@ -51,7 +51,7 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetNotActive()
         {
-            return await _context.User.Where(a => a.isActiveAccount == false).ToListAsync();
+            return await _context.User.Where(a => a.isActiveAccount == false && a.Roleid != 6).ToListAsync();
         }
 
         [HttpGet]
