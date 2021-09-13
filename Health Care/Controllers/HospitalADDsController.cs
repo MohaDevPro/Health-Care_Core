@@ -32,6 +32,16 @@ namespace Health_Care.Controllers
         {
             return await _context.HospitalADDs.ToListAsync();
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<HospitalADDs>> IncreaseCounterOfseen(int id)
+        {
+            var hospitalADDs = await _context.HospitalADDs.FindAsync(id);
+            hospitalADDs.NumberOfSeen += 1;
+            _context.Entry(hospitalADDs).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return hospitalADDs;
+
+        }
 
         // GET: api/HospitalADDs/5
         [HttpGet("{id}")]
