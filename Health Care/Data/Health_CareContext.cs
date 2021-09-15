@@ -94,6 +94,10 @@ namespace Health_Care.Data
 
         public DbSet<Health_Care.Models.DoctorClinicReqeust> DoctorClinicReqeusts { get; set; }
 
+        public DbSet<Health_Care.Models.AppointmentWorker> AppointmentWorker { get; set; }
+
+        public DbSet<Health_Care.Models.HospitalADDs> HospitalADDs { get; set; }
+
 
 
 
