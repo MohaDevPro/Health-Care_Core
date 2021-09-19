@@ -20,6 +20,8 @@ namespace Health_Care.Models
         public string shiftAMPM { get; set; }
         public string RealOpenTime { get; set; }
         public string RealClossTime { get; set; }
+        public bool AM { get; set; }
+        public bool PM { get; set; }
         public int clinicid { get; set; }
         public int userId { get; set; }
     }
