@@ -145,7 +145,7 @@ namespace Health_Care.Controllers
             return Ok();
         }
 
-        [AllowAnonymous]
+        [Authorize]
         [HttpPost("{userIDTo}")]
         public async Task<ActionResult> SendNotificationsToUser( int userIDTo, Notifications notifications)
         {

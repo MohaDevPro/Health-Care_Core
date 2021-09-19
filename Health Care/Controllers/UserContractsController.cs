@@ -119,6 +119,17 @@ namespace Health_Care.Controllers
             }
             var splitEndDate = userContract.contractEndDate.Split('/');
             var enddate = new DateTime(Convert.ToInt32(splitEndDate[0]), Convert.ToInt32(splitEndDate[1]), Convert.ToInt32(splitEndDate[2]));
+            var n = Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd")).AddDays(14);
+            if (enddate == n)
+            {
+                NotificationsController notificationsController = new NotificationsController(_context);
+                await notificationsController.SendNotificationsToUser(id,new Notifications() {
+                title = "فترة العقد قاربت على الإنتهاء",
+                body = "فترة العقد قاربت على الإنتهاء يرجى الموافقة على الشروط العقد الجديد التي ستظهر لك بعد إسبوعين",
+                isRepeated = false,
+                
+                });
+            }
             if ( enddate< Convert.ToDateTime(DateTime.Now.ToString("yyyy/MM/dd")))
             {
                 return false;
