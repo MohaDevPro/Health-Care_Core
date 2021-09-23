@@ -95,6 +95,7 @@ namespace Health_Care.Controllers
             //_context.Notifications.Add(notifications);
             // Create a list containing up to 500 registration tokens.
             // These registration tokens come from the client FCM SDKs.
+
             List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
             var y = registrationTokens.GetRange(0, 0 + 500 < registrationTokens.Count ? 0 + 500 : registrationTokens.Count);
             for (int i = 0; i < registrationTokens.Count; i += 500)
@@ -109,11 +110,10 @@ namespace Health_Care.Controllers
                     Android = new AndroidConfig()
                     {
                         Priority = Priority.High,
-
                         //TimeToLive = TimeSpan.FromDays(7),
                         Notification = new AndroidNotification()
                         {
-                            Icon = "stock_ticker_update",
+                            Icon = "ic_launcher",
                             Color = "#f45342",
                         },
                     },
@@ -122,7 +122,7 @@ namespace Health_Care.Controllers
                         Aps = new Aps()
                         {
                             Alert = new ApsAlert() { Body = notifications.body, Title = notifications.title, },
-                            Sound = "",
+                          CriticalSound =new CriticalSound(){ Critical = true,Volume=1.0},
                             ContentAvailable = true,
                             Badge = 42,
                         },
