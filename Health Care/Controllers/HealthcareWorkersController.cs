@@ -244,6 +244,7 @@ namespace Health_Care.Controllers
                                      id = HealthWorker.id,
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
+                                     BackgroundImage = HealthWorker.BackGroundPicture,
                                      userId = HealthWorker.userId,
                                      services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
                                                  where workerService.HealthcareWorkerid == HealthWorker.id select service).ToList(),
