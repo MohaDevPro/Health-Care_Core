@@ -80,7 +80,20 @@ namespace Health_Care
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
-
+            
+            app.Use(async (context, next) =>
+            {
+                // Content-Security-Policy is an effective measure to protect your site from XSS attacks
+                context.Response.Headers.Add(
+                    "Content-Security-Policy",
+                    "script-src 'self'; " +
+                    "style-src 'self'; " +
+                    "img-src 'self'");
+                // X-Frame-Options is an effective measure to protect your site from clickjacking attacks
+                context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                await next();
+            });
+            
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

@@ -89,7 +89,7 @@ namespace Health_Care.Controllers
                      
                      user.id,
                      nameAR= clinic.Name,
-                     user.nameEN,
+                     //user.nameEN,
                      user.phoneNumber,
                      user.regionId,
                      user.Roleid,
@@ -114,7 +114,7 @@ namespace Health_Care.Controllers
                 {
                     user.id,
                     nameAR=doctor.name,
-                    user.nameEN,
+                    //user.nameEN,
                     user.phoneNumber,
                     user.regionId,
                     user.Roleid,

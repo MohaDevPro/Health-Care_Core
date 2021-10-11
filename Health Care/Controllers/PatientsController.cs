@@ -80,7 +80,10 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-
+            patient.active = true;
+            var user = _context.User.Where(u=>u.id == patient.userId).FirstOrDefault();
+            user.active = true;
+            user.isActiveAccount = true;
             _context.Entry(patient).State = EntityState.Modified;
 
             try
