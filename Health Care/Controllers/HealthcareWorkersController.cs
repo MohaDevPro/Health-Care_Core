@@ -38,13 +38,7 @@ namespace Health_Care.Controllers
                               Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
                                           join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
                                           where healthcareWorkerServices.HealthcareWorkerid == HealthWorker.id
-                                          select new
-                                          {
-                                              id = service.id,
-                                              serviceName = service.serviceName,
-                                              servicePrice = healthcareWorkerServices.Price
-
-                                          }).ToList(),
+                                          select service).ToList(),
                           }
                           ).ToListAsync();
         }
