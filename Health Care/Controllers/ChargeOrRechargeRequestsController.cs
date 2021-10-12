@@ -83,7 +83,10 @@ namespace Health_Care.Controllers
             {
                 return false;
             }
-
+            else if (chargeOrRechargeRequest != null)
+            {
+                return chargeOrRechargeRequest.ConfirmToAddBalance;
+            }
             return true;
         }
 

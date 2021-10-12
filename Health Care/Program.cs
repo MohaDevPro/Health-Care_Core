@@ -20,7 +20,9 @@ namespace Health_Care
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                    //.UseKestrel(c => c.AddServerHeader = false) // to diable server Header 
+                    .UseStartup<Startup>();
                 });
     }
 }
