@@ -41,14 +41,13 @@ namespace Health_Care.Controllers
             {
                 if (service.active == true) 
                 {
-                    var price = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id).Price : 0;
+                    //var price = service.servicePrice;
                     var oldservice = choosingIDs.Contains(service.id) ? choosingServices.HealthcareWorkerServices.First(x => x.serviceId == service.id) : new HealthcareWorkerService();
-
                     var services = new
                     {
                         service.id,
                         service.serviceName,
-                        servicePrice = price,
+                        servicePrice = service.servicePrice,
                         isSelected = choosingIDs.Contains(service.id),
                         oldchoosing = oldservice
                     };
