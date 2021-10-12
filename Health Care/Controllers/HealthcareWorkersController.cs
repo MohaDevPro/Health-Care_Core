@@ -42,7 +42,7 @@ namespace Health_Care.Controllers
                                           {
                                               id = service.id,
                                               serviceName = service.serviceName,
-                                              servicePrice = healthcareWorkerServices.Price
+                                              servicePrice = service.servicePrice,
 
                                           }).ToList(),
                           }
@@ -316,11 +316,9 @@ namespace Health_Care.Controllers
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
-            var healthcareWorker = await _context.HealthcareWorker.Where(x => x.userId == healthcareWorkerservices[0].HealthcareWorkerid).Include(x=>x.HealthcareWorkerServices)
+            var healthcareWorker = await _context.HealthcareWorker.Where(x => x.id == healthcareWorkerservices[0].HealthcareWorkerid).Include(x=>x.HealthcareWorkerServices)
                 .FirstOrDefaultAsync();
-            var d = 0;
             healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
-            var e = 5;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
