@@ -72,7 +72,7 @@ namespace Health_Care.Controllers
                     {
                         service.id,
                         service.serviceName,
-                        servicePrice = 0,
+                        service.servicePrice,
                         isSelected = false,
                         oldchoosing = new HealthcareWorkerService()
                     };

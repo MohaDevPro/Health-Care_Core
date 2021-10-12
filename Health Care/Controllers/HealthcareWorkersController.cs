@@ -120,6 +120,31 @@ namespace Health_Care.Controllers
             return healthcareWorker;
         }
         [HttpGet("{id}")]
+        public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
+        {
+            var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
+            if (healthcareWorker == null)
+            {
+                return NotFound();
+            }
+            var doctor = new
+            {
+                id = id,
+                Name = healthcareWorker.Name,
+                Picture = healthcareWorker.Picture,
+                Description = healthcareWorker.Description,
+                BackgroundImage = healthcareWorker.BackGroundPicture,
+                healthcareWorker.active,
+                Services = (from healthcareWorkerServices in _context.HealthcareWorkerService
+                            join service in _context.Service on healthcareWorkerServices.serviceId equals service.id
+                            where healthcareWorkerServices.HealthcareWorkerid == id
+                            select service).ToList(),
+            };
+
+            return doctor;
+        }
+
+        [HttpGet("{id}")]
         public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
