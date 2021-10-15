@@ -140,7 +140,6 @@ namespace Health_Care.Controllers
                     i.Name,
                     i.Picture,
                     i.regionId,
-                    
                     i.userId,
                     i.specialitylist,
                     isFavorite = flag ? true : false,

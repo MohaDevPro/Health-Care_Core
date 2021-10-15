@@ -257,12 +257,14 @@ namespace Health_Care.Controllers
         {
             var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x=>x.active == true)  on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
             var WorkerH = await (from HealthWorker in _context.HealthcareWorker
+                                 join user in _context.User on HealthWorker.userId equals user.id
                                  where HealthWorker.active == true
                                  select new
                                  {
                                      id = HealthWorker.id,
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
+                                     user.regionId,
                                      BackgroundImage = HealthWorker.BackGroundPicture,
                                      userId = HealthWorker.userId,
                                      services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
@@ -285,6 +287,7 @@ namespace Health_Care.Controllers
                     i.Name,
                     i.Picture,
                     i.Description,
+                    i.regionId,
                     i.userId,
                     i.services,
                     isFavorite = flag ? true : false,
