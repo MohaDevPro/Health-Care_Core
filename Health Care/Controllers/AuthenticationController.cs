@@ -39,9 +39,10 @@ namespace Health_Care.Controllers
         public async Task<ActionResult> Login(User user)
         {
             User user2 = _context.User.Include(u => u.RefreshTokens).Where(x => x.phoneNumber == user.phoneNumber && x.Password == user.Password && x.active == true).FirstOrDefault();
-            user2.DeviceId = user.DeviceId;
+            
             if (user2 != null)
             {
+                user2.DeviceId = user.DeviceId;
                 RefreshToken refreshToken = user2.RefreshTokens;
                 if (refreshToken.ExpiryDate < DateTime.UtcNow)
                 {
