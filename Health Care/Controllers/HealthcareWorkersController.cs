@@ -252,10 +252,11 @@ namespace Health_Care.Controllers
         }
 
 
-        [HttpGet("{patientId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId)
+        [HttpGet("{patientId}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize)
         {
-            var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x=>x.active == true)  on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
+
+            var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x=>x.active == true)  on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).Skip(pageKey).Take(pageSize).ToListAsync();
             var WorkerH = await (from HealthWorker in _context.HealthcareWorker
                                  join user in _context.User on HealthWorker.userId equals user.id
                                  where HealthWorker.active == true
@@ -272,7 +273,7 @@ namespace Health_Care.Controllers
                                                  where workerService.HealthcareWorkerid == HealthWorker.id select service).ToList(),
                                      Description = HealthWorker.Description
                                  }
-                          ).ToListAsync();
+                          ).Skip(pageKey).Take(pageSize).ToListAsync();
             var listFinalResult = new List<object>();
             bool flag = false;
             foreach (var i in WorkerH)
