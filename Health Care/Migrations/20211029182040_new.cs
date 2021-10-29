@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Health_Care.Migrations
 {
-    public partial class news : Migration
+    public partial class @new : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -838,9 +838,7 @@ namespace Health_Care.Migrations
                     id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     HealthcareWorkerid = table.Column<int>(nullable: false),
-                    userId = table.Column<int>(nullable: false),
-                    serviceId = table.Column<int>(nullable: false),
-                    Price = table.Column<int>(nullable: false)
+                    serviceId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
