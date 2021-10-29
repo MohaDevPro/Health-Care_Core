@@ -265,6 +265,7 @@ namespace Health_Care.Controllers
                                      Name = HealthWorker.Name,
                                      Picture = HealthWorker.Picture,
                                      user.regionId,
+                                     regionworking=_context.HealthcareWorkerRegions.Where(x=>x.HealthcareWorkerid==HealthWorker.id).ToList(),
                                      BackgroundImage = HealthWorker.BackGroundPicture,
                                      userId = HealthWorker.userId,
                                      services = (from workerService in _context.HealthcareWorkerService join service in _context.Service on workerService.serviceId equals service.id
@@ -288,6 +289,7 @@ namespace Health_Care.Controllers
                     i.Picture,
                     i.Description,
                     i.regionId,
+                    i.regionworking,
                     i.userId,
                     i.services,
                     isFavorite = flag ? true : false,
