@@ -128,7 +128,7 @@ namespace Health_Care.Controllers
             {
                 doctors = doctors.Where(x => x.regionId.Contains(regionId)).ToList();
             }
-            else if (specialityId != 0)
+            if (specialityId != 0)
             {
                 doctors = doctors.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
             }

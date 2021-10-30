@@ -33,10 +33,12 @@ namespace Health_Care.Controllers
             return await _context.ExternalClinic.Where(x => x.active == true).ToListAsync();
         }
         
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic()
+        [HttpGet("{regionId}/{specialityId}/{pageKey}/{pageSize}/{byString}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinic(int regionId, int specialityId, int pageKey, int pageSize, string byString)
         {
-            return await (from clinic in _context.ExternalClinic join user in _context.User on clinic.userId equals user.id
+            byString = byString.Replace("empty", "");
+
+            var clinics= await (from clinic in _context.ExternalClinic join user in _context.User on clinic.userId equals user.id
                           where clinic.active == true
                           select new
                           {
@@ -51,7 +53,16 @@ namespace Health_Care.Controllers
                                                 select specialit).ToList(),
                           }
 
-                          ).ToListAsync();
+                          ).Where(x=>x.Name.Contains(byString)).ToListAsync();
+            if (regionId != 0)
+            {
+                clinics = clinics.Where(x => x.regionId == regionId).ToList();
+            }
+            if (specialityId != 0)
+            {
+                clinics = clinics.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
+            }
+            return clinics.Skip(pageKey).Take(pageSize).ToList();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicForAdmin()

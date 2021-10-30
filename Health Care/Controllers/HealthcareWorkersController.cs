@@ -252,7 +252,7 @@ namespace Health_Care.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{patientId}/{regionId}/{serviceId}/{pageKey}/{pageSize}/{byString}")]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize,int regionId,int serviceId,string Bystring)
         {
             var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x => x.active == true) on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
@@ -285,10 +285,9 @@ namespace Health_Care.Controllers
             {
                 WorkerH = WorkerH.Where(x => x.regionworking.Exists(c => c.RegionID == regionId));
             }
-             var  lastWorkerH =await WorkerH.Skip(pageKey).Take(pageSize).ToListAsync();
             var listFinalResult = new List<object>();
             bool flag = false;
-            foreach (var i in lastWorkerH)
+            foreach (var i in WorkerH)
             {
                 foreach (var j in WorkerWithFavorite)
                 {
@@ -310,7 +309,7 @@ namespace Health_Care.Controllers
                 listFinalResult.Add(docrotwithfavorite);
                 flag = false;
             }
-            return listFinalResult;
+            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
 
         }
 

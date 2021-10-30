@@ -28,10 +28,11 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/HospitalClinics
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic()
+        [HttpGet("{regionId}/{departId}/{pageKey}/{pageSize}/{byString}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic(int regionId, int departId, int pageKey, int pageSize, string byString)
         {
-            return await (from hospital in _context.Hospitals
+            byString = byString.Replace("empty", "");
+            var hos= await (from hospital in _context.Hospitals
                           join user in _context.User on hospital.UserId equals user.id 
                           
                           where hospital.active == true
@@ -49,7 +50,16 @@ namespace Health_Care.Controllers
                               Description = hospital.Description
                           }
 
-                          ).ToListAsync();
+                          ).Where(x=>x.Name.Contains(byString)).ToListAsync();
+            if (regionId != 0)
+            {
+                hos = hos.Where(x => x.regionId == regionId).ToList();
+            }
+            if (departId != 0)
+            {
+                hos = hos.Where(x => x.departmentsList.Exists(x => x.id == departId)).ToList();
+            }
+            return hos.Skip(pageKey).Take(pageSize).ToList();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinicForAdmin()
