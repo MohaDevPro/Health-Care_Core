@@ -100,15 +100,13 @@ namespace Health_Care.Controllers
         }
 
 
-        [HttpGet("{patientId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId)
+        [HttpGet("{patientId}/{regionId}/{specialityId}/{pageKey}/{pageSize}/{byString}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId,int regionId,int specialityId,int pageKey,int pageSize,string byString)
         {
+            byString = byString.Replace("empty","");
             var favorite = (from PatientFavorite in _context.Favorite
                             where PatientFavorite.PatientId == patientId
                             select PatientFavorite).ToList();
-
-
-
             var doctors = await (from doctor in _context.Doctor
                                  join user in _context.User on doctor.Userid equals user.id
                                  where doctor.active == true
@@ -117,14 +115,25 @@ namespace Health_Care.Controllers
                                      id = doctor.id,
                                      Name = doctor.name,
                                      Picture = doctor.Picture,
-                                     user.regionId,
+                                     regionId=(from dr in _context.Doctor 
+                                               join cldr in _context.clinicDoctors on dr.id equals cldr.Doctorid
+                                               join cl in _context.ExternalClinic on cldr.Clinicid equals cl.id
+                                               join usr in _context.User on cl.userId equals usr.id where dr.id== doctor.id select usr.regionId).ToList(),
                                      userId = doctor.Userid,
                                      specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                                        join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                                        where specialitydoctor.Doctorid == doctor.id && specialitydoctor.Roleid == 0
                                                        select specialit).ToList(),
                                  }
-                          ).ToListAsync();
+                          ).Where(x=>x.Name.Contains(byString)).ToListAsync();
+            if (regionId != 0)
+            {
+                doctors = doctors.Where(x => x.regionId.Contains(regionId)).ToList();
+            }
+            if (specialityId != 0)
+            {
+                doctors = doctors.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
+            }
             var listFinalResult = new List<object>();
             bool flag = false;
             foreach (var i in doctors)
@@ -149,7 +158,7 @@ namespace Health_Care.Controllers
                 listFinalResult.Add(docrotwithfavorite);
                 flag = false;
             }
-            return listFinalResult;
+            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
 
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]

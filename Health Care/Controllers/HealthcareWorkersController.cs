@@ -252,203 +252,65 @@ namespace Health_Care.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{patientId}/{regionId}/{serviceId}/{pageKey}/{pageSize}/{byString}")]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize,int regionId,int serviceId,string Bystring)
         {
             var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x => x.active == true) on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
             Bystring = Bystring.Replace("empty", "");
-            if (regionId == 0 && serviceId == 0)
+            var WorkerH = (from HealthWorker in _context.HealthcareWorker
+                                 join user in _context.User on HealthWorker.userId equals user.id
+                                 where HealthWorker.active == true
+                                 select new
+                                 {
+                                     id = HealthWorker.id,
+                                     Name = HealthWorker.Name,
+                                     Picture = HealthWorker.Picture,
+                                     user.regionId,
+                                     regionworking = _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == HealthWorker.id).ToList(),
+                                     BackgroundImage = HealthWorker.BackGroundPicture,
+                                     userId = HealthWorker.userId,
+                                     services = (from workerService in _context.HealthcareWorkerService
+                                                 join service in _context.Service on workerService.serviceId equals service.id
+                                                 where workerService.HealthcareWorkerid == HealthWorker.id
+                                                 select service).ToList(),
+                                     Description = HealthWorker.Description
+                                 }
+             ).Where(x => x.Name.Contains(Bystring));
+
+             if (serviceId != 0)
             {
-                var WorkerH = await (from HealthWorker in _context.HealthcareWorker
-                                     join user in _context.User on HealthWorker.userId equals user.id
-                                     where HealthWorker.active == true
-                                     select new
-                                     {
-                                         id = HealthWorker.id,
-                                         Name = HealthWorker.Name,
-                                         Picture = HealthWorker.Picture,
-                                         user.regionId,
-                                         regionworking = _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == HealthWorker.id).ToList(),
-                                         BackgroundImage = HealthWorker.BackGroundPicture,
-                                         userId = HealthWorker.userId,
-                                         services = (from workerService in _context.HealthcareWorkerService
-                                                     join service in _context.Service on workerService.serviceId equals service.id
-                                                     where workerService.HealthcareWorkerid == HealthWorker.id
-                                                     select service).ToList(),
-                                         Description = HealthWorker.Description
-                                     }
-                          ).Where(x=>x.Name.Contains(Bystring)).Skip(pageKey).Take(pageSize).ToListAsync();
-                var listFinalResult = new List<object>();
-                bool flag = false;
-                foreach (var i in WorkerH)
-                {
-                    foreach (var j in WorkerWithFavorite)
-                    {
-                        if (j.UserId == i.userId)
-                            flag = true;
-                    }
-                    var docrotwithfavorite = new
-                    {
-                        i.id,
-                        i.Name,
-                        i.Picture,
-                        i.Description,
-                        i.regionId,
-                        i.regionworking,
-                        i.userId,
-                        i.services,
-                        isFavorite = flag ? true : false,
-                    };
-                    listFinalResult.Add(docrotwithfavorite);
-                    flag = false;
-                }
-                return listFinalResult;
+                WorkerH = WorkerH.Where(x => x.services.Exists(x => x.id == serviceId));
             }
-            else if (regionId == 0)
+             if (regionId != 0)
             {
-                var WorkerH = await (from HealthWorker in _context.HealthcareWorker
-                                     join user in _context.User on HealthWorker.userId equals user.id
-                                     where HealthWorker.active == true
-                                     select new
-                                     {
-                                         id = HealthWorker.id,
-                                         Name = HealthWorker.Name,
-                                         Picture = HealthWorker.Picture,
-                                         user.regionId,
-                                         regionworking = _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == HealthWorker.id).ToList(),
-                                         BackgroundImage = HealthWorker.BackGroundPicture,
-                                         userId = HealthWorker.userId,
-                                         services = (from workerService in _context.HealthcareWorkerService
-                                                     join service in _context.Service on workerService.serviceId equals service.id
-                                                     where workerService.HealthcareWorkerid == HealthWorker.id
-                                                     select service).ToList(),
-                                         Description = HealthWorker.Description
-                                     }
-                              ).Where(x=>x.Name.Contains(Bystring)).ToListAsync();
-                WorkerH = WorkerH.Where(x => x.services.Exists(x => x.id == serviceId)).Skip(pageKey).Take(pageSize).ToList();
-                var listFinalResult = new List<object>();
-                bool flag = false;
-                foreach (var i in WorkerH)
-                {
-                    foreach (var j in WorkerWithFavorite)
-                    {
-                        if (j.UserId == i.userId)
-                            flag = true;
-                    }
-                    var docrotwithfavorite = new
-                    {
-                        i.id,
-                        i.Name,
-                        i.Picture,
-                        i.Description,
-                        i.regionId,
-                        i.regionworking,
-                        i.userId,
-                        i.services,
-                        isFavorite = flag ? true : false,
-                    };
-                    listFinalResult.Add(docrotwithfavorite);
-                    flag = false;
-                }
-                return listFinalResult;
+                WorkerH = WorkerH.Where(x => x.regionworking.Exists(c => c.RegionID == regionId));
             }
-            else if (serviceId == 0)
+            var listFinalResult = new List<object>();
+            bool flag = false;
+            foreach (var i in WorkerH)
             {
-                var WorkerH = await (from HealthWorker in _context.HealthcareWorker
-                                     join user in _context.User on HealthWorker.userId equals user.id
-                                     where HealthWorker.active == true
-                                     select new
-                                     {
-                                         id = HealthWorker.id,
-                                         Name = HealthWorker.Name,
-                                         Picture = HealthWorker.Picture,
-                                         user.regionId,
-                                         regionworking = _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == HealthWorker.id).ToList(),
-                                         BackgroundImage = HealthWorker.BackGroundPicture,
-                                         userId = HealthWorker.userId,
-                                         services = (from workerService in _context.HealthcareWorkerService
-                                                     join service in _context.Service on workerService.serviceId equals service.id
-                                                     where workerService.HealthcareWorkerid == HealthWorker.id
-                                                     select service).ToList(),
-                                         Description = HealthWorker.Description
-                                     }
-                          ).Where(x=>x.Name.Contains(Bystring)).ToListAsync();
-                WorkerH = WorkerH.Where(x => x.regionworking.Exists(c => c.RegionID == regionId)).Skip(pageKey).Take(pageSize).ToList();
-                var listFinalResult = new List<object>();
-                bool flag = false;
-                foreach (var i in WorkerH)
+                foreach (var j in WorkerWithFavorite)
                 {
-                    foreach (var j in WorkerWithFavorite)
-                    {
-                        if (j.UserId == i.userId)
-                            flag = true;
-                    }
-                    var docrotwithfavorite = new
-                    {
-                        i.id,
-                        i.Name,
-                        i.Picture,
-                        i.Description,
-                        i.regionId,
-                        i.regionworking,
-                        i.userId,
-                        i.services,
-                        isFavorite = flag ? true : false,
-                    };
-                    listFinalResult.Add(docrotwithfavorite);
-                    flag = false;
+                    if (j.UserId == i.userId)
+                        flag = true;
                 }
-                return listFinalResult;
+                var docrotwithfavorite = new
+                {
+                    i.id,
+                    i.Name,
+                    i.Picture,
+                    i.Description,
+                    i.regionId,
+                    i.regionworking,
+                    i.userId,
+                    i.services,
+                    isFavorite = flag ? true : false,
+                };
+                listFinalResult.Add(docrotwithfavorite);
+                flag = false;
             }
-            else
-            {
-                var WorkerH = await (from HealthWorker in _context.HealthcareWorker
-                                     join user in _context.User on HealthWorker.userId equals user.id
-                                     where HealthWorker.active == true
-                                     select new
-                                     {
-                                         id = HealthWorker.id,
-                                         Name = HealthWorker.Name,
-                                         Picture = HealthWorker.Picture,
-                                         user.regionId,
-                                         regionworking = _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == HealthWorker.id).ToList(),
-                                         BackgroundImage = HealthWorker.BackGroundPicture,
-                                         userId = HealthWorker.userId,
-                                         services = (from workerService in _context.HealthcareWorkerService
-                                                     join service in _context.Service on workerService.serviceId equals service.id
-                                                     where workerService.HealthcareWorkerid == HealthWorker.id
-                                                     select service).ToList(),
-                                         Description = HealthWorker.Description
-                                     }
-                          ).Where(x=>x.Name.Contains(Bystring)).ToListAsync();
-                WorkerH = WorkerH.Where(x => x.regionworking.Exists(x => x.RegionID == regionId)).ToList();
-                WorkerH = WorkerH.Where(x => x.services.Exists(x => x.id == serviceId)).Skip(pageKey).Take(pageSize).ToList();
-                var listFinalResult = new List<object>();
-                bool flag = false;
-                foreach (var i in WorkerH)
-                {
-                    foreach (var j in WorkerWithFavorite)
-                    {
-                        if (j.UserId == i.userId)
-                            flag = true;
-                    }
-                    var docrotwithfavorite = new
-                    {
-                        i.id,
-                        i.Name,
-                        i.Picture,
-                        i.Description,
-                        i.regionId,
-                        i.regionworking,
-                        i.userId,
-                        i.services,
-                        isFavorite = flag ? true : false,
-                    };
-                    listFinalResult.Add(docrotwithfavorite);
-                    flag = false;
-                }
-                return listFinalResult;
-            }   
+            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
+
         }
 
         // POST: api/HealthcareWorkers
