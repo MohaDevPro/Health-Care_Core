@@ -158,14 +158,19 @@ namespace Health_Care.Controllers
                 listFinalResult.Add(docrotwithfavorite);
                 flag = false;
             }
-            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
-
+            
+            if (pageSize != 0)
+            {
+                return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return listFinalResult.ToList();
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id,int pageKey,int pageSize)
         {
 
-            return await (from doctor in _context.Doctor where doctor.active == true 
+            var doctors =  await (from doctor in _context.Doctor where doctor.active == true 
                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           where Clinicdoctor.Clinicid==id
                           select new
@@ -182,7 +187,13 @@ namespace Health_Care.Controllers
                                                 select specialit).ToList(),
                           }
 
-                          ).Skip(pageKey).Take(pageSize).ToListAsync();
+                          ).ToListAsync();
+            if (pageSize != 0)
+            {
+                return doctors.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return doctors.ToList();
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id, int pageKey, int pageSize)
