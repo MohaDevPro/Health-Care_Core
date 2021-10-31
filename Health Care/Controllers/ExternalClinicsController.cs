@@ -69,8 +69,8 @@ namespace Health_Care.Controllers
 
 
         // GET: api/ExternalClinics/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDoctorID(int id)
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDoctorID(int id, int pageKey, int pageSize)
         {
             var externalClinic = await (from clinic in _context.ExternalClinic where clinic.active == true join Clinicdoctor in _context.clinicDoctors on clinic.id equals Clinicdoctor.Clinicid
                                         where Clinicdoctor.Doctorid==id
@@ -89,7 +89,7 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
 
-            return externalClinic;
+            return externalClinic.Skip(pageKey).Take(pageSize).ToList();
         }
 
         [HttpGet("{id}")]
