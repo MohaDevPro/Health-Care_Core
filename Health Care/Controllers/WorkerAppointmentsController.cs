@@ -252,7 +252,7 @@ namespace Health_Care.Controllers
             }
             workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
             
-            if (workerAppointment.ConfirmHealthWorkerCome_ByHimself)
+            if (workerAppointment.ConfirmHealthWorkerCome_ByPatient)
             {
                 AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
                 appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
@@ -293,12 +293,12 @@ namespace Health_Care.Controllers
             }
             workerAppointment.ConfirmHealthWorkerCome_ByHimself = true;
 
-            if (workerAppointment.ConfirmHealthWorkerCome_ByPatient)
-            {
-                AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
-                appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
-                _context.Entry(appointmentWorker).State = EntityState.Modified;
-            }
+            //if (workerAppointment.ConfirmHealthWorkerCome_ByHimself)
+            //{
+            //    AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
+            //    appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
+            //    _context.Entry(appointmentWorker).State = EntityState.Modified;
+            //}
             _context.Entry(workerAppointment).State = EntityState.Modified;
             
 
@@ -337,17 +337,24 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-            workerAppointment.doesNotCome = true;
-            workerAppointment.reservedAmountUntilConfirm = true;
-            HealthcareWorker worker = _context.HealthcareWorker.Find(workerAppointment.workerId);
-            worker.CountOfDoesNotCome += 1;
-            if (worker.CountOfDoesNotCome >= 3)
+            if (!workerAppointment.doesNotCome)
             {
-                worker.active = false;
-                User user = _context.User.Find(worker.userId);
-                user.isActiveAccount = false;
+                Patient patient = _context.Patient.Where(x => x.id == workerAppointment.patientId).FirstOrDefault();
+                patient.Balance += workerAppointment.servicePrice;
+                workerAppointment.doesNotCome = true;
+                workerAppointment.reservedAmountUntilConfirm = true;
+                HealthcareWorker worker = _context.HealthcareWorker.Find(workerAppointment.workerId);
+                worker.CountOfDoesNotCome += 1;
+                if (worker.CountOfDoesNotCome >= 3)
+                {
+                    worker.active = false;
+                    User user = _context.User.Find(worker.userId);
+                    user.isActiveAccount = false;
+                }
+                _context.Entry(workerAppointment).State = EntityState.Modified;
+
+                
             }
-            _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try
             {
@@ -359,12 +366,8 @@ namespace Health_Care.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
+            }
             return NoContent();
         }
 
@@ -378,7 +381,8 @@ namespace Health_Care.Controllers
             DateTime d = DateTime.Now;
             workerAppointment.CodeConfirmation = $"{d.ToString("dd")}{d.ToString("MM")}{d.ToString("yyyy")}-{random.Next(1000000, 9999999)}";
             _context.WorkerAppointment.Add(workerAppointment);
-            
+            Patient patient = _context.Patient.Where(x=> x.id == workerAppointment.patientId).FirstOrDefault();
+            patient.Balance -= workerAppointment.servicePrice;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWorkerAppointment", new { id = workerAppointment.id }, workerAppointment);

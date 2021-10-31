@@ -59,7 +59,13 @@ namespace Health_Care.Controllers
             {
                 hos = hos.Where(x => x.departmentsList.Exists(x => x.id == departId)).ToList();
             }
-            return hos.Skip(pageKey).Take(pageSize).ToList();
+           
+            if (pageSize != 0)
+            {
+                return hos.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return hos.ToList();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinicForAdmin()

@@ -62,7 +62,13 @@ namespace Health_Care.Controllers
             {
                 clinics = clinics.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
             }
-            return clinics.Skip(pageKey).Take(pageSize).ToList();
+            
+            if (pageSize != 0)
+            {
+                return clinics.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return clinics.ToList();
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicForAdmin()
@@ -100,7 +106,12 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
 
-            return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+            if (pageSize != 0)
+            {
+                return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return externalClinic.ToList();
         }
 
         [HttpGet("{id}/{pageKey}/{pageSize}")]
@@ -121,7 +132,13 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
 
-            return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+           
+            if (pageSize != 0)
+            {
+                return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return externalClinic.ToList();
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByDepartmentID(int id, int pageKey, int pageSize)
@@ -142,7 +159,13 @@ namespace Health_Care.Controllers
 
                           ).ToListAsync();
 
-            return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+           
+            if (pageSize != 0)
+            {
+                return externalClinic.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return externalClinic.ToList();
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetExternalClinic(int id)

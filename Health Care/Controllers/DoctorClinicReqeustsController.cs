@@ -88,8 +88,13 @@ namespace Health_Care.Controllers
                     clinicID = clinicid
                 }) ;
             }
-            return finalusers.Skip(pageKey).Take(pageSize).ToList();
-
+            
+            if (pageSize != 0)
+            {
+                return finalusers.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return finalusers.ToList();
         }
         // GET: api/DoctorClinicReqeusts/5
         [HttpGet("{id}")]
