@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 //using Health_Care.Migrations;
 
 
@@ -14,6 +15,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin, دكتور")]
     public class DoctorsController : ControllerBase
     {
         private readonly Health_CareContext _context;
