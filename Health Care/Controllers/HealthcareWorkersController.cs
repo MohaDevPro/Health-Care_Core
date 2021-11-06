@@ -255,7 +255,7 @@ namespace Health_Care.Controllers
         [HttpGet("{patientId}/{regionId}/{serviceId}/{pageKey}/{pageSize}/{byString}")]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize,int regionId,int serviceId,string Bystring)
         {
-            var WorkerWithFavorite = await (from fav in _context.Favorite join Worker in _context.HealthcareWorker.Where(x => x.active == true) on fav.UserId equals Worker.userId where fav.PatientId == patientId select fav).ToListAsync();
+            var favorite = await _context.Favorite.Where(x => x.PatientId == patientId && x.type == "worker").ToListAsync();
             Bystring = Bystring.Replace("empty", "");
             var WorkerH = (from HealthWorker in _context.HealthcareWorker
                                  join user in _context.User on HealthWorker.userId equals user.id
@@ -289,9 +289,9 @@ namespace Health_Care.Controllers
             bool flag = false;
             foreach (var i in WorkerH)
             {
-                foreach (var j in WorkerWithFavorite)
+                foreach (var j in favorite)
                 {
-                    if (j.UserId == i.userId)
+                    if (j.UserId == i.id)
                         flag = true;
                 }
                 var docrotwithfavorite = new
