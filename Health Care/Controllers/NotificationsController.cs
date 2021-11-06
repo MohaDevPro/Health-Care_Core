@@ -221,24 +221,31 @@ namespace Health_Care.Controllers
 
             if (token.Token.Count() == 163 && token.Token.Split(':')[0].Count() == 22 && token.DeviceID != null)
             {
-                var Token = _context.FCMTokens.Where(t => t.DeviceID == token.DeviceID).FirstOrDefault();
-                if (Token == null)
+                var Token = _context.FCMTokens.Where(t => t.DeviceID == token.DeviceID).ToList();
+                if (Token.Count == 0)
                 {
                     
                     _context.FCMTokens.Add(token);
                     await _context.SaveChangesAsync();
                     return Ok();
-                }
-                var user = _context.User.Where(u => u.DeviceId == token.DeviceID).ToList();
-                if (user.Count != 0)
+                }else
                 {
-                    token.UserID = user.Last().id;
+                    foreach (var t in Token)
+                    {
+                        t.Token = token.Token;
+                    }
                 }
-                Token.Token = token.Token;
-                Token.DeviceID = token.DeviceID;
-                Token.UserID = token.UserID;
-                _context.Entry(Token).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                //var user = _context.User.Where(u => u.DeviceId == token.DeviceID).ToList();
+                //if (user.Count != 0)
+                //{
+                //    token.UserID = user.Last().id;
+                //}
+                //Token.Token = token.Token;
+                //Token.DeviceID = token.DeviceID;
+                //Token.UserID = token.UserID;
+                //_context.Entry(Token).State = EntityState.Modified;
+
                 return Ok();
             }
             return BadRequest();

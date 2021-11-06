@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 //using Health_Care.Migrations;
 
 
@@ -14,6 +15,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize(Roles = "admin, دكتور")]
     public class DoctorsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -157,13 +159,19 @@ namespace Health_Care.Controllers
                 listFinalResult.Add(docrotwithfavorite);
                 flag = false;
             }
-            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
-
+            
+            if (pageSize != 0)
+            {
+                return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return listFinalResult.ToList();
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id)
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id,int pageKey,int pageSize)
         {
-            return await (from doctor in _context.Doctor where doctor.active == true 
+
+            var doctors =  await (from doctor in _context.Doctor where doctor.active == true 
                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           where Clinicdoctor.Clinicid==id
                           select new
@@ -181,9 +189,15 @@ namespace Health_Care.Controllers
                           }
 
                           ).ToListAsync();
+            if (pageSize != 0)
+            {
+                return doctors.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return doctors.ToList();
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id)
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id, int pageKey, int pageSize)
         {
             var doctors=(from doctor in _context.Doctor
                          where doctor.active == true
@@ -214,7 +228,7 @@ namespace Health_Care.Controllers
                     checkIDS.Add(i.id);
                 }
             }
-            return notRepitted;
+            return notRepitted.Skip(pageKey).Take(pageSize).ToList();
         }
         // GET: api/Doctors/5
         [HttpGet("{id}")]

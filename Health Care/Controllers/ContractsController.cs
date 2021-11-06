@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class ContractsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -23,6 +25,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Contracts
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Contract>>> GetContract()
         {
             return await _context.Contract.Where(s => s.active == true).Include(c=>c.ContractTerms).ToListAsync();
@@ -41,6 +44,7 @@ namespace Health_Care.Controllers
 
             return contract;
         }
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Contract>> GetContractBasedOnRole(int id)
         {
@@ -131,6 +135,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Contracts/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Contract>> DeleteContract(int id)
         {
             var contract = await _context.Contract.FindAsync(id);

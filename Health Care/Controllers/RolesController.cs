@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize(Roles = "admin")]
     public class RolesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -23,6 +25,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Roles
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Role>>> GetRole()
         {
             return await _context.Role.Where(x => x.active == true).ToListAsync();

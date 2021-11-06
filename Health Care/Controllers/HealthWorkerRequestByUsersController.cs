@@ -95,7 +95,24 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
+            WorkerAppointment appointment = _context.WorkerAppointment.Where(x=>x.id == healthWorkerRequestByUser.appointmentId).FirstOrDefault();
+            Patient patient = _context.Patient.Where(x=>x.id == appointment.patientId).FirstOrDefault();
+            patient.Balance += appointment.servicePrice;
+            _context.HealthWorkerRequestByUser.Remove(healthWorkerRequestByUser);
+            await _context.SaveChangesAsync();
 
+            return healthWorkerRequestByUser;
+        }
+        
+        // DELETE: api/HealthWorkerRequestByUsers/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<HealthWorkerRequestByUser>> DeleteHealthWorkerRequestByUserByAppointmentID(int id)
+        {
+            var healthWorkerRequestByUser = _context.HealthWorkerRequestByUser.Where(a=>a.appointmentId == id).FirstOrDefault();
+            if (healthWorkerRequestByUser == null)
+            {
+                return NotFound();
+            }
             _context.HealthWorkerRequestByUser.Remove(healthWorkerRequestByUser);
             await _context.SaveChangesAsync();
 

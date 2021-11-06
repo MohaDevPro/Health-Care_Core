@@ -309,8 +309,13 @@ namespace Health_Care.Controllers
                 listFinalResult.Add(docrotwithfavorite);
                 flag = false;
             }
-            return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
-
+           
+            if (pageSize != 0)
+            {
+                return listFinalResult.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return listFinalResult.ToList();
         }
 
         // POST: api/HealthcareWorkers

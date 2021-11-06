@@ -28,8 +28,8 @@ namespace Health_Care.Controllers
             return await _context.DoctorClinicReqeusts.ToListAsync();
         }
 
-        [HttpGet("{id}/{isfrom}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetDoctorClinicReqeustsByuserID(int id,bool isfrom)
+        [HttpGet("{id}/{isfrom}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorClinicReqeustsByuserID(int id,bool isfrom, int pageKey, int pageSize)
         {
 
             var users = new List<UserRequestVM>();
@@ -88,8 +88,13 @@ namespace Health_Care.Controllers
                     clinicID = clinicid
                 }) ;
             }
-            return finalusers;
-
+            
+            if (pageSize != 0)
+            {
+                return finalusers.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return finalusers.ToList();
         }
         // GET: api/DoctorClinicReqeusts/5
         [HttpGet("{id}")]
