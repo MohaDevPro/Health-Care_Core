@@ -339,6 +339,7 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             appointment.PatientComeToAppointment = true;
+            appointment.Paid = true;
             _context.Entry(appointment).State = EntityState.Modified;
 
             try
