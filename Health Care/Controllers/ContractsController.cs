@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ContractsController : ControllerBase
     {
         private readonly Health_CareContext _context;
