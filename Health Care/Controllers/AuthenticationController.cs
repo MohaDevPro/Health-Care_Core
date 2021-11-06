@@ -22,7 +22,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public class AuthenticationController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -59,6 +59,14 @@ namespace Health_Care.Controllers
                 if (fCM_Token != null)
                 {
                     fCM_Token.UserID = user2.id;
+                }
+                else
+                {
+                    _context.FCMTokens.Add(new FCM_Tokens() { 
+                        DeviceID = user2.DeviceId,
+                        UserID = user2.id,
+                        
+                    });
                 }
                 int SpecificId;
                 if (user2.Roleid == 1)

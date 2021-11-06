@@ -15,7 +15,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin, دكتور")]
+    //[Authorize(Roles = "admin, دكتور")]
     public class DoctorsController : ControllerBase
     {
         private readonly Health_CareContext _context;
