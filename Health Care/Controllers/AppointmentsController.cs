@@ -243,8 +243,8 @@ namespace Health_Care.Controllers
             return appointmentList;
         }
 
-        [HttpGet("{Month}")]
-        public async Task<ActionResult<object>> GetAppointmentMonthRecords(int Month)
+        [HttpGet("{Month}/{doctorid}")]
+        public async Task<ActionResult<object>> GetAppointmentMonthRecords(int Month,int doctorid)
         {
             var appointmentOfMonth = _context.Appointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
             var NoRepittedPatientAppointment = new List<Appointment>();
@@ -260,15 +260,19 @@ namespace Health_Care.Controllers
             if (appointmentOfMonth.Count() > 0 && doctors.Count() > 0)
             {
                 var MonthRecords = new List<object>();
-                foreach (var healthworker in doctors)
+                if (doctorid != 0)
                 {
-                    var subAppointment = appointmentOfMonth.Where(x => x.doctorId == healthworker.id &&x.PatientComeToAppointment);
-                    var subNoRepittedPatientAppointment= appointmentOfMonth.Where(x => x.doctorId == healthworker.id);
+                    doctors = doctors.Where(x => x.id == doctorid);
+                }
+                foreach (var doctor in doctors)
+                {
+                    var subAppointment = appointmentOfMonth.Where(x => x.doctorId == doctor.id &&x.PatientComeToAppointment);
+                    var subNoRepittedPatientAppointment = appointmentOfMonth.Where(x => x.doctorId == doctor.id);
                     MonthRecords.Add(new
                     {
-                        healthWorkerid = healthworker.id,
+                        healthWorkerid = doctor.id,
                         NumberOfServices = subNoRepittedPatientAppointment.Count(),
-                        HealthWorkerName = healthworker.name,
+                        HealthWorkerName = doctor.name,
                         NumberOfUsers = subAppointment.Count(),
                         TotalyPrice = subAppointment.Select(x => x.appointmentPrice).Sum(),
                         BinefetOfApp = subAppointment.Select(x => x.appointmentPrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
@@ -300,14 +304,14 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAppointment(int id, Appointment appointment)
+        public async Task<ActionResult<Appointment>> PutAppointment(int id, Appointment appointment)
         {
             if (id != appointment.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(appointment).State = EntityState.Modified;
+             _context.Entry(appointment).State = EntityState.Modified;
 
             try
             {
@@ -325,7 +329,7 @@ namespace Health_Care.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetAppointment", new { id = appointment.id }, appointment);
         }
 
 
@@ -339,6 +343,7 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             appointment.PatientComeToAppointment = true;
+            appointment.Paid = true;
             _context.Entry(appointment).State = EntityState.Modified;
 
             try
