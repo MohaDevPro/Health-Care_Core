@@ -170,8 +170,8 @@ namespace Health_Care.Controllers
                 var MonthRecords = new List<object>();
                 foreach (var healthworker in healthWorkers)
                 {
-                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.userId && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
-                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.userId && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
+                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.userId && (x.ConfirmHealthWorkerCome_ByHimself||x.ConfirmHealthWorkerCome_ByPatient) );
+                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.userId && (x.ConfirmHealthWorkerCome_ByHimself || x.ConfirmHealthWorkerCome_ByPatient));
                     MonthRecords.Add(new
                     {
                         healthWorkerid = healthworker.id,
