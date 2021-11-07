@@ -300,14 +300,14 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAppointment(int id, Appointment appointment)
+        public async Task<ActionResult<Appointment>> PutAppointment(int id, Appointment appointment)
         {
             if (id != appointment.id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(appointment).State = EntityState.Modified;
+             _context.Entry(appointment).State = EntityState.Modified;
 
             try
             {
@@ -325,7 +325,7 @@ namespace Health_Care.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction("GetAppointment", new { id = appointment.id }, appointment);
         }
 
 
@@ -339,6 +339,7 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             appointment.PatientComeToAppointment = true;
+            appointment.Paid = true;
             _context.Entry(appointment).State = EntityState.Modified;
 
             try

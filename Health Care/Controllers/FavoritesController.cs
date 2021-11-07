@@ -67,7 +67,7 @@ namespace Health_Care.Controllers
 
 
             return await (from PatientFavorite in _context.Favorite
-                          join doctor in _context.Doctor on PatientFavorite.UserId equals doctor.Userid
+                          join doctor in _context.Doctor on PatientFavorite.UserId equals doctor.id
                           where PatientFavorite.PatientId == patientId && PatientFavorite.type=="doctor"
                           select new
                           {
@@ -91,8 +91,8 @@ namespace Health_Care.Controllers
 
 
             return await (from PatientFavorite in _context.Favorite
-                          join worker in _context.HealthcareWorker on PatientFavorite.UserId equals worker.userId
-                          where PatientFavorite.PatientId == patientId && PatientFavorite.type == "worker"
+                          join worker in _context.HealthcareWorker on PatientFavorite.UserId equals worker.id
+                          where PatientFavorite.PatientId == patientId && PatientFavorite.type == "worker" && worker.active==true
                           select new
                           {
                               id = worker.id,

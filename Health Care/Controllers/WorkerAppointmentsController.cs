@@ -76,13 +76,13 @@ namespace Health_Care.Controllers
         {
             List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
 
-            string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
+            string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
             var workerAppointmentList = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
                 .OrderBy(x=>x.appointmentDate).ToListAsync();
 
             foreach (var item in workerAppointmentList)
             {
-                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate == TodayDate && x.appointmentId == item.id);
+                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate.Trim() == TodayDate && x.appointmentId == item.id);
                 if (workerAppointmentRequest != null)
                 {
                     result.Add(new WorkerAppointmentViewModel()
@@ -97,6 +97,22 @@ namespace Health_Care.Controllers
             //if (result == null) { return NotFound(); }
             
             return result;
+        }
+        public string getDate(int workerId)
+        {
+            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("G");
+           
+            return TodayDate;
+        }
+        public string getDateWithAdd(int workerId)
+        {
+            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            string TodayDate = DateTime.Now.ToUniversalTime().AddHours(7).ToString("G");
+
+            return TodayDate;
         }
 
         [HttpGet("{workerId}")]
@@ -255,15 +271,15 @@ namespace Health_Care.Controllers
             }
             workerAppointment.ConfirmHealthWorkerCome_ByPatient = true;
             
-            if (workerAppointment.ConfirmHealthWorkerCome_ByPatient)
-            {
-                AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
-                appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
-                _context.Entry(appointmentWorker).State = EntityState.Modified;
-            }
+            //if (workerAppointment.ConfirmHealthWorkerCome_ByPatient)
+            //{
+            //    AppointmentWorker appointmentWorker = await _context.AppointmentWorker.FirstOrDefaultAsync(e => e.workerId == workerAppointment.workerId);
+            //    appointmentWorker.totalProfitFromRealAppointment += (workerAppointment.servicePrice * (workerAppointment.PercentageFromAppointmentPriceForApp / 100));
+            //    _context.Entry(appointmentWorker).State = EntityState.Modified;
+            //}
 
             workerAppointment.reservedAmountUntilConfirm = true;
-            Patient patient = _context.Patient.Where(x=>x.userId == workerAppointment.patientId).FirstOrDefault();
+            //Patient patient = _context.Patient.Where(x=>x.userId == workerAppointment.patientId).FirstOrDefault();
             //patient.Balance -= workerAppointment.servicePrice;
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
@@ -342,7 +358,7 @@ namespace Health_Care.Controllers
             }
             if (!workerAppointment.doesNotCome)
             {
-                Patient patient = _context.Patient.Where(x => x.id == workerAppointment.patientId).FirstOrDefault();
+                Patient patient = _context.Patient.Where(x => x.userId == workerAppointment.patientId).FirstOrDefault();
                 patient.Balance += workerAppointment.servicePrice;
                 workerAppointment.doesNotCome = true;
                 workerAppointment.reservedAmountUntilConfirm = true;
@@ -384,8 +400,8 @@ namespace Health_Care.Controllers
             DateTime d = DateTime.Now;
             workerAppointment.CodeConfirmation = $"{d.ToString("dd")}{d.ToString("MM")}{d.ToString("yyyy")}-{random.Next(1000000, 9999999)}";
             _context.WorkerAppointment.Add(workerAppointment);
-            Patient patient = _context.Patient.Where(x=> x.id == workerAppointment.patientId).FirstOrDefault();
-            patient.Balance -= workerAppointment.servicePrice;
+            Patient patient = _context.Patient.Where(x=> x.userId == workerAppointment.patientId).FirstOrDefault();
+            patient.Balance = patient.Balance - workerAppointment.servicePrice;
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWorkerAppointment", new { id = workerAppointment.id }, workerAppointment);

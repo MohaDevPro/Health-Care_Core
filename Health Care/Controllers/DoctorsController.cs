@@ -15,7 +15,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin, دكتور")]
+    //[Authorize(Roles = "admin, دكتور")]
     public class DoctorsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -104,11 +104,12 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorsWithFavorite(int patientId,int regionId,int specialityId,int pageKey,int pageSize,string byString)
         {
             byString = byString.Replace("empty","");
-            var favorite = (from PatientFavorite in _context.Favorite
-                            where PatientFavorite.PatientId == patientId
-                            select PatientFavorite).ToList();
+            //var favorite = (from PatientFavorite in _context.Favorite
+            //                where PatientFavorite.PatientId == patientId
+            //                select PatientFavorite).ToList();
+            var favorite = _context.Favorite.Where(x => x.PatientId == patientId && x.type == "doctor").ToList();
+            
             var doctors = await (from doctor in _context.Doctor
-                                 join user in _context.User on doctor.Userid equals user.id
                                  where doctor.active == true
                                  select new
                                  {
@@ -136,23 +137,23 @@ namespace Health_Care.Controllers
             }
             var listFinalResult = new List<object>();
             bool flag = false;
-            foreach (var i in doctors)
+            foreach (var doctor in doctors)
             {
                 
                
-                foreach (var j in favorite)
+                foreach (var favorit in favorite)
                 {
-                    if (j.UserId == i.id)
+                    if (favorit.UserId == doctor.id)
                         flag = true;
                 }
                 var docrotwithfavorite = new
                 {
-                    i.id,
-                    i.Name,
-                    i.Picture,
-                    i.regionId,
-                    i.userId,
-                    i.specialitylist,
+                    doctor.id,
+                    doctor.Name,
+                    doctor.Picture,
+                    doctor.regionId,
+                    doctor.userId,
+                    doctor.specialitylist,
                     isFavorite = flag ? true : false,
                 };
                 listFinalResult.Add(docrotwithfavorite);
