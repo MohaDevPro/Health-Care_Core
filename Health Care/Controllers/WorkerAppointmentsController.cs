@@ -150,7 +150,7 @@ namespace Health_Care.Controllers
         [HttpGet("{Month}/{HealthWorkerID}")]
         public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
-            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
+            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/") && (x.ConfirmHealthWorkerCome_ByHimself || x.ConfirmHealthWorkerCome_ByPatient)).ToList();
             var NoRepittedPatientAppointment = new List<WorkerAppointment>();
             foreach (var i in appointmentOfMonth)
             {
@@ -160,27 +160,30 @@ namespace Health_Care.Controllers
                 }
 
             }
-            var healthWorkers = _context.HealthcareWorker.Where(x => x.active);
+            var healthWorkers = _context.HealthcareWorker.Where(x => x.active).ToList();
             if (appointmentOfMonth.Count() > 0 && healthWorkers.Count() > 0)
             {
                 if (HealthWorkerID != 0)
                 {
-                    healthWorkers = healthWorkers.Where(x => x.id == HealthWorkerID);
+                    healthWorkers = healthWorkers.Where(x => x.id == HealthWorkerID).ToList();
                 }
                 var MonthRecords = new List<object>();
                 foreach (var healthworker in healthWorkers)
                 {
-                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.userId && (x.ConfirmHealthWorkerCome_ByHimself||x.ConfirmHealthWorkerCome_ByPatient) );
-                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.userId && (x.ConfirmHealthWorkerCome_ByHimself || x.ConfirmHealthWorkerCome_ByPatient));
+                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.userId  );
+                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.userId );
+                    var TotalyPrice = subAppointment.Select(x => x.servicePrice).Sum();
+                    var BinefetOfApp = subAppointment.Select(x => x.servicePrice * x.PercentageFromAppointmentPriceForApp / 100).Sum();
+                    var BinefetOfHealthWorker = subAppointment.Select(x => x.servicePrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum();
                     MonthRecords.Add(new
                     {
                         healthWorkerid = healthworker.id,
                         NumberOfServices = subAppointment.Count(),
                         HealthWorkerName = healthworker.Name,
-                        NumberOfUsers = subNoRepittedPatientAppointment.Where(x => x.workerId == healthworker.id).Count(),
-                        TotalyPrice = subAppointment.Select(x => x.servicePrice).Sum(),
-                        BinefetOfApp = subAppointment.Select(x => x.servicePrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
-                        BinefetOfHealthWorker = subAppointment.Select(x => x.servicePrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum(),
+                        NumberOfUsers = subNoRepittedPatientAppointment.Count(),
+                        TotalyPrice ,
+                        BinefetOfApp ,
+                        BinefetOfHealthWorker,
                     });
                 }
 
