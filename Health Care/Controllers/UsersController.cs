@@ -30,6 +30,12 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(s => s.active == true).ToListAsync();
         }
+         [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRoleID(int id)
+        {
+            return await _context.User.Where(s => s.active == true & s.Roleid == id).ToListAsync();
+        }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
