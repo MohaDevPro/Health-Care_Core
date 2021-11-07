@@ -154,8 +154,8 @@ namespace Health_Care.Controllers
                 var MonthRecords = new List<object>();
                 foreach (var healthworker in healthWorkers)
                 {
-                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.id && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
-                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.id && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
+                    var subAppointment = appointmentOfMonth.Where(x => x.workerId == healthworker.userId && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
+                    var subNoRepittedPatientAppointment = NoRepittedPatientAppointment.Where(x => x.workerId == healthworker.userId && x.AcceptedByHealthWorker && x.cancelledByHealthWorker == false);
                     MonthRecords.Add(new
                     {
                         healthWorkerid = healthworker.id,
@@ -182,10 +182,13 @@ namespace Health_Care.Controllers
             var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
             var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
             var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+            var UnConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
+
 
             li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
             li.WorkerComeToAppointment1 = WorkerComeToAppointment;
             li.cancelledAppointmentbyworker1 = cancelledAppointmentbyworker;
+            li.UnConfirmedAppointmentbyworker1 = UnConfirmedAppointmentbyworker;
 
             if (li == null) { return NotFound(); }
             return li;
