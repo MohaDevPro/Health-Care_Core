@@ -89,8 +89,8 @@ namespace Health_Care.Controllers
             }
         }
         // GET: api/Appointments/5
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId)
+        [HttpGet("{userId}/{isAccepted}/{cancelByUser}/{canceledBySecretary}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId, bool isAccepted, bool cancelByUser, bool canceledBySecretary)
         {
             var appointment = await(from appointments in  _context.Appointment join
                                     Clinic in _context.ExternalClinic on appointments.distnationClinicId equals Clinic.id
@@ -101,8 +101,13 @@ namespace Health_Care.Controllers
                                     }
                                     
                                     ).ToListAsync();
-            if (appointment == null) { return NotFound(); }
-            return appointment;
+            if (cancelByUser || canceledBySecretary)
+                return appointment.Where(x => x.appointment.cancelledByUser || x.appointment.cancelledByClinicSecretary).OrderByDescending(x=>x.appointment.id).ToList();
+            else if (isAccepted)
+                return appointment.Where(x => x.appointment.Accepted).OrderByDescending(x=>x.appointment.id).ToList();
+            else return appointment.Where(x => x.appointment.Accepted == false && x.appointment.cancelledByUser == false && x.appointment.cancelledByClinicSecretary == false).OrderByDescending(x=>x.appointment.id).ToList();
+            //if (appointment == null) { return NotFound(); }
+            //return appointment;
         }
         [HttpGet("{appointmentDoctorClinicid}")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
