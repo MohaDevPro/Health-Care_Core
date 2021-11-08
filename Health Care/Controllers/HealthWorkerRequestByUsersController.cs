@@ -88,7 +88,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/HealthWorkerRequestByUsers/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<HealthWorkerRequestByUser>> DeleteHealthWorkerRequestByUser(int id)
+        public async Task<ActionResult> DeleteHealthWorkerRequestByUser(int id)
         {
             var healthWorkerRequestByUser = await _context.HealthWorkerRequestByUser.FindAsync(id);
             if (healthWorkerRequestByUser == null)
@@ -101,7 +101,7 @@ namespace Health_Care.Controllers
             _context.HealthWorkerRequestByUser.Remove(healthWorkerRequestByUser);
             await _context.SaveChangesAsync();
 
-            return healthWorkerRequestByUser;
+            return Ok();
         }
         
         // DELETE: api/HealthWorkerRequestByUsers/5

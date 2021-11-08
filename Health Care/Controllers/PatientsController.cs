@@ -35,7 +35,7 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<Patient>> GetPatient(int id)
         {
             //var patient = await _context.Patient.FindAsync(id);
-            var patient = await _context.Patient.FirstOrDefaultAsync(x=>x.userId == id);
+            var patient = await _context.Patient.FirstOrDefaultAsync(x=>x.id == id);
 
             if (patient == null)
             {

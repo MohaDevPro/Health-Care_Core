@@ -122,7 +122,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<ActionResult> Logout(User user)
         {
             var fcm_token = _context.FCMTokens.Where(t => t.UserID == user.id).FirstOrDefault();
@@ -167,7 +166,7 @@ namespace Health_Care.Controllers
                 RefreshRequest refreshRequest = new RefreshRequest();
                 refreshRequest.AccessToken = GenerateAccessToken(user);
                 refreshRequest.RefreshToken = refreshToken.Token;
-                string type = _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
+                string type = user.Roleid == 6 ? "admin" : _context.Role.Where(r => r.id == user.Roleid).FirstOrDefault().RoleName;
                 int SpecificId;
                 //var hospital = _context.Hospitals.Where(x => x.UserId == user.id).FirstOrDefault();
                 //var healthcareWorker = _context.HealthcareWorker.Where(x => x.userId == user.id).FirstOrDefault();

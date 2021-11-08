@@ -10,5 +10,7 @@ namespace Health_Care.Models
         public List<WorkerAppointment> ConfirmedAppointmentbyworker1 { get; set; }
         public List<WorkerAppointment> WorkerComeToAppointment1 { get; set; }
         public List<WorkerAppointment> cancelledAppointmentbyworker1 { get; set; }
+        public List<WorkerAppointment> UnConfirmedAppointmentbyworker1 { get; set; }
+
     }
 }

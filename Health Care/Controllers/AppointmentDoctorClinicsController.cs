@@ -119,6 +119,7 @@ namespace Health_Care.Controllers
             var doctors = await _context.Doctor.ToListAsync();
             var clinics = await _context.ExternalClinic.ToListAsync();
             var execuate = await allorders.ToListAsync();
+            var appintments = _context.Appointment.ToList();
             var test = from doctor in doctors
                        join appointment in execuate on doctor.id equals appointment.doctorId
                        join clinic in clinics on appointment.clinicId equals clinic.id
@@ -130,7 +131,7 @@ namespace Health_Care.Controllers
                            ClinicName = clinic.Name,
                            DoctorName = doctor.name,
                            appointment.numberOfRealAppointment,
-                           appointment.totalProfitFromRealAppointment,
+                           totalProfitFromRealAppointment=appintments.Where(x=>x.appointmentDoctorClinicId==appointment.id+"").Select(x=>x.appointmentPrice*x.PercentageFromAppointmentPriceForApp/100).Sum(),
 
                        };
 
@@ -422,12 +423,14 @@ namespace Health_Care.Controllers
             }
 
             int profitSumforAppAdmin = 0;
-            foreach (var item in newAppointmentDoctorClinicObj)
+            var ids = newAppointmentDoctorClinicObj.Select(x => x.id);
+            var appointments = _context.Appointment.Where(x =>ids.Contains(Convert.ToInt32(x.appointmentDoctorClinicId))).ToList();
+            foreach (var item in appointments)
             {
-                profitSumforAppAdmin += item.totalProfitFromRealAppointment;
+                profitSumforAppAdmin += item.appointmentPrice*item.PercentageFromAppointmentPriceForApp/100;
             };
 
-            int totalAmount = profitSumforAppAdmin * 100 / medicalExaminationPercentage;
+            int totalAmount = profitSumforAppAdmin ;
             int profitSumforuser = totalAmount - profitSumforAppAdmin;
 
 

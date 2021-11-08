@@ -14,6 +14,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class NotificationsController : ControllerBase
     {
         private readonly Health_CareContext _context;

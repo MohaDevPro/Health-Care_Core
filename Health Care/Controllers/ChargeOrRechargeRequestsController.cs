@@ -27,15 +27,31 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/ChargeOrRechargeRequests
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequest()
+        [HttpGet("{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequest(int pageKey, int pageSize)
         {
-            return await _context.ChargeOrRechargeRequest.ToListAsync();
+            var recharges=await _context.ChargeOrRechargeRequest.OrderByDescending(x=>x.id).ToListAsync();
+            if (pageSize != 0)
+            {
+                return recharges.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+            {
+                return recharges;
+            }
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequestByUserID(int id)
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequestByUserID(int id, int pageKey, int pageSize)
         {
-            return await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).ToListAsync();
+            var recharge= await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).OrderByDescending(x=>x.id).ToListAsync();
+            if (pageSize != 0)
+            {
+                return recharge.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+            {
+                return recharge;
+            }
         }
 
         [HttpGet("{id}")]

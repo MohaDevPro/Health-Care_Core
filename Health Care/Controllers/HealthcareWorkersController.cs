@@ -77,10 +77,18 @@ namespace Health_Care.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers()
+        [HttpGet("{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers(int pageKey, int pageSize)
         {
-            return await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
+            var healthcares= await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
+            if (pageSize != 0)
+            {
+                return healthcares.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+            {
+                return healthcares;
+            }
         }
 
         [HttpGet]

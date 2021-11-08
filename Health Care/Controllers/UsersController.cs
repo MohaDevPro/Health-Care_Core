@@ -24,11 +24,26 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Users
-        [HttpGet]
+        [HttpGet("{pageKey}/{pageSize}")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<User>>> GetUser()
+        public async Task<ActionResult<IEnumerable<User>>> GetUser(int pageKey, int pageSize)
         {
-            return await _context.User.Where(s => s.active == true).ToListAsync();
+            var users = await _context.User.Where(s => s.active == true).ToListAsync();
+            if (pageSize != 0)
+            {
+                return users.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+            {
+                return users;
+            }
+            
+        }
+         [HttpGet("{id}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRoleID(int id)
+        {
+            return await _context.User.Where(s => s.active == true & s.Roleid == id).ToListAsync();
         }
 
         // GET: api/Users/5
@@ -51,10 +66,20 @@ namespace Health_Care.Controllers
             return await _context.User.Where(a => a.active == false).ToListAsync();
         }
         
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetNotActive()
+        [HttpGet("{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetNotActive(int pageKey, int pageSize)
         {
-            return await _context.User.Where(a => a.isActiveAccount == false).ToListAsync();
+            
+            var users =  await _context.User.Where(a => a.isActiveAccount == false).ToListAsync();
+            if (pageSize != 0)
+            {
+                return users.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+            {
+                return users;
+            }
+
         }
 
         [HttpGet]
