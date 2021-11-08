@@ -246,7 +246,7 @@ namespace Health_Care.Controllers
         [HttpGet("{Month}/{doctorid}")]
         public async Task<ActionResult<object>> GetAppointmentMonthRecords(int Month,int doctorid)
         {
-            var appointmentOfMonth = _context.Appointment.Where(x => x.appointmentDate.Contains("/" + Month + "/"));
+            var appointmentOfMonth = _context.Appointment.Where(x => x.appointmentDate.Contains("/" + Month + "/")).ToList();
             var NoRepittedPatientAppointment = new List<Appointment>();
             //foreach (var i in appointmentOfMonth)
             //{
@@ -256,27 +256,31 @@ namespace Health_Care.Controllers
             //    }
 
             //}
-            var doctors = _context.Doctor.Where(x => x.active);
+            var doctors = _context.Doctor.Where(x => x.active).ToList();
             if (appointmentOfMonth.Count() > 0 && doctors.Count() > 0)
             {
                 var MonthRecords = new List<object>();
                 if (doctorid != 0)
                 {
-                    doctors = doctors.Where(x => x.id == doctorid);
+                    doctors = doctors.Where(x => x.id == doctorid).ToList();
                 }
                 foreach (var doctor in doctors)
                 {
                     var subAppointment = appointmentOfMonth.Where(x => x.doctorId == doctor.id &&x.PatientComeToAppointment);
                     var subNoRepittedPatientAppointment = appointmentOfMonth.Where(x => x.doctorId == doctor.id);
+
+                    var TotalyPrice = subAppointment.Select(x => x.appointmentPrice).Sum();
+                    var BinefetOfApp = subAppointment.Select(x => x.appointmentPrice * x.PercentageFromAppointmentPriceForApp / 100).Sum();
+                    var BinefetOfHealthWorker = subAppointment.Select(x => x.appointmentPrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum();
                     MonthRecords.Add(new
                     {
                         healthWorkerid = doctor.id,
                         NumberOfServices = subNoRepittedPatientAppointment.Count(),
                         HealthWorkerName = doctor.name,
                         NumberOfUsers = subAppointment.Count(),
-                        TotalyPrice = subAppointment.Select(x => x.appointmentPrice).Sum(),
-                        BinefetOfApp = subAppointment.Select(x => x.appointmentPrice * x.PercentageFromAppointmentPriceForApp / 100).Sum(),
-                        BinefetOfHealthWorker = subAppointment.Select(x => x.appointmentPrice * (100 - x.PercentageFromAppointmentPriceForApp) / 100).Sum(),
+                        TotalyPrice ,
+                        BinefetOfApp ,
+                        BinefetOfHealthWorker ,
                     });
                 }
 
