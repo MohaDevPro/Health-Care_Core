@@ -10,7 +10,7 @@ using Health_Care.Models;
 
 namespace Health_Care.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class MedicalAdvicesController : ControllerBase
     {
@@ -22,10 +22,15 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/MedicalAdvices
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicalAdvice>>> GetMedicalAdvice()
+        [HttpGet("{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<MedicalAdvice>>> GetMedicalAdvice(int pageKey, int pageSize)
         {
-            return await _context.MedicalAdvice.ToListAsync();
+
+            var medecal= await _context.MedicalAdvice.ToListAsync();
+            if (pageSize != 0)
+                return medecal.Skip(pageKey).Take(pageSize).ToList();
+            else
+                return medecal;
         }
 
         // GET: api/MedicalAdvices/5
