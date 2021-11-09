@@ -199,11 +199,12 @@ namespace Health_Care.Controllers
         [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnHospitalID(int id, int pageKey, int pageSize)
         {
+            var userid = _context.Hospitals.FirstOrDefault(x=>x.id==id).UserId;
             var doctors=(from doctor in _context.Doctor
                          where doctor.active == true
                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
                           join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
-                          where clinic.userId == id
+                          where clinic.userId == userid
                           select new
                           {
                               id = doctor.id,
