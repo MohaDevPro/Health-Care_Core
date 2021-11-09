@@ -117,7 +117,8 @@ namespace Health_Care.Controllers
         [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetExternalClinicByHospitalID(int id, int pageKey, int pageSize)
         {
-            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==id && x.active == true)
+            var userid = _context.Hospitals.FirstOrDefault(x => x.id == id).UserId;
+            var externalClinic = await (from clinic in _context.ExternalClinic.Where(x=>x.userId==userid && x.active == true)
                                         select new
                                         {
                                             id = clinic.id,
