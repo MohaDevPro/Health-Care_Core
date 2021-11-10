@@ -43,29 +43,43 @@ namespace Health_Care.Controllers
 
             return userContract;
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllUserContracts(int roleid,int statusid)
+        [HttpGet("{roleID}/{statusId}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAllUserContracts(int roleID ,int statusId,int pageKey, int pageSize)
         {
             var contracts = await (from user in _context.User
-                             join userContract in _context.UserContract on user.id equals userContract.userId
-                                   where user.active==true && user.Roleid==roleid
-                             select new
-                             {
-                                 ContractId = userContract.id,
-                                 userId=user.id,
-                                 name=user.nameAR,
-                                 phonenumber=user.phoneNumber,
-                                 startDate=userContract.contractStartDate,
-                                 endDate=userContract.contractEndDate,
-                             }).ToListAsync();
-
+                                   join userContract in _context.UserContract on user.id equals userContract.userId
+                                   where user.active == true
+                                   select new
+                                   {
+                                       ContractId = userContract.id,
+                                       userId = user.id,
+                                       name = user.nameAR,
+                                       phonenumber = user.phoneNumber,
+                                       startDate = userContract.contractStartDate,
+                                       endDate = userContract.contractEndDate,
+                                   }).ToListAsync();
+            if (roleID != 0)
+            {
+                contracts = await (from user in _context.User
+                                   join userContract in _context.UserContract on user.id equals userContract.userId
+                                   where user.active == true && user.Roleid == roleID
+                                   select new
+                                   {
+                                       ContractId = userContract.id,
+                                       userId = user.id,
+                                       name = user.nameAR,
+                                       phonenumber = user.phoneNumber,
+                                       startDate = userContract.contractStartDate,
+                                       endDate = userContract.contractEndDate,
+                                   }).ToListAsync();
+            }
             List<object> result = new List<object>();
             foreach(var item in contracts)
             {
                 var date = DateTime.Parse(item.endDate);
                 if ((date - DateTime.Now).Days <= 14 && (date - DateTime.Now).Days >0)
                 {
-                    if(statusid==1 || statusid==3)
+                    if(statusId==1 || statusId==3)
                     result.Add(new
                     {
                         item.ContractId,
@@ -79,7 +93,7 @@ namespace Health_Care.Controllers
                 }
                 else if((date - DateTime.Now).Days > 14)
                 {
-                    if (statusid == 1 || statusid == 4)
+                    if (statusId == 1 || statusId == 4)
                         result.Add(new
                     {
                         item.ContractId,
@@ -93,7 +107,7 @@ namespace Health_Care.Controllers
                 }
                 else
                 {
-                    if (statusid == 1 || statusid == 2)
+                    if (statusId == 1 || statusId == 2)
                         result.Add(new
                     {
                         item.ContractId,
@@ -106,8 +120,10 @@ namespace Health_Care.Controllers
                     });
                 }
             }
-
-            return result;
+            if (pageSize != 0)
+                return result.Skip(pageKey).Take(pageSize).ToList();
+            else
+                return result;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<bool>> GetIsUserAcceptContract(int id)

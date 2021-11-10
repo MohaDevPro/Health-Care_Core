@@ -41,17 +41,20 @@ namespace Health_Care.Controllers
             return x ;
         }
 
-        [HttpGet] //for patient , clinic ......
-        public async Task<ActionResult<ReportAndComplaintViewModel>> GetReportAndComplaintForAdmin()
+        [HttpGet("{pageKey}/{pageSize}")] //for patient , clinic ......
+        public async Task<ActionResult<List<ReportAndComplaint>>> GetReportAndComplaintForAdmin(int pageKey, int pageSize)
         {
-            List<ReportAndComplaint> answeredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered).ToListAsync();
-            List<ReportAndComplaint> unAnsweredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered == false).OrderByDescending(x => x.ReportAndComplaintDate).ToListAsync();
-            ReportAndComplaintViewModel x = new ReportAndComplaintViewModel()
-            {
-                AnsweredReportAndComplaint = answeredReportAndComplaints,
-                UnAnsweredReportAndComplaint = unAnsweredReportAndComplaints,
-            };
-            return x;
+            //List<ReportAndComplaint> answeredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered).ToListAsync();
+            //List<ReportAndComplaint> unAnsweredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.isAnswered == false).OrderByDescending(x => x.ReportAndComplaintDate).ToListAsync();
+            //ReportAndComplaintViewModel x = new ReportAndComplaintViewModel()
+            //{
+            //    AnsweredReportAndComplaint = answeredReportAndComplaints,
+            //    UnAnsweredReportAndComplaint = unAnsweredReportAndComplaints,
+            //};
+            var reportAndComplaints = await _context.ReportAndComplaint.OrderByDescending(x => x.id).ToListAsync();
+            if (pageSize != 0)
+                return reportAndComplaints.Skip(pageKey).Take(pageSize).ToList();
+            else return reportAndComplaints;
         }
 
         // GET: api/ReportAndComplaints/5
