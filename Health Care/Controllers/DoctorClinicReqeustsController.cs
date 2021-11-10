@@ -85,6 +85,8 @@ namespace Health_Care.Controllers
                     users[i].request.IsCanceled,
                     users[i].request.CancelResoun,
                     users[i].user.Roleid,
+                   requestid= users[i].request.id,
+
                     clinicID = clinicid
                 }) ;
             }
@@ -113,14 +115,14 @@ namespace Health_Care.Controllers
         // PUT: api/DoctorClinicReqeusts/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{fromID}/{ToID}")]
-        public async Task<IActionResult> AcceptDoctorClinicRequests(int fromID,int ToID)
+        [HttpPut("{requestid}")]
+        public async Task<IActionResult> AcceptDoctorClinicRequests(int requestid)
         {
 
-            var doctorClinicReqeust = _context.DoctorClinicReqeusts.FirstOrDefault(x => x.FromID == fromID && x.ToID == ToID);
+            var doctorClinicReqeust = _context.DoctorClinicReqeusts.FirstOrDefault(x => x.id== requestid);
 
             doctorClinicReqeust.IsAccepted = true;
-            var listid = new List<int>() { fromID, ToID };
+            var listid = new List<int>() { doctorClinicReqeust.FromID, doctorClinicReqeust.ToID };
             int Clinicid=0;
             int Doctorid=0;
             foreach(var i in listid)
@@ -146,15 +148,15 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         [HttpPut("{fromID}/{ToID}/{Resoun}")]
-        public async Task<IActionResult> CancelDoctorClinicRequests(int fromID, int ToID,string Resoun)
+        public async Task<IActionResult> CancelDoctorClinicRequests(int requestid,string Resoun)
         {
 
-            var doctorClinicReqeust = _context.DoctorClinicReqeusts.FirstOrDefault(x => x.FromID == fromID && x.ToID == ToID);
+            var doctorClinicReqeust = _context.DoctorClinicReqeusts.FirstOrDefault(x => x.id == requestid);
 
             doctorClinicReqeust.IsCanceled = true;
             doctorClinicReqeust.IsAccepted = false;
             doctorClinicReqeust.CancelResoun = Resoun;
-            var listid = new List<int>() { fromID, ToID };
+            var listid = new List<int>() { doctorClinicReqeust.FromID, doctorClinicReqeust.ToID };
             int Clinicid = 0;
             int Doctorid = 0;
             foreach (var i in listid)

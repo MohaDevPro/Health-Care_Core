@@ -106,12 +106,13 @@ namespace Health_Care.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetAllUsersByRole( int roleId)
         {
+            var requests = _context.DoctorClinicReqeusts;
             if (roleId == 2) {
                 
                 return await
                 (from clinic in _context.ExternalClinic
                  join user in _context.User on clinic.userId equals user.id
-                 where clinic.active == true
+                 where clinic.active == true && (requests.FirstOrDefault(x=>x.IsCanceled==false&&(x.FromID==user.id||x.ToID==user.id)&&x.ClinicID==0||x.ClinicID==clinic.id)==null)
                  select new
                  {
                      
@@ -137,7 +138,7 @@ namespace Health_Care.Controllers
             else return await
                (from doctor in _context.Doctor
                 join user in _context.User on doctor.Userid equals user.id
-                where doctor.active == true && user.Roleid==5
+                where doctor.active == true && user.Roleid==5 && (requests.FirstOrDefault(x => x.IsCanceled == false && (x.FromID == user.id || x.ToID == user.id)) == null)
                 select new
                 {
                     user.id,
