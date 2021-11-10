@@ -103,13 +103,14 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllUsersByRole( int roleId)
+        [HttpGet("{roleId}/{regionId}/{specialityId}/{pageKey}/{pageSize}/{byString}")]
+       
+        public async Task<ActionResult<IEnumerable<object>>> GetAllUsersByRole( int roleId, int regionId,int specialityId,int pageKey,int pageSize,string byString)
         {
             var requests = _context.DoctorClinicReqeusts;
             if (roleId == 2) {
                 
-                return await
+                var clinicOBJ= await
                 (from clinic in _context.ExternalClinic
                  join user in _context.User on clinic.userId equals user.id
                  where clinic.active == true && (requests.FirstOrDefault(x=>x.IsCanceled==false&&(x.FromID==user.id||x.ToID==user.id)&&x.ClinicID==0||x.ClinicID==clinic.id)==null)
@@ -120,7 +121,7 @@ namespace Health_Care.Controllers
                      nameAR= clinic.Name,
                      //user.nameEN,
                      user.phoneNumber,
-                     user.regionId,
+                     listRegionId = new List<int>(user.regionId),
                      user.Roleid,
                      clinicID=clinic.id,
                      //user.isActiveAccount,
@@ -133,9 +134,22 @@ namespace Health_Care.Controllers
                                        where specialitydoctor.Doctorid == clinic.id  && specialitydoctor.Roleid == 1
                                        select specialit).ToList(),
                  }
-                              ).ToListAsync();
+                              ).Where(x=>x.nameAR.Contains(byString)).ToListAsync();
+                if (regionId != 0)
+                {
+                    clinicOBJ = clinicOBJ.Where(x => x.listRegionId.Contains(regionId)).ToList();
+                }
+                if (specialityId != 0)
+                {
+                    clinicOBJ = clinicOBJ.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
+                }
+                if (pageSize != 0)
+                    return clinicOBJ.Skip(pageKey).Take(pageSize).ToList();
+                else
+                    return clinicOBJ;
             }
-            else return await
+            else
+            { var doctorOBJ= await
                (from doctor in _context.Doctor
                 join user in _context.User on doctor.Userid equals user.id
                 where doctor.active == true && user.Roleid==5 && (requests.FirstOrDefault(x => x.IsCanceled == false && (x.FromID == user.id || x.ToID == user.id)) == null)
@@ -145,7 +159,12 @@ namespace Health_Care.Controllers
                     nameAR=doctor.name,
                     //user.nameEN,
                     user.phoneNumber,
-                    user.regionId,
+                    listRegionId= (from dr in _context.Doctor
+                                   join cldr in _context.clinicDoctors on dr.id equals cldr.Doctorid
+                                   join cl in _context.ExternalClinic on cldr.Clinicid equals cl.id
+                                   join usr in _context.User on cl.userId equals usr.id
+                                   where dr.id == doctor.id
+                                   select usr.regionId).ToList(),
                     user.Roleid,
                     //user.isActiveAccount,
                     //user.email,
@@ -158,6 +177,20 @@ namespace Health_Care.Controllers
                                       select specialit).ToList(),
                 }
                              ).ToListAsync();
+                if (regionId != 0)
+                {
+                    doctorOBJ = doctorOBJ.Where(x => x.listRegionId.Contains(regionId)).ToList();
+                }
+                if (specialityId != 0)
+                {
+                    doctorOBJ = doctorOBJ.Where(x => x.specialitylist.Exists(x => x.id == specialityId)).ToList();
+                }
+                if (pageSize != 0)
+                    return doctorOBJ.Skip(pageKey).Take(pageSize).ToList();
+                else
+                    return doctorOBJ;
+            }
+               
 
         }
 
