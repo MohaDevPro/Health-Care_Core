@@ -218,8 +218,8 @@ namespace Health_Care.Controllers
 
             //if (li == null) { return NotFound(); }
             if (pageSize != 0)
-                return workerAppointment.Skip(pageKey).Take(pageSize).ToList();
-            else return workerAppointment;
+                return workerAppointment.OrderByDescending(x=>x.id).Skip(pageKey).Take(pageSize).ToList();
+            else return workerAppointment.OrderByDescending(x=>x.id).ToList();
             //return li;
         }
 
