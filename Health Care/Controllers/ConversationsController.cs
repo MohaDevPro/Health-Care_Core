@@ -75,7 +75,7 @@ namespace Health_Care.Controllers
                     //TimeToLive = TimeSpan.FromDays(7),
                     Notification = new AndroidNotification()
                     {
-                        Icon = "stock_ticker_update",
+                        Icon = "ic_launcher",
                         Color = "#f45342",
                     },
                 },
