@@ -193,24 +193,34 @@ namespace Health_Care.Controllers
 
         }
 
-        [HttpGet("{userId}")]
-        public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentBasedOnStatusByUserId(int userId)
+        [HttpGet("{userId}/{acceptedByWorker}/{confirmWorkerComeByPatient}/{cancelledByWorker}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<List<WorkerAppointment>>> GetWorkerAppointmentBasedOnStatusByUserId(int userId,bool acceptedByWorker,bool confirmWorkerComeByPatient,bool cancelledByWorker,int pageKey,int pageSize)
         {
-            WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
+            //WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
+            var workerAppointment =await _context.WorkerAppointment.Where(x => x.patientId == userId).ToListAsync();
+            //var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
+            //var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
+            //var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+            //var UnConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
+            if (cancelledByWorker)
+                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+            else if (confirmWorkerComeByPatient)
+                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
+            else if (acceptedByWorker)
+                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
+            else
+                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.cancelledByHealthWorker == false).ToListAsync();
 
-            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
-            var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
-            var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
-            var UnConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
+            //li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
+            //li.WorkerComeToAppointment1 = WorkerComeToAppointment;
+            //li.cancelledAppointmentbyworker1 = cancelledAppointmentbyworker;
+            //li.UnConfirmedAppointmentbyworker1 = UnConfirmedAppointmentbyworker;
 
-
-            li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
-            li.WorkerComeToAppointment1 = WorkerComeToAppointment;
-            li.cancelledAppointmentbyworker1 = cancelledAppointmentbyworker;
-            li.UnConfirmedAppointmentbyworker1 = UnConfirmedAppointmentbyworker;
-
-            if (li == null) { return NotFound(); }
-            return li;
+            //if (li == null) { return NotFound(); }
+            if (pageSize != 0)
+                return workerAppointment.Skip(pageKey).Take(pageSize).ToList();
+            else return workerAppointment;
+            //return li;
         }
 
         //[HttpGet("{userId}")]

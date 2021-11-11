@@ -89,8 +89,8 @@ namespace Health_Care.Controllers
             }
         }
         // GET: api/Appointments/5
-        [HttpGet("{userId}/{isAccepted}/{cancelByUser}/{canceledBySecretary}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId, bool isAccepted, bool cancelByUser, bool canceledBySecretary)
+        [HttpGet("{userId}/{isAccepted}/{cancelByUser}/{canceledBySecretary}/{isPaid}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId, bool isAccepted, bool cancelByUser, bool canceledBySecretary,bool isPaid,int pageKey,int pageSize)
         {
             var appointment = await(from appointments in  _context.Appointment join
                                     Clinic in _context.ExternalClinic on appointments.distnationClinicId equals Clinic.id
@@ -102,10 +102,16 @@ namespace Health_Care.Controllers
                                     
                                     ).ToListAsync();
             if (cancelByUser || canceledBySecretary)
-                return appointment.Where(x => x.appointment.cancelledByUser || x.appointment.cancelledByClinicSecretary).OrderByDescending(x=>x.appointment.id).ToList();
-            else if (isAccepted)
-                return appointment.Where(x => x.appointment.Accepted).OrderByDescending(x=>x.appointment.id).ToList();
-            else return appointment.Where(x => x.appointment.Accepted == false && x.appointment.cancelledByUser == false && x.appointment.cancelledByClinicSecretary == false).OrderByDescending(x=>x.appointment.id).ToList();
+                appointment= appointment.Where(x => x.appointment.cancelledByUser || x.appointment.cancelledByClinicSecretary).OrderByDescending(x=>x.appointment.id).ToList();
+            else if (isPaid)
+                appointment= appointment.Where(x => x.appointment.Paid).OrderByDescending(x=>x.appointment.id).ToList();
+            else if(isAccepted) 
+                appointment= appointment.Where(x => x.appointment.Accepted).OrderByDescending(x => x.appointment.id).ToList();
+            else appointment= appointment.Where(x => x.appointment.Accepted == false && x.appointment.cancelledByUser == false && x.appointment.cancelledByClinicSecretary == false).OrderByDescending(x=>x.appointment.id).ToList();
+
+            if (pageSize != 0)
+                return appointment.Skip(pageKey).Take(pageSize).ToList();
+            else return appointment;
             //if (appointment == null) { return NotFound(); }
             //return appointment;
         }
