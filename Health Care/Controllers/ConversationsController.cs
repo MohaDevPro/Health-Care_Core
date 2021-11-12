@@ -29,10 +29,10 @@ namespace Health_Care.Controllers
         {
             return await _context.Conversation.Where(c=>c.isRecived == false).ToListAsync();
         }
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Conversation>>> GetConversationByUserId(int id)
+        [HttpGet("{userIdFrom}/{userIdTo}/{appointmentId}")]
+        public async Task<ActionResult<IEnumerable<Conversation>>> GetConversationByUserId(int userIdFrom,int userIdTo,int appointmentId)
         {
-            return await _context.Conversation.Where(c=>c.isRecived == false && c.userIdFrom == id).ToListAsync();
+            return await _context.Conversation.Where(c=>c.isRecived == false && c.isReaded == false && c.userIdFrom == userIdFrom && c.userIdTo == userIdTo && c.appointmentId == appointmentId).ToListAsync();
         }
 
         // GET: api/Conversations/5
