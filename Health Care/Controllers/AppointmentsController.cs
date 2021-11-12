@@ -94,10 +94,12 @@ namespace Health_Care.Controllers
         {
             var appointment = await(from appointments in  _context.Appointment join
                                     Clinic in _context.ExternalClinic on appointments.distnationClinicId equals Clinic.id
+                                    join doctor in _context.Doctor on appointments.doctorId equals doctor.id
                                     where appointments.userId==userId 
                                     select new {
                                         appointment=appointments,
                                         Doctor=new {Clinic.id,Clinic.Name},
+                                        doctorName=doctor.name
                                     }
                                     
                                     ).ToListAsync();
@@ -108,6 +110,8 @@ namespace Health_Care.Controllers
             else if(isAccepted) 
                 appointment= appointment.Where(x => x.appointment.Accepted).OrderByDescending(x => x.appointment.id).ToList();
             else appointment= appointment.Where(x => x.appointment.Accepted == false && x.appointment.cancelledByUser == false && x.appointment.cancelledByClinicSecretary == false).OrderByDescending(x=>x.appointment.id).ToList();
+
+
 
             if (pageSize != 0)
                 return appointment.Skip(pageKey).Take(pageSize).ToList();
