@@ -614,11 +614,10 @@ namespace Health_Care.Controllers
                         fileStream.Dispose();
                         d.backgroundImage = @"\images\" + "bg_doctor_" + Doctor.id + "." + bg.ContentType.Split('/')[1];
                     }
-                    if (Picture != null || bg != null)
-                    {
+                    
                         //_context.Entry(Doctor).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
-                    }
+                    
 
                     return CreatedAtAction("GetDoctor", new { id = Doctor.id }, Doctor);
                 }

@@ -168,6 +168,37 @@ namespace Health_Care.Controllers
                 return listFinalResult.ToList();
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorinsideClinicBasedonClinicID(int id, int pageKey, int pageSize)
+        {
+
+            var doctors = await (from doctor in _context.Doctor
+                                 where doctor.active == true
+                                 join Clinic in _context.ExternalClinic on doctor.Userid equals Clinic.userId
+                                 where Clinic.id == id
+                                 select new
+                                 {
+                                     id = doctor.id,
+                                     Name = doctor.name,
+                                     Picture = doctor.Picture,
+                                     BackgroundImage = doctor.backgroundImage,
+                                     AppointmentPrice = doctor.appointmentPrice,
+                                     NumberofAvailableAppointment = doctor.numberOfAvailableAppointment,
+                                     specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                       join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                       where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                       select specialit).ToList(),
+                                 }
+
+                          ).ToListAsync();
+            if (pageSize != 0)
+            {
+                return doctors.Skip(pageKey).Take(pageSize).ToList();
+            }
+            else
+                return doctors.ToList();
+        }
+
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnClinicID(int id,int pageKey,int pageSize)
         {
 
