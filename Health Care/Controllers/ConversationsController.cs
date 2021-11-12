@@ -53,53 +53,58 @@ namespace Health_Care.Controllers
         {
             _context.Conversation.Add(conversation);
             await _context.SaveChangesAsync();
-            string ToUserFCMToken = _context.FCMTokens.Where(t => t.UserID == conversation.userIdTo).FirstOrDefault().Token;
-            User FromUser = _context.User.Where(u => u.id == conversation.userIdFrom).FirstOrDefault();
-
-            var message = new Message()
+            var ToUserFCMToken = _context.FCMTokens.Where(t => t.UserID == conversation.userIdTo).FirstOrDefault();
+            if (ToUserFCMToken != null)
             {
-                Notification = new Notification()
+                
+                User FromUser = _context.User.Where(u => u.id == conversation.userIdFrom).FirstOrDefault();
+
+                var message = new Message()
                 {
-                    Body = conversation.message,
-                    Title = FromUser.nameAR,
-                },
-                Data = new Dictionary<string, string>() {
+                    Notification = new Notification()
+                    {
+                        Body = conversation.message,
+                        Title = FromUser.nameAR,
+                    },
+                    Data = new Dictionary<string, string>() {
                     { "id", conversation.id.ToString() },
                     { "FromUser", FromUser.nameAR },
                     { "message", conversation.message }
                 },
-                Android = new AndroidConfig()
-                {
-                    Priority = Priority.High,
+                    Android = new AndroidConfig()
+                    {
+                        Priority = Priority.High,
 
-                    //TimeToLive = TimeSpan.FromDays(7),
-                    Notification = new AndroidNotification()
-                    {
-                        Icon = "ic_launcher",
-                        Color = "#f45342",
+                        //TimeToLive = TimeSpan.FromDays(7),
+                        Notification = new AndroidNotification()
+                        {
+                            Icon = "ic_launcher",
+                            Color = "#f45342",
+                        },
                     },
-                },
-                Apns = new ApnsConfig()
-                {
-                    Aps = new Aps()
+                    Apns = new ApnsConfig()
                     {
-                        //Alert = new ApsAlert() { Body = FromUser.name, Title = conversation.message, },
-                        ContentAvailable = true,
-                        Badge = 42,
-                    },
-                    Headers = new Dictionary<string, string>() {
+                        Aps = new Aps()
+                        {
+                            //Alert = new ApsAlert() { Body = FromUser.name, Title = conversation.message, },
+                            ContentAvailable = true,
+                            Badge = 42,
+                        },
+                        Headers = new Dictionary<string, string>() {
                         { "apns-priority", "5" }, // Must be `5` when `contentAvailable` is set to true.
                         { "apns-topic", "io.flutter.plugins.firebase.messaging" } // bundle identifier
                     },
-                },
+                    },
 
-                Token = ToUserFCMToken,
+                    Token = ToUserFCMToken.Token,
                 };
 
                 var response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
                 // See the BatchResponse reference documentation
                 // for the contents of response.
                 Console.WriteLine($"{response} messages were sent successfully");
+
+            }
 
             return conversation;
         }
