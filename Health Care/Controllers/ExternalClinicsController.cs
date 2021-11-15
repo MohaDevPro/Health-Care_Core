@@ -178,6 +178,7 @@ namespace Health_Care.Controllers
                 Name = clinic.Name,
                 Picture = clinic.Picture,
                 BackgroundImage = clinic.BackgroundImage,
+                 clinic.userId,
                 specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
                                   join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
                                   where specialitydoctor.Doctorid == clinic.id && specialitydoctor.Roleid == 1
