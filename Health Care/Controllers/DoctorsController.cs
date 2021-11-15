@@ -262,6 +262,41 @@ namespace Health_Care.Controllers
             }
             return notRepitted.Skip(pageKey).Take(pageSize).ToList();
         }
+        [HttpGet("{id}/{pageKey}/{pageSize}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetDoctorBasedOnDepartmentID(int id, int pageKey, int pageSize)
+        {
+            var doctors = (from doctor in _context.Doctor
+                           where doctor.active == true
+                           join Clinicdoctor in _context.clinicDoctors on doctor.id equals Clinicdoctor.Doctorid
+                           join clinic in _context.ExternalClinic on Clinicdoctor.Clinicid equals clinic.id
+                           where clinic.HospitalDepartmentsID == id && clinic.active
+                           select new
+                           {
+                               id = doctor.id,
+                               Name = doctor.name,
+                               Picture = doctor.Picture,
+                               BackgroundImage = doctor.backgroundImage,
+                               specialitylist = (from specialitydoctor in _context.SpeciallyDoctors
+                                                 join specialit in _context.Speciality on specialitydoctor.Specialityid equals specialit.id
+                                                 where specialitydoctor.Doctorid == doctor.id && specialit.isBasic == true && specialitydoctor.Roleid == 0
+                                                 select specialit).ToList(),
+                           }
+
+                          );
+            List<object> notRepitted = new List<object>();
+            List<int> checkIDS = new List<int>();
+
+            foreach (var i in doctors)
+            {
+                if (!checkIDS.Contains(i.id))
+                {
+                    notRepitted.Add(i);
+                    checkIDS.Add(i.id);
+                }
+            }
+            return notRepitted.Skip(pageKey).Take(pageSize).ToList();
+        }
+
         // GET: api/Doctors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetDoctor(int id)
