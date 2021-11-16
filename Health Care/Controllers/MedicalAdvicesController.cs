@@ -28,9 +28,9 @@ namespace Health_Care.Controllers
 
             var medecal= await _context.MedicalAdvice.ToListAsync();
             if (pageSize != 0)
-                return medecal.Skip(pageKey).Take(pageSize).ToList();
+                return medecal.OrderByDescending(x => x.id).Skip(pageKey).Take(pageSize).ToList();
             else
-                return medecal;
+                return medecal.OrderByDescending(x => x.id).ToList() ;
         }
 
         // GET: api/MedicalAdvices/5
