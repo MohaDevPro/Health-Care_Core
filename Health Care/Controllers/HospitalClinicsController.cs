@@ -32,23 +32,24 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<IEnumerable<object>>> GetHospitalClinic(int regionId, int departId, int pageKey, int pageSize, string byString)
         {
             byString = byString.Replace("empty", "");
-            var hos= await (from hospital in _context.Hospitals
-                          join user in _context.User on hospital.UserId equals user.id 
-                          
-                          where hospital.active == true
-                          select new
-                          {
-                              id = hospital.id,
-                              Name = hospital.Name,
-                              Picture = hospital.Picture,
-                              user.regionId,
-                              departmentsList = (from HospitalDep in _context.hospitalDepartments
-                                                join departments in _context.departmentsOfHospitals on HospitalDep.DepatmentsOfHospitalID equals departments.id
-                                                where HospitalDep.Hospitalid == hospital.id && departments.active == true 
-                                                select departments).ToList(),
-                              BackgroundImage =hospital.BackgoundImage,
-                              Description = hospital.Description
-                          }
+            var hos = await (from hospital in _context.Hospitals
+                             join user in _context.User on hospital.UserId equals user.id
+
+                             where hospital.active == true
+                             select new
+                             {
+                                 id = hospital.id,
+                                 Name = hospital.Name,
+                                 Picture = hospital.Picture,
+                                 user.regionId,
+                                 userId= hospital.UserId,
+                                 departmentsList = (from HospitalDep in _context.hospitalDepartments
+                                                 join departments in _context.departmentsOfHospitals on HospitalDep.DepatmentsOfHospitalID equals departments.id
+                                                 where HospitalDep.Hospitalid == hospital.id && departments.active == true
+                                                 select departments).ToList(),
+                                 BackgroundImage = hospital.BackgoundImage,
+                                 Description = hospital.Description
+                             }
 
                           ).Where(x=>x.Name.Contains(byString)).ToListAsync();
             if (regionId != 0)

@@ -56,17 +56,18 @@ namespace Health_Care.Controllers
                 refreshRequest.AccessToken = GenerateAccessToken(user2);
                 string type = _context.Role.Where(r => r.id == user2.Roleid).FirstOrDefault().RoleName;
                 FCM_Tokens fCM_Token = _context.FCMTokens.Where(t => t.DeviceID == user2.DeviceId).FirstOrDefault();
-                if (fCM_Token != null)
+                if (fCM_Token != null )
                 {
                     fCM_Token.UserID = user2.id;
                 }
                 else
                 {
-                    _context.FCMTokens.Add(new FCM_Tokens() { 
+                    _context.FCMTokens.Add(new FCM_Tokens()
+                    {
                         DeviceID = user2.DeviceId,
                         UserID = user2.id,
-                        
-                    });
+                        Token = fCM_Token.Token
+                    }) ;
                 }
                 int SpecificId;
                 if (user2.Roleid == 1)
