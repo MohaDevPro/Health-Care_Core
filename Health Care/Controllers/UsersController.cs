@@ -249,6 +249,41 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
+        [HttpPut("{id}")]
+        public async Task<ActionResult<User>> PutPatientDate(int id, User user)
+        {
+            if (id != user.id)
+            {
+                return BadRequest();
+            }
+            var patient = await _context.User.FindAsync(id);
+            patient.address = user.address;
+            patient.nameAR = user.nameAR;
+            patient.phoneNumber = user.phoneNumber;
+            patient.regionId = user.regionId;
+            
+
+            _context.Entry(patient).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return patient;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            //return NoContent();
+        }
 
         [HttpPut("{result}/{id}")]
         public async Task<IActionResult> PutUserCompleteData(bool reuslt,int id )
