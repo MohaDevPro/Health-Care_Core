@@ -16,6 +16,7 @@ namespace Health_Care.Models
         public bool ConfirmToAddBalance { get; set; }
         public bool IsCanceled { get; set; }
         public bool IsRestore { get; set; }
+        public bool IsRestored { get; set; }
         public string ResounOfCancel { get; set; }
 
 

@@ -28,9 +28,29 @@ namespace Health_Care.Controllers
 
         // GET: api/ChargeOrRechargeRequests
         [HttpGet("{pageKey}/{pageSize}")]
-        public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequest(int pageKey, int pageSize)
+        public async Task<ActionResult<IEnumerable<object>>> GetChargeOrRechargeRequest(int pageKey, int pageSize)
         {
-            var recharges=await _context.ChargeOrRechargeRequest.OrderByDescending(x=>x.id).ToListAsync();
+            var recharges=await(from recharge in _context.ChargeOrRechargeRequest.OrderByDescending(x=>x.id)
+                                join user in _context.User on recharge.userId equals user.id
+                                select new
+                                {
+                                    recharge.id,
+                                    recharge.IsCanceled,
+                                    recharge.IsRestore,
+                                    recharge.IsRestored,
+                                    recharge.NumberOfReceipt,
+                                    recharge.rechargeDate,
+                                    recharge.ResounOfCancel,
+                                    recharge.BalanceReceipt,
+                                    recharge.BalanceReceiptImage,
+                                    recharge.ConfirmToAddBalance,
+                                    user.nameAR,
+                                    user.phoneNumber,
+
+
+                                }
+                                
+                                ).ToListAsync();
             if (pageSize != 0)
             {
                 return recharges.Skip(pageKey).Take(pageSize).ToList();
