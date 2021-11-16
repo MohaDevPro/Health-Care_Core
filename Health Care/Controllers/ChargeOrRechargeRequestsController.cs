@@ -44,6 +44,7 @@ namespace Health_Care.Controllers
                                     recharge.BalanceReceipt,
                                     recharge.BalanceReceiptImage,
                                     recharge.ConfirmToAddBalance,
+                                    recharge.userId,
                                     user.nameAR,
                                     user.phoneNumber,
 
