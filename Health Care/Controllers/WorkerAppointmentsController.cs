@@ -251,7 +251,14 @@ namespace Health_Care.Controllers
             {
                 return BadRequest();
             }
-
+            if (workerAppointment.cancelledByHealthWorker)
+            {
+                Patient patient = _context.Patient.Where(p=>p.userId == workerAppointment.patientId).FirstOrDefault();
+                if (patient == null)
+                {
+                    patient.Balance += workerAppointment.servicePrice;
+                }
+            }
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try
