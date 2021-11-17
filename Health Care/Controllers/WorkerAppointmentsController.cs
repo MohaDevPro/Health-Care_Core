@@ -72,23 +72,37 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{workerId}")]
-        public async Task<ActionResult<IEnumerable<WorkerAppointmentViewModel>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
+        public async Task<ActionResult<IEnumerable<object>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
         {
-            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+            List<object> result = new List<object>();
 
-            string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
-            var workerAppointmentList = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
-                .OrderBy(x=>x.appointmentDate).ToListAsync();
+            //string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
+            var workerAppointmentList = await (from appointment in  _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
+                .OrderBy(x=>x.appointmentDate)
+                join user in _context.User on appointment.patientId equals user.id
+                join service in _context.Service on appointment.serviceId equals service.id
+                select new
+                {
+                    appointment,
+                    user.nameAR,
+                    user.phoneNumber,
+                    service.serviceName
+                }
+                
+                ).ToListAsync();
 
             foreach (var item in workerAppointmentList)
             {
-                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate.Trim() == TodayDate && x.appointmentId == item.id);
+                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.appointmentId == item.appointment.id);
                 if (workerAppointmentRequest != null)
                 {
-                    result.Add(new WorkerAppointmentViewModel()
+                    result.Add(new 
                     {
-                        workerAppointment = item,
+                        workerAppointment = item.appointment,
                         healthWorkerRequestByUser = workerAppointmentRequest,
+                        item.nameAR,
+                        item.phoneNumber,
+                        item.serviceName
                     });
                 }
 
