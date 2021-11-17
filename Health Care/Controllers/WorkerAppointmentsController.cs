@@ -213,7 +213,7 @@ namespace Health_Care.Controllers
             //WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
             //var workerAppointment =await _context.WorkerAppointment.Where(x => x.patientId == userId).ToListAsync();
             var workerAppointment = await (from appoitnment in _context.WorkerAppointment
-                                           join worker in _context.HealthcareWorker on appoitnment.workerId equals worker.id join service in _context.Service on appoitnment.serviceId equals service.id
+                                           join worker in _context.HealthcareWorker on appoitnment.workerId equals worker.userId join service in _context.Service on appoitnment.serviceId equals service.id
                                            where appoitnment.patientId == userId
                                            select new
                                            {
