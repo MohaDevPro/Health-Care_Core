@@ -87,6 +87,10 @@ namespace Health_Care.Controllers
         {
             var p = _context.Patient.Where(x=>x.userId == id).FirstOrDefault();
             var charges = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
+            if (charges.Count == 0)
+            {
+                return false;
+            }
             var balance = 0;
             //var First = _context.ChargeOrRechargeRequest.Where(x=>x.IsRestore == true && x.userId == id).ToList();
             foreach (var item in charges)
@@ -96,7 +100,7 @@ namespace Health_Care.Controllers
             }
             var dateList = charges[0].rechargeDate.Split("/");
             var date =new DateTime(Convert.ToInt32(dateList[2]), Convert.ToInt32(dateList[1]), Convert.ToInt32(dateList[0])).AddDays(5) ;
-            return date >= DateTime.Now && p.Balance == balance;
+            return date >= DateTime.Now && p.Balance == balance && balance != 0;
         }
 
         // GET: api/ChargeOrRechargeRequests/5
