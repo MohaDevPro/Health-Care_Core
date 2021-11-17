@@ -34,13 +34,35 @@ namespace Mr.Delivery.Models
 
         public async Task DoWork(CancellationToken stoppingToken)
         {
+            Console.WriteLine("CancellationToken");
+            _logger.LogInformation("_logger CancellationToken");
             while (!stoppingToken.IsCancellationRequested)
             {
                 
                 List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
                 
                 var notifications =await _context.Notifications.ToListAsync();
-
+                var WorkerAppointments = _context.WorkerAppointment.Where(w=> w.AcceptedByHealthWorker == false).ToList();
+                _logger.LogInformation($"------WorkerAppointments-------------{WorkerAppointments.Count}------------------------");
+                _logger.LogInformation("LogInformation AppointmentDate");
+                foreach (var item in WorkerAppointments)
+                {
+                    var requst = _context.HealthWorkerRequestByUser.Where(x=>x.appointmentId ==item.id).FirstOrDefault();
+                    var AppointmentDate = requst.RequestDate.Split('/');
+                    var time = requst.RequestTime.Split(':');
+                    DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]),Convert.ToInt32(time[0]),Convert.ToInt32(time[1]),00);
+                    DateTime dateNow = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 00);
+                    
+                    _logger.LogInformation("AppointmentDate");
+                    if (date.AddMinutes(9) < dateNow)
+                    {
+                        Patient patient = _context.Patient.FirstOrDefault(p=>p.userId == item.patientId);
+                        patient.Balance += item.servicePrice;
+                        _context.HealthWorkerRequestByUser.Remove(requst);
+                        _context.WorkerAppointment.Remove(item);
+                        _context.SaveChanges();
+                    }
+                }
                 foreach (Notifications n in notifications)
                 {
 

@@ -14,6 +14,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Mr.Delivery.Models;
 
 namespace Health_Care
 {
@@ -62,6 +63,8 @@ namespace Health_Care
                     ClockSkew = TimeSpan.Zero
                 };
             });
+            services.AddHostedService<ConsumeScopedServiceHostedService>();
+            services.AddScoped<IScopedProcessingService, ScopedProcessingService>();
             FirebaseApp.Create(new AppOptions()
             {
                 Credential = GoogleCredential.FromFile(_env.ContentRootPath + @"\Firebase\healthcare-45abe-firebase-adminsdk-1pkof-68c59dcf29.json"),
