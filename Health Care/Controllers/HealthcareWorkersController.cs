@@ -265,7 +265,7 @@ namespace Health_Care.Controllers
         {
             var favorite = await _context.Favorite.Where(x => x.PatientId == patientId && x.type == "worker").ToListAsync();
             Bystring = Bystring.Replace("empty", "");
-            var WorkerH = (from HealthWorker in _context.HealthcareWorker
+            var WorkerH =await (from HealthWorker in _context.HealthcareWorker
                                  join user in _context.User on HealthWorker.userId equals user.id
                                  where HealthWorker.active == true
                                  select new
@@ -283,15 +283,15 @@ namespace Health_Care.Controllers
                                                  select service).ToList(),
                                      Description = HealthWorker.Description
                                  }
-             ).Where(x => x.Name.Contains(Bystring));
+             ).Where(x => x.Name.Contains(Bystring)).ToListAsync();
 
              if (serviceId != 0)
             {
-                WorkerH = WorkerH.Where(x => x.services.Exists(x => x.id == serviceId));
+                WorkerH = WorkerH.Where(x => x.services.Exists(x => x.id == serviceId)).ToList();
             }
              if (regionId != 0)
             {
-                WorkerH = WorkerH.Where(x => x.regionworking.Exists(c => c.RegionID == regionId));
+                WorkerH = WorkerH.Where(x => x.regionworking.Exists(c => c.RegionID == regionId)).ToList();
             }
             var listFinalResult = new List<object>();
             bool flag = false;

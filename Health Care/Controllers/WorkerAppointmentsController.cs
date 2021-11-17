@@ -72,23 +72,37 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{workerId}")]
-        public async Task<ActionResult<IEnumerable<WorkerAppointmentViewModel>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
+        public async Task<ActionResult<IEnumerable<object>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
         {
-            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+            List<object> result = new List<object>();
 
-            string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
-            var workerAppointmentList = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
-                .OrderBy(x=>x.appointmentDate).ToListAsync();
+            //string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
+            var workerAppointmentList = await (from appointment in  _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
+                .OrderBy(x=>x.appointmentDate)
+                join user in _context.User on appointment.patientId equals user.id
+                join service in _context.Service on appointment.serviceId equals service.id
+                select new
+                {
+                    appointment,
+                    user.nameAR,
+                    user.phoneNumber,
+                    service.serviceName
+                }
+                
+                ).ToListAsync();
 
             foreach (var item in workerAppointmentList)
             {
-                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.RequestDate.Trim() == TodayDate && x.appointmentId == item.id);
+                var workerAppointmentRequest = await _context.HealthWorkerRequestByUser.FirstOrDefaultAsync(x => x.appointmentId == item.appointment.id);
                 if (workerAppointmentRequest != null)
                 {
-                    result.Add(new WorkerAppointmentViewModel()
+                    result.Add(new 
                     {
-                        workerAppointment = item,
+                        workerAppointment = item.appointment,
                         healthWorkerRequestByUser = workerAppointmentRequest,
+                        item.nameAR,
+                        item.phoneNumber,
+                        item.serviceName
                     });
                 }
 
@@ -194,22 +208,47 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{userId}/{acceptedByWorker}/{confirmWorkerComeByPatient}/{cancelledByWorker}/{pageKey}/{pageSize}")]
-        public async Task<ActionResult<List<WorkerAppointment>>> GetWorkerAppointmentBasedOnStatusByUserId(int userId,bool acceptedByWorker,bool confirmWorkerComeByPatient,bool cancelledByWorker,int pageKey,int pageSize)
+        public async Task<ActionResult<IEnumerable<object>>> GetWorkerAppointmentBasedOnStatusByUserId(int userId,bool acceptedByWorker,bool confirmWorkerComeByPatient,bool cancelledByWorker,int pageKey,int pageSize)
         {
             //WorkerAppointmentsCategories li = new WorkerAppointmentsCategories();
-            var workerAppointment =await _context.WorkerAppointment.Where(x => x.patientId == userId).ToListAsync();
+            //var workerAppointment =await _context.WorkerAppointment.Where(x => x.patientId == userId).ToListAsync();
+            var workerAppointment = await (from appoitnment in _context.WorkerAppointment
+                                           join worker in _context.HealthcareWorker on appoitnment.workerId equals worker.id join service in _context.Service on appoitnment.serviceId equals service.id
+                                           where appoitnment.patientId == userId
+                                           select new
+                                           {
+                                               appoitnment.id,
+                                               appoitnment.patientId,
+                                               appoitnment.PercentageFromAppointmentPriceForApp,
+                                               appoitnment.regionId,
+                                               appoitnment.reservedAmountUntilConfirm,
+                                               appoitnment.serviceId,
+                                               appoitnment.servicePrice,
+                                               workerName= worker.Name,
+                                               appoitnment.workerId,
+                                               appoitnment.cancelledByHealthWorker,
+                                               appoitnment.appointmentDate,
+                                               appoitnment.appointmentShift,
+                                               appoitnment.cancelReasonWrittenByHealthWorker,
+                                               appoitnment.CodeConfirmation,
+                                               appoitnment.ConfirmHealthWorkerCome_ByHimself,
+                                               appoitnment.ConfirmHealthWorkerCome_ByPatient,
+                                               appoitnment.doesNotCome,
+                                               appoitnment.AcceptedByHealthWorker,
+                                               service.serviceName,
+                                           }).ToListAsync();
             //var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient==false).ToListAsync();
             //var WorkerComeToAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
             //var cancelledAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
             //var UnConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
             if (cancelledByWorker)
-                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToListAsync();
+                workerAppointment = workerAppointment.Where(x => x.patientId == userId && x.cancelledByHealthWorker == true).ToList();
             else if (confirmWorkerComeByPatient)
-                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToListAsync();
+                workerAppointment = workerAppointment.Where(x => x.patientId == userId && x.ConfirmHealthWorkerCome_ByPatient == true).ToList();
             else if (acceptedByWorker)
-                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false).ToListAsync();
+                workerAppointment = workerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == false).ToList();
             else
-                workerAppointment = await _context.WorkerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.cancelledByHealthWorker == false).ToListAsync();
+                workerAppointment = workerAppointment.Where(x => x.patientId == userId && x.AcceptedByHealthWorker == false && x.cancelledByHealthWorker == false).ToList();
 
             //li.ConfirmedAppointmentbyworker1 = ConfirmedAppointmentbyworker;
             //li.WorkerComeToAppointment1 = WorkerComeToAppointment;
