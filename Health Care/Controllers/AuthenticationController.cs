@@ -43,7 +43,7 @@ namespace Health_Care.Controllers
 
             if (user2 != null)
             {
-                if (!user2.isActiveAccount)
+                if (!user2.isActiveAccount && user2.completeData)
                 {
                     return new ObjectResult("الحساب غير مفعل، تواصل مع إدارة التطبيق") { StatusCode = 205 };
                 }
