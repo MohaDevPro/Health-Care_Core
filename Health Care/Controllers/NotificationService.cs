@@ -42,7 +42,7 @@ namespace Mr.Delivery.Models
                 List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
                 
                 var notifications =await _context.Notifications.ToListAsync();
-                var WorkerAppointments = _context.WorkerAppointment.Where(w=> w.AcceptedByHealthWorker == false).ToList();
+                var WorkerAppointments = _context.WorkerAppointment.Where(w=> w.AcceptedByHealthWorker == false && w.cancelledByHealthWorker == false).ToList();
                 _logger.LogInformation($"------WorkerAppointments-------------{WorkerAppointments.Count}------------------------");
                 _logger.LogInformation("LogInformation AppointmentDate");
                 foreach (var item in WorkerAppointments)
@@ -51,10 +51,12 @@ namespace Mr.Delivery.Models
                     var AppointmentDate = requst.RequestDate.Split('/');
                     var time = requst.RequestTime.Split(':');
                     DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]),Convert.ToInt32(time[0]),Convert.ToInt32(time[1]),00);
-                    DateTime dateNow = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 00);
-                    
+                    DateTime dateNow = DateTime.UtcNow.AddHours(3);
+                    DateTime dateNowLocal = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 00);
+                    _logger.LogInformation($"------date Appointments-------------{date}------------------------");
+                    _logger.LogInformation($"------dateNow-------------{dateNowLocal}-------------{date.AddMinutes(9) < dateNowLocal}-----------");
                     _logger.LogInformation("AppointmentDate");
-                    if (date.AddMinutes(9) < dateNow)
+                    if (date.AddMinutes(9) < dateNowLocal)
                     {
                         Patient patient = _context.Patient.FirstOrDefault(p=>p.userId == item.patientId);
                         patient.Balance += item.servicePrice;
