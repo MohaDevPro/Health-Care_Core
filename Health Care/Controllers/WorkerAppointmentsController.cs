@@ -161,6 +161,39 @@ namespace Health_Care.Controllers
             return result;
         }
 
+   
+        [HttpGet("{workerId}")]
+        public async Task<ActionResult<object>> GetCofirmedAppointmentBasedOnWorkerId(int workerId)
+        {
+            //List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
+
+            //string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
+            var ConfirmedAppointmentbyworker = await _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == true && x.ConfirmHealthWorkerCome_ByPatient == true && x.cancelledByHealthWorker == false)
+                .OrderBy(x => x.appointmentDate).ToListAsync();
+
+            List<Service> servicesList = new List<Service>();
+            List<Service> servicesListBasedOnAppointmentList = await _context.Service.ToListAsync();
+            
+            List<User> patienList = new List<User>();
+            List<User> patientInfo = await _context.User.ToListAsync();
+
+            foreach (var item in ConfirmedAppointmentbyworker)
+            {
+                servicesList.Add(servicesListBasedOnAppointmentList.FirstOrDefault(e => e.id == item.serviceId));
+                patienList.Add(patientInfo.FirstOrDefault(e => e.id == item.patientId));
+            }
+
+            var result = new
+            {
+                ConfirmedAppointmentbyworker = ConfirmedAppointmentbyworker,
+                servicesListBasedOnAppointmentList = servicesList,
+                patientInfo = patienList,
+            };
+            if (result == null) { return NotFound(); }
+
+            return result;
+        }
+
         [HttpGet("{Month}/{HealthWorkerID}")]
         public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
