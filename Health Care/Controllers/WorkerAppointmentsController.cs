@@ -77,7 +77,7 @@ namespace Health_Care.Controllers
             List<object> result = new List<object>();
 
             //string TodayDate = DateTime.Now.ToUniversalTime().AddHours(3).ToString("dd/MM/yyyy");
-            var workerAppointmentList = await (from appointment in  _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false)
+            var workerAppointmentList = await (from appointment in  _context.WorkerAppointment.Where(x => x.workerId == workerId && x.AcceptedByHealthWorker == false&&x.cancelledByHealthWorker==false)
                 .OrderBy(x=>x.appointmentDate)
                 join user in _context.User on appointment.patientId equals user.id
                 join service in _context.Service on appointment.serviceId equals service.id
