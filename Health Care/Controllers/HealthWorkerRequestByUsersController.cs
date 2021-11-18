@@ -96,7 +96,7 @@ namespace Health_Care.Controllers
                 return NotFound();
             }
             WorkerAppointment appointment = _context.WorkerAppointment.Where(x=>x.id == healthWorkerRequestByUser.appointmentId).FirstOrDefault();
-            Patient patient = _context.Patient.Where(x=>x.id == appointment.patientId).FirstOrDefault();
+            Patient patient = _context.Patient.Where(x=>x.userId == appointment.patientId).FirstOrDefault();
             patient.Balance += appointment.servicePrice;
             _context.HealthWorkerRequestByUser.Remove(healthWorkerRequestByUser);
             await _context.SaveChangesAsync();
