@@ -224,7 +224,7 @@ namespace Health_Care.Controllers
             return appointmentList;
         }
 
-        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId},{code}")]
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}/{code}")]
         public async Task<ActionResult<Appointment>> getAppointmentBasedOnCode(string month, string day, string year, int clinicId, int doctorId,string code)
         {
             string searchDate = month + "/" + day + "/" + year;
