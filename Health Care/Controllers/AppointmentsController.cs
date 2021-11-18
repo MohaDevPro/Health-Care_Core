@@ -227,7 +227,7 @@ namespace Health_Care.Controllers
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId},{code}")]
         public async Task<ActionResult<Appointment>> getAppointmentBasedOnCode(string month, string day, string year, int clinicId, int doctorId,string code)
         {
-            string searchDate = day + "/" + month + "/" + year;
+            string searchDate = month + "/" + day + "/" + year;
 
             var appointmentList = await _context.Appointment
                 .FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId && x.Accepted == true && x.Paid == false && x.active == true && x.CodeConfirmation==code);
