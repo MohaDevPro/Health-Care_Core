@@ -108,7 +108,7 @@ namespace Health_Care.Controllers
             else if (isPaid)
                 appointment= appointment.Where(x => x.appointment.Paid).OrderByDescending(x=>x.appointment.id).ToList();
             else if(isAccepted) 
-                appointment= appointment.Where(x => x.appointment.Accepted).OrderByDescending(x => x.appointment.id).ToList();
+                appointment= appointment.Where(x => x.appointment.Accepted&& x.appointment.Paid==false).OrderByDescending(x => x.appointment.id).ToList();
             else appointment= appointment.Where(x => x.appointment.Accepted == false && x.appointment.cancelledByUser == false && x.appointment.cancelledByClinicSecretary == false).OrderByDescending(x=>x.appointment.id).ToList();
 
 
