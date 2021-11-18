@@ -209,15 +209,28 @@ namespace Health_Care.Controllers
             if (li == null) { return NotFound(); }
             return li;
         }
-
-
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
         {
             string searchDate = day + "/" + month + "/" + year;
 
             var appointmentList = await _context.Appointment
-                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId && x.active == true).ToListAsync();
+                .Where(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId && x.active == true ).ToListAsync();
+
+            if (appointmentList == null)
+            {
+                return NotFound();
+            }
+            return appointmentList;
+        }
+
+        [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId},{code}")]
+        public async Task<ActionResult<Appointment>> getAppointmentBasedOnCode(string month, string day, string year, int clinicId, int doctorId,string code)
+        {
+            string searchDate = day + "/" + month + "/" + year;
+
+            var appointmentList = await _context.Appointment
+                .FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.distnationClinicId == clinicId && x.doctorId == doctorId && x.Accepted == true && x.Paid == false && x.active == true && x.CodeConfirmation==code);
 
             if (appointmentList == null)
             {
