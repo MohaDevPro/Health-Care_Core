@@ -326,7 +326,7 @@ namespace Health_Care.Controllers
             if (workerAppointment.cancelledByHealthWorker)
             {
                 Patient patient = _context.Patient.Where(p=>p.userId == workerAppointment.patientId).FirstOrDefault();
-                if (patient == null)
+                if (patient != null)
                 {
                     patient.Balance += workerAppointment.servicePrice;
                 }
