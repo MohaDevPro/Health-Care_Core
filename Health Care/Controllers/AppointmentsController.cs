@@ -178,29 +178,29 @@ namespace Health_Care.Controllers
             if (li == null) { return NotFound(); }
             return li;
         }
-        [HttpGet("{doctorid}/{status}")]
-        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status)
+        [HttpGet("{doctorid}/{status}/{clinicID}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status,int clinicID)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();
 
             var appointment = await _context.Appointment.ToListAsync();
 
-            var ConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            var ConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid &&x.distnationClinicId==clinicID
             && x.Accepted == true && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
 
-            var unConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid
+            var unConfirmedAppointment = appointment.Where(x => x.doctorId == doctorid && x.distnationClinicId == clinicID
             && x.Accepted == false && x.cancelledByUser == false && x.cancelledByClinicSecretary == false && x.active == true).OrderBy(x => x.appointmentDate).ToList();
 
-            var cancelledAppointmentByUser = appointment.Where(x => x.doctorId == doctorid
+            var cancelledAppointmentByUser = appointment.Where(x => x.doctorId == doctorid && x.distnationClinicId == clinicID
             && x.cancelledByUser == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
 
-            var cancelledAppointmentBySecretary = appointment.Where(x => x.doctorId == doctorid
-            && x.cancelledByUser == false && x.cancelledByClinicSecretary == true && x.active == true).OrderBy(x => x.appointmentDate).ToList();
+            var cancelledAppointmentBySecretaryorUser = appointment.Where(x => x.doctorId == doctorid && x.distnationClinicId == clinicID
+            &&  (x.cancelledByUser == true || x.cancelledByClinicSecretary == true) && x.active == true).OrderBy(x => x.appointmentDate).ToList();
 
             li.Add(ConfirmedAppointment);
             li.Add(unConfirmedAppointment);
             li.Add(cancelledAppointmentByUser);
-            li.Add(cancelledAppointmentBySecretary);
+            li.Add(cancelledAppointmentBySecretaryorUser);
             if (status != 5)
             {
                 return li[status];
