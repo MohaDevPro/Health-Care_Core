@@ -441,11 +441,18 @@ namespace Health_Care.Controllers
             }
             var appointmentDoctorClinicObj = await _context.AppointmentDoctorClinic.FirstOrDefaultAsync(x => x.appointmentDate == searchDate && x.clinicId == clinicId && x.doctorId == doctorId);
             appointmentDoctorClinicObj.numberOfRealAppointment-= appointmentList.Count;
-
+            NotificationsController notifications = new NotificationsController(_context);
+            var doctor = _context.Doctor.Where(d => d.id == doctorId).FirstOrDefault();
+            var clinic = _context.ExternalClinic.Where(d => d.id == clinicId).FirstOrDefault();
+            List<int> usersIDs = appointmentList.Select(x=>x.userId).ToList();
+            await notifications.SendNotificationsToManyUsers(usersIDs, new Notifications()
+            {
+                title = "تم إلغاء الموعد",
+                body = $"تم إلغاء الموعد الذي بتاريخ {searchDate} عند الطبيب {doctor.name} في عيادة {clinic.Name}",
+            });
             foreach (var appointment in appointmentList)
             {
                 appointment.active = false;
-                
                 await _context.SaveChangesAsync();
                 
             }
