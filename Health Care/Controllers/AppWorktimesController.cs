@@ -387,20 +387,51 @@ namespace Health_Care.Controllers
 
         //    return appWorktime;
         //}
+        [HttpGet("{doctorId}/{clinicId}/{day}")]
+        public async Task<ActionResult<String>> checkAppointmentsBeforeDelete(int doctorId,int clinicId,int day)
+        {
+            int counter = 0;
+            foreach (var item in _context.Appointment.Where(x => x.distnationClinicId == clinicId && x.doctorId == doctorId && x.PatientComeToAppointment==false))
+            {
+                var date = new DateTime(Convert.ToInt32(item.appointmentDate.Split('/')[2]), Convert.ToInt32(item.appointmentDate.Split('/')[1]), Convert.ToInt32(item.appointmentDate.Split('/')[0]));
+                if (date >= DateTime.UtcNow.AddHours(3) && (int)date.DayOfWeek == day)
+                {                 
+                    counter++;
+                }
+            }
+            
+            if (counter > 0)
+                return "هنالك : " + counter + " من الحجوزات في هذا اليوم سيتم الغاؤها.";
+            else return "";
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult<AppWorktime>> DeleteAppWorktime(int id)
         {
+
             var appWorktime = await _context.AppWorktime.FindAsync(id);
+           
             if (appWorktime == null)
             {
                 return NotFound();
             }
+            foreach (var item in await _context.Appointment.Where(x => x.distnationClinicId == appWorktime.ExternalClinicId && x.doctorId == appWorktime.userId && x.PatientComeToAppointment==false).ToListAsync())
+            {
+                var date = new DateTime(Convert.ToInt32(item.appointmentDate.Split('/')[2]), Convert.ToInt32(item.appointmentDate.Split('/')[1]), Convert.ToInt32(item.appointmentDate.Split('/')[0]));
+                if (date >= DateTime.UtcNow.AddHours(3) && (int)date.DayOfWeek == appWorktime.day)
+                {
+                    item.cancelledByClinicSecretary = true;
+                    item.cancelReasonWrittenBySecretary = "تم تغيير اوقات دوام الدكتور";
+                     _context.Entry(item).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             int additionalDay = 1;
             if (appWorktime.day != 7)
                 additionalDay = appWorktime.day + 1;
-            var AdditionalserviceSetting = _context.AppWorktime.Where(x => x.userId == appWorktime.userId && x.shiftAM_PM == appWorktime.shiftAM_PM && x.IsAdditional == true && x.day == additionalDay && x.ExternalClinicId==appWorktime.ExternalClinicId).FirstOrDefault();
+            var AdditionalserviceSetting = await _context.AppWorktime.Where(x => x.userId == appWorktime.userId && x.shiftAM_PM == appWorktime.shiftAM_PM && x.IsAdditional == true && x.day == additionalDay && x.ExternalClinicId==appWorktime.ExternalClinicId).FirstOrDefaultAsync();
 
-            _context.AppWorktime.Remove(appWorktime);
+             _context.AppWorktime.Remove(appWorktime);
             await _context.SaveChangesAsync();
 
             if (AdditionalserviceSetting != null)
