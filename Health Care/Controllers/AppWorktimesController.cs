@@ -391,10 +391,10 @@ namespace Health_Care.Controllers
         public async Task<ActionResult<String>> checkAppointmentsBeforeDelete(int doctorId,int clinicId,int day)
         {
             int counter = 0;
-            foreach (var item in _context.Appointment.Where(x => x.distnationClinicId == clinicId && x.doctorId == doctorId && x.PatientComeToAppointment==false))
+            foreach (var item in _context.Appointment.Where(x => x.distnationClinicId == clinicId && x.doctorId == doctorId && x.PatientComeToAppointment==false && x.cancelledByClinicSecretary==false))
             {
                 var date = new DateTime(Convert.ToInt32(item.appointmentDate.Split('/')[2]), Convert.ToInt32(item.appointmentDate.Split('/')[1]), Convert.ToInt32(item.appointmentDate.Split('/')[0]));
-                if (date.Date >= DateTime.UtcNow.AddHours(3).Date && (int)date.DayOfWeek == day)
+                if (date >= DateTime.UtcNow.AddHours(3) && (int)date.DayOfWeek == day)
                 {                 
                     counter++;
                 }
@@ -414,7 +414,7 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            var appointments = await _context.Appointment.Where(x => x.distnationClinicId == appWorktime.ExternalClinicId && x.doctorId == appWorktime.userId && x.PatientComeToAppointment == false).ToListAsync();
+            var appointments = await _context.Appointment.Where(x => x.distnationClinicId == appWorktime.ExternalClinicId && x.doctorId == appWorktime.userId && x.PatientComeToAppointment == false && x.cancelledByClinicSecretary==false).ToListAsync();
             try
             {
                 NotificationsController notifications = new NotificationsController(_context);
@@ -433,7 +433,7 @@ namespace Health_Care.Controllers
             foreach (var item in appointments)
             {
                 var date = new DateTime(Convert.ToInt32(item.appointmentDate.Split('/')[2]), Convert.ToInt32(item.appointmentDate.Split('/')[1]), Convert.ToInt32(item.appointmentDate.Split('/')[0]));
-                if (date.Date >= DateTime.UtcNow.AddHours(3).Date && (int)date.DayOfWeek == appWorktime.day)
+                if (date >= DateTime.UtcNow.AddHours(3) && (int)date.DayOfWeek == appWorktime.day)
                 {
                     item.cancelledByClinicSecretary = true;
                     item.cancelReasonWrittenBySecretary = "تم تغيير اوقات دوام الدكتور";
