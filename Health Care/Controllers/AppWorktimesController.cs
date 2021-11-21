@@ -414,7 +414,23 @@ namespace Health_Care.Controllers
             {
                 return NotFound();
             }
-            foreach (var item in await _context.Appointment.Where(x => x.distnationClinicId == appWorktime.ExternalClinicId && x.doctorId == appWorktime.userId && x.PatientComeToAppointment==false).ToListAsync())
+            var appointments = await _context.Appointment.Where(x => x.distnationClinicId == appWorktime.ExternalClinicId && x.doctorId == appWorktime.userId && x.PatientComeToAppointment == false).ToListAsync();
+            try
+            {
+                NotificationsController notifications = new NotificationsController(_context);
+                var doctor = _context.Doctor.Where(d => d.id == appWorktime.userId).FirstOrDefault();
+                var clinic = _context.ExternalClinic.Where(d => d.id == appWorktime.ExternalClinicId).FirstOrDefault();
+                List<int> usersIDs = appointments.Select(x => x.userId).ToList();
+                await notifications.SendNotificationsToManyUsers(usersIDs, new Notifications()
+                {
+                    title = "تم إلغاء الموعد",
+                    body = $"تم إلغاء الموعد عند الطبيب {doctor.name} في عيادة {clinic.Name} لأنه تم تغيير اوقات دوام الدكتور",
+                });
+            }
+            catch (Exception e)
+            {
+            }
+            foreach (var item in appointments)
             {
                 var date = new DateTime(Convert.ToInt32(item.appointmentDate.Split('/')[2]), Convert.ToInt32(item.appointmentDate.Split('/')[1]), Convert.ToInt32(item.appointmentDate.Split('/')[0]));
                 if (date >= DateTime.UtcNow.AddHours(3) && (int)date.DayOfWeek == appWorktime.day)
