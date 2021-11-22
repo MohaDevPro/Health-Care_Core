@@ -38,13 +38,8 @@ namespace Mr.Delivery.Models
             _logger.LogInformation("_logger CancellationToken");
             while (!stoppingToken.IsCancellationRequested)
             {
-                
-                List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
-                
-                var notifications =await _context.Notifications.ToListAsync();
+            //----------------------------------------------------------------------------------------------------------------------------------
                 var WorkerAppointments = _context.WorkerAppointment.Where(w=> w.AcceptedByHealthWorker == false && w.cancelledByHealthWorker == false).ToList();
-                _logger.LogInformation($"------WorkerAppointments-------------{WorkerAppointments.Count}------------------------");
-                _logger.LogInformation("LogInformation AppointmentDate");
                 foreach (var item in WorkerAppointments)
                 {
                     var requst = _context.HealthWorkerRequestByUser.Where(x=>x.appointmentId ==item.id).FirstOrDefault();
@@ -53,9 +48,6 @@ namespace Mr.Delivery.Models
                     DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]),Convert.ToInt32(time[0]),Convert.ToInt32(time[1]),00);
                     DateTime dateNow = DateTime.UtcNow.AddHours(3);
                     DateTime dateNowLocal = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 00);
-                    _logger.LogInformation($"------date Appointments-------------{date}------------------------");
-                    _logger.LogInformation($"------dateNow-------------{dateNowLocal}-------------{date.AddMinutes(9) < dateNowLocal}-----------");
-                    _logger.LogInformation("AppointmentDate");
                     if (date.AddMinutes(9) < dateNowLocal)
                     {
                         Patient patient = _context.Patient.FirstOrDefault(p=>p.userId == item.patientId);
@@ -65,6 +57,39 @@ namespace Mr.Delivery.Models
                         _context.SaveChanges();
                     }
                 }
+            //----------------------------------------------------------------------------------------------------------------------------------
+
+            //----------------------------------------------------------------------------------------------------------------------------------
+                var Appointment = _context.Appointment.Where(a => a.Accepted && !a.cancelledByClinicSecretary && !a.PatientComeToAppointment && !a.Paid).ToList();
+                foreach (var item in Appointment)
+                {
+                    List<string> Token = _context.FCMTokens.Where(f=>f.UserID == item.userId).Select(f=>f.Token).ToList();
+                    var AppointmentDate = item.appointmentDate.Split('/');
+                    var time = item.appointmentStartFrom.Replace('A',' ').Replace('M',' ').Replace('P',' ').Split(':');
+                    _logger.LogInformation($"-------------time {time[0]} {time[1]}-------------");
+                    var doctor = _context.Doctor.FirstOrDefault(d=>d.id == item.doctorId);
+                    var clinic = _context.ExternalClinic.FirstOrDefault(d=>d.id == item.distnationClinicId);
+                    DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]), Convert.ToInt32(time[0])-2, Convert.ToInt32(time[1]), 00);
+                    DateTime dateNow = DateTime.UtcNow.AddHours(3);
+                    DateTime dateNowLocal = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 00);
+
+                    if (date == dateNowLocal)
+                    {
+                        Patient patient = _context.Patient.FirstOrDefault(p => p.userId == item.userId);
+                        Notifications notification = new Notifications()
+                        {
+                            title = "🔔 تذكير بموعد الحجز",
+                            body = $"لديك موعد بعد ساعتين في عيادة {clinic.Name} عند الطبيب {doctor.name} ",
+                            isRepeated = false,
+                        };
+                        await SendNotificationsToListAsync(notification, Token);
+                    }
+                }
+            //----------------------------------------------------------------------------------------------------------------------------------
+
+            //----------------------------------------------------------------------------------------------------------------------------------
+                List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
+                var notifications = await _context.Notifications.ToListAsync();
                 foreach (Notifications n in notifications)
                 {
 
@@ -80,7 +105,10 @@ namespace Mr.Delivery.Models
                     _logger.LogInformation($"{DateTime.Now.TimeOfDay} == {TimeSpan.Parse(n.time)} {DateTime.Now.TimeOfDay == TimeSpan.Parse(n.time)}");
 
                 }
+            //----------------------------------------------------------------------------------------------------------------------------------
+
                 await Task.Delay(58000, stoppingToken);
+
             }
 
         }
