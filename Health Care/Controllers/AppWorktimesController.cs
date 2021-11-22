@@ -10,11 +10,14 @@ using Health_Care.Models;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
+
     public class AppWorktimesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -26,6 +29,8 @@ namespace Health_Care.Controllers
         static AppWorktime availableWork { get; set; }
 
         // GET: api/AppWorktimes
+        [AllowAnonymous]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppWorktime>>> GetAppWorktime()
         {
@@ -33,6 +38,7 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/AppWorktimes/5
+
         [HttpGet("{id}")]
         public async Task<ActionResult<AppWorktime>> GetAppWorktime(int id)
         {
@@ -45,6 +51,8 @@ namespace Health_Care.Controllers
 
             return appWorktime;
         }
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public async Task<IEnumerable<object>> GetAppWorktimeBasedOnDoctorID(int id)
         {
@@ -53,11 +61,15 @@ namespace Health_Care.Controllers
             var appWorktimes = await _context.AppWorktime.Where(x => x.userId == id).Include(x=>x.ExternalClinic).Select(x=> new {x.id,x.IsAdditional,x.RealClossTime,x.RealOpenTime,x.shiftAM_PM,x.startTime,x.userId, clinicId=x.ExternalClinicId,x.endTime,x.day,clinicname=x.ExternalClinic.Name }).ToListAsync();
             return appWorktimes;
         }
+        [AllowAnonymous]
+
         [HttpGet("{userId}/{clinicId}")]
         public async Task<ActionResult<IEnumerable<AppWorktime>>> GetWorkTimeByuserIdAndClinicId(int userId,int clinicId)
         {
             return await _context.AppWorktime.Where(x => x.IsAdditional == false && x.userId == userId && x.ExternalClinicId== clinicId).OrderBy(x => x.day).ToListAsync();
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpGet("{id}/{clinicId}/{day}")]
         public async Task<ActionResult<String>> GetAvailableTimeBasedonUserIDDayClinicAndNotAdditional(int id,int clinicId ,int day)
         {
@@ -68,6 +80,8 @@ namespace Health_Care.Controllers
                 return appworktime[0].shiftAM_PM;
             else return "ok";
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpGet]
         public async Task<ActionResult<String>> GetWorkTimeGroupByServiceIDDayAndNotAdditional(int id,int clinicId ,string period, bool sat, bool sun, bool mon, bool tue, bool wed, bool thur, bool fri)
         {
@@ -254,6 +268,7 @@ namespace Health_Care.Controllers
 
         //    return NoContent();
         ////}
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAppWorktime(int id, AppWorktime appWorktime)
         {
@@ -344,6 +359,7 @@ namespace Health_Care.Controllers
 
         //    return CreatedAtAction("GetAppWorktime", new { id = appWorktime.id }, appWorktime);
         //}
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
         [HttpPost]
         public async Task<ActionResult<AppWorktime>> PostAppWorktime(AppWorktime appWorktime)
         {
@@ -387,6 +403,8 @@ namespace Health_Care.Controllers
 
         //    return appWorktime;
         //}
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpGet("{doctorId}/{clinicId}/{day}")]
         public async Task<ActionResult<String>> checkAppointmentsBeforeDelete(int doctorId,int clinicId,int day)
         {
@@ -404,6 +422,8 @@ namespace Health_Care.Controllers
                 return "هنالك : " + counter + " من الحجوزات في هذا اليوم سيتم الغاؤها.";
             else return "";
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<AppWorktime>> DeleteAppWorktime(int id)
         {
@@ -458,6 +478,7 @@ namespace Health_Care.Controllers
 
             return appWorktime;
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
 
         [HttpPost]
         public ActionResult PostAvailableWorkTimeAsGroup(AvailableWorkTimeVM availableWorkTimeVM)

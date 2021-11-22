@@ -8,11 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [AllowAnonymous]
+
     public class HealthcareWorkersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -51,7 +54,7 @@ namespace Health_Care.Controllers
                           where worker.active == false && user.active == false
                           select worker).ToListAsync();
         }
-
+        [Authorize(Roles = "admin")]
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<HealthcareWorker> halthcareWorker)
@@ -191,6 +194,8 @@ namespace Health_Care.Controllers
         // PUT: api/HealthcareWorkers/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareWorker healthcareWorker)
         {
@@ -228,6 +233,8 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPut("{id}/{status}")]
         public async Task<IActionResult> PutWorkerStatus(int id, bool status)
         {
@@ -329,6 +336,8 @@ namespace Health_Care.Controllers
         // POST: api/HealthcareWorkers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
         {
@@ -337,7 +346,7 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
-        
+
         //[HttpPost("{id}")]
         //public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(int id, HealthcareWorker healthcareWorker)
         //{
@@ -361,6 +370,8 @@ namespace Health_Care.Controllers
 
         //    return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         //}
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
@@ -373,6 +384,8 @@ namespace Health_Care.Controllers
         }
 
         // DELETE: api/HealthcareWorkers/5
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<HealthcareWorker>> DeleteHealthcareWorker(int id)
         {

@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
+
     public class MedicalAdvicesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -22,6 +25,8 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/MedicalAdvices
+        [AllowAnonymous]
+
         [HttpGet("{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<MedicalAdvice>>> GetMedicalAdvice(int pageKey, int pageSize)
         {
