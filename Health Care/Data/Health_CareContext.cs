@@ -18,8 +18,6 @@ namespace Health_Care.Data
 
         public DbSet<Health_Care.Models.HealthcareWorkerWorkPlace> HealthcareWorkerWorkPlace { get; set; }
 
-        public DbSet<Health_Care.Models.WorkerSalary> WorkerSalary { get; set; }
-
         public DbSet<Health_Care.Models.WorkerAppointment> WorkerAppointment { get; set; }
 
         public DbSet<Health_Care.Models.UserContract> UserContract { get; set; }
@@ -52,8 +50,6 @@ namespace Health_Care.Data
         public DbSet<Health_Care.Models.Conversation> Conversation { get; set; }
 
         public DbSet<Health_Care.Models.HealthcareWorkerService> HealthcareWorkerService { get; set; }
-
-        public DbSet<Health_Care.Models.ProfitFromTheApp> ProfitFromTheApp { get; set; }
 
         public DbSet<Health_Care.Models.Doctor> Doctor { get; set; }
 
