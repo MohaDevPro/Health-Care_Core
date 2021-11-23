@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ReportAndComplaintsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -40,6 +42,7 @@ namespace Health_Care.Controllers
             };
             return x ;
         }
+        [Authorize(Roles = "admin")]
 
         [HttpGet("{pageKey}/{pageSize}")] //for patient , clinic ......
         public async Task<ActionResult<List<ReportAndComplaint>>> GetReportAndComplaintForAdmin(int pageKey, int pageSize)
@@ -74,6 +77,7 @@ namespace Health_Care.Controllers
         // PUT: api/ReportAndComplaints/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [Authorize(Roles = "admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReportAndComplaint(int id, ReportAndComplaint reportAndComplaint)
         {

@@ -54,7 +54,7 @@ namespace Health_Care.Controllers
                           where worker.active == false && user.active == false
                           select worker).ToListAsync();
         }
-
+        [Authorize(Roles = "admin")]
         [HttpPut]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> RestoreService(List<HealthcareWorker> halthcareWorker)
@@ -133,7 +133,7 @@ namespace Health_Care.Controllers
             return healthcareWorker;
         }
         [HttpGet("{id}")]
-        نظر تحتاج
+        //نظر تحتاج مستخدمة في صقحة ال ServicesSearch
         public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
@@ -172,7 +172,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{serviceId}")]
-        نظر تحتاج
+        //نظر تحتاج مستخدمة في صقحة ال ServicesSearch
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
         {
             //var healthcareWorkerServiceList = await _context.HealthcareWorkerService.Where(x => x.serviceId == serviceId).ToListAsync();

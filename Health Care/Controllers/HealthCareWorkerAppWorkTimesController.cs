@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class HealthCareWorkerAppWorkTimesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -23,6 +25,7 @@ namespace Health_Care.Controllers
         static HealthCareWorkerAppWorkTime availableWork { get; set; }
 
         // GET: api/HealthCareWorkerAppWorkTimes
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HealthCareWorkerAppWorkTime>>> GetHealthCareWorkerAppWorkTime()
         {
@@ -30,6 +33,8 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/HealthCareWorkerAppWorkTimes/5
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public async Task<ActionResult<HealthCareWorkerAppWorkTime>> GetHealthCareWorkerAppWorkTime(int id)
         {
@@ -40,6 +45,7 @@ namespace Health_Care.Controllers
             }
             return healthCareWorkerAppWorkTime;
         }
+        [AllowAnonymous]
 
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<HealthCareWorkerAppWorkTime>>> GetHealthCareWorkerAppWorkTimeBasedonUserId(int id)
@@ -48,11 +54,14 @@ namespace Health_Care.Controllers
             
             return healthCareWorkerAppWorkTime;
         }
+        [AllowAnonymous]
+
         [HttpGet("{userId}")]
         public async Task<ActionResult<IEnumerable<HealthCareWorkerAppWorkTime>>> GetWorkerWorkTimeByuserId(int userId)
         {
             return await _context.HealthCareWorkerAppWorkTime.Where(x => x.IsAdditional == false && x.userId == userId).OrderBy(x => x.day).ToListAsync();
         }
+        [Authorize(Roles = "admin,عامل صحي")]
         [HttpGet("{id}/{day}")]
         public async Task<ActionResult<String>> GetWorkerAvailableTimeBasedonUserIDDayAndNotAdditional(int id, int day)
         {
@@ -63,6 +72,8 @@ namespace Health_Care.Controllers
                 return appworktime[0].shiftAM_PM;
             else return "ok";
         }
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpGet]
         public async Task<ActionResult<String>> GetWorkerWorkTimeGroupByServiceIDDayAndNotAdditional(int id,string period, bool sat, bool sun, bool mon, bool tue, bool wed, bool thur, bool fri)
         {
@@ -183,6 +194,8 @@ namespace Health_Care.Controllers
 
         //    return NoContent();
         //}
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHealthCareWorkerAppWorkTime(int id, HealthCareWorkerAppWorkTime appWorktime)
         {
@@ -339,6 +352,7 @@ namespace Health_Care.Controllers
 
         //    return CreatedAtAction("GetHealthCareWorkerAppWorkTime", new { id = healthCareWorkerAppWorkTime.id }, healthCareWorkerAppWorkTime);
         //}
+        [Authorize(Roles = "admin,عامل صحي")]
         [HttpPost]
         public async Task<ActionResult<HealthCareWorkerAppWorkTime>> PostHealthCareWorkerAppWorkTime(HealthCareWorkerAppWorkTime appWorktime)
         {
@@ -366,6 +380,8 @@ namespace Health_Care.Controllers
             }
             return CreatedAtAction("GetServiceSetting", new { id = appWorktime.id }, appWorktime);
         }
+        [Authorize(Roles = "admin,عامل صحي")]
+
         [HttpPost]
         public ActionResult PostAvailableWorkTimeAsGroup(AvailableWorkTimeVM availableWorkTimeVM)
         {
