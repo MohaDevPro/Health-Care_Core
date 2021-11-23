@@ -9,6 +9,7 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
@@ -56,6 +57,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Hospital>>> GetDisabled()
         {
             return await (from hospital in _context.Hospitals
@@ -66,6 +68,8 @@ namespace Health_Care.Controllers
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> RestoreService(List<Hospital> hospital)
         {
             if (hospital.Count == 0)
@@ -93,6 +97,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<IActionResult> PutHospital(int id, Hospital hospital)
         {
             if (id != hospital.id)
@@ -122,6 +127,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<IActionResult> PutHospitalWithImages(int id, [FromForm] Hospital hospital, IFormFile Picture, IFormFile bg)
         {
 
@@ -185,6 +191,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<ActionResult<Hospital>> PostHospital(Hospital hospital)
         {
             _context.Hospitals.Add(hospital);

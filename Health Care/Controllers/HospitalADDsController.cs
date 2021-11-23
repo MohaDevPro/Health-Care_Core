@@ -9,11 +9,13 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles ="admin")]
     public class HospitalADDsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -28,11 +30,13 @@ namespace Health_Care.Controllers
 
         // GET: api/HospitalADDs
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<HospitalADDs>>> GetHospitalADDs()
         {
             return await _context.HospitalADDs.ToListAsync();
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HospitalADDs>> IncreaseCounterOfseen(int id)
         {
             var hospitalADDs = await _context.HospitalADDs.FindAsync(id);
@@ -45,6 +49,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HospitalADDs/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HospitalADDs>> GetHospitalADDs(int id)
         {
             var hospitalADDs = await _context.HospitalADDs.FindAsync(id);

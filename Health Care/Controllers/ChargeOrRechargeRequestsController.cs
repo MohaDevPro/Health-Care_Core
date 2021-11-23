@@ -9,11 +9,14 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class ChargeOrRechargeRequestsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -62,6 +65,7 @@ namespace Health_Care.Controllers
             }
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequestByUserID(int id, int pageKey, int pageSize)
         {
             var recharge= await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).OrderByDescending(x=>x.id).ToListAsync();
@@ -76,6 +80,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public List<string> GetChargeOrRechargeRequestByUserI(int id)
         {
             var x = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
@@ -83,7 +88,8 @@ namespace Health_Care.Controllers
             return dateList.ToList();
         }
         [HttpGet("{id}")]
-        public  bool IsRestorable(int id)
+        [Authorize(Roles = "مريض,admin")]
+        public bool IsRestorable(int id)
         {
             var p = _context.Patient.Where(x=>x.userId == id).FirstOrDefault();
             var charges = _context.ChargeOrRechargeRequest.Where(x => x.userId == id).ToList();
@@ -105,6 +111,7 @@ namespace Health_Care.Controllers
 
         // GET: api/ChargeOrRechargeRequests/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<ChargeOrRechargeRequest>> GetChargeOrRechargeRequest(int id)
         {
             var chargeOrRechargeRequest = await _context.ChargeOrRechargeRequest.FindAsync(id);
@@ -116,6 +123,7 @@ namespace Health_Care.Controllers
             return chargeOrRechargeRequest;
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<bool>> GetIsCharged(int id)
         {
             var chargeOrRechargeRequest = await _context.ChargeOrRechargeRequest.Where(c=>c.userId == id).FirstOrDefaultAsync();
@@ -135,6 +143,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<IActionResult> PutChargeOrRechargeRequest(int id, ChargeOrRechargeRequest chargeOrRechargeRequest)
         {
             if (id != chargeOrRechargeRequest.id)
@@ -172,6 +181,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPost("{id}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<IActionResult> RestoreChargeOrRechargeRequest(int id)
         {
             //var c = _context.ChargeOrRechargeRequest.Where(x=>x.userId == id).ToList();
@@ -208,6 +218,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<Doctor>> PostChargeOrRechargeRequest( [FromForm] ChargeOrRechargeRequest rechargeRequest, IFormFile Picture)
         {
             if (ModelState.IsValid)

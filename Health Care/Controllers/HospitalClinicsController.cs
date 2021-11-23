@@ -9,6 +9,7 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
@@ -85,6 +86,7 @@ namespace Health_Care.Controllers
 
 
         [HttpGet("{hospitalId}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<object>>> GetClinicAndDoctorByHospitalID(int hospitalId)
         {
             var hospital = await _context.Hospitals.Where(x => x.UserId == hospitalId && x.active ==true).FirstOrDefaultAsync();
@@ -224,6 +226,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<IActionResult> PutHospitalClinic(int id, Hospital hospitalClinic)
         {
             if (id != hospitalClinic.id)
@@ -256,6 +259,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<ActionResult<Hospital>> PostHospitalClinic(Hospital hospitalClinic)
         {
             _context.Hospitals.Add(hospitalClinic);
@@ -266,6 +270,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/HospitalClinics/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<ActionResult<Hospital>> DeleteHospitalClinic(int id)
         {
             var hospitalClinic = await _context.Hospitals.FindAsync(id);
@@ -280,6 +285,7 @@ namespace Health_Care.Controllers
             return hospitalClinic;
         }
         [HttpPut("{departmentid}/{hospitalid}")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<IActionResult> PutDepartmentsOfHospital(int departmentid,int hospitalid, [FromForm] DepartmentsOfHospital DepartmentsOfHospital, IFormFile Picture, IFormFile bg)
         {
             if (departmentid != DepartmentsOfHospital.id)
@@ -345,6 +351,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost("{hospitalid}")]
+        [Authorize(Roles = "admin,مستشفى")]
         //[Authorize(Roles = "admin, DepartmentsOfHospital")]
         public async Task<ActionResult<object>> PostDepartmentsOfHospital(int hospitalid,[FromForm] DepartmentsOfHospital DepartmentsOfHospital, IFormFile Picture, IFormFile bg)
         {
@@ -405,6 +412,7 @@ namespace Health_Care.Controllers
         // DELETE: api/DepartmentsOfHospitals/5
         [HttpDelete("{Departmeentid}/{hospitalid}")]
         //[Authorize(Roles = "admin, DepartmentsOfHospital")]
+        [Authorize(Roles = "admin,مستشفى")]
         public async Task<ActionResult<HospitalDepartments>> DeleteDepartmentsOfHospital(int Departmeentid,int hospitalid)
         {
             var hospitaldepartment = await _context.hospitalDepartments.FirstOrDefaultAsync(x=>x.Hospitalid==hospitalid && x.DepatmentsOfHospitalID==Departmeentid);
@@ -426,7 +434,7 @@ namespace Health_Care.Controllers
         }
 
 
-
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutExternalClinic(int id, [FromForm] ExternalClinic ExternalClinic, IFormFile Picture, IFormFile bg)
         {
@@ -492,6 +500,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
         //[Authorize(Roles = "admin, ExternalClinic")]
         public async Task<ActionResult<ExternalClinic>> PostExternalClinic([FromForm] ExternalClinic ExternalClinic, IFormFile Picture, IFormFile bg)
         {
@@ -550,6 +559,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/ExternalClinics/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
         //[Authorize(Roles = "admin, ExternalClinic")]
         public async Task<ActionResult<ExternalClinic>> DeleteExternalClinic(int id)
         {
@@ -573,6 +583,8 @@ namespace Health_Care.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مستشفى,عيادة,دكتور")]
+
         public async Task<IActionResult> PutDoctor(int id, [FromForm] Doctor Doctor, IFormFile Picture, IFormFile bg)
         {
             if (id != Doctor.id)
@@ -640,6 +652,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost("{ClinicID}")]
+        [Authorize(Roles = "admin,مستشفى,عيادة,دكتور")]
         //[Authorize(Roles = "admin, Doctor")]
         public async Task<ActionResult<Doctor>> PostDoctor(int ClinicID, [FromForm] Doctor Doctor, IFormFile Picture, IFormFile bg)
         {
@@ -700,6 +713,8 @@ namespace Health_Care.Controllers
         // DELETE: api/Doctors/5
         [HttpDelete("{id}")]
         //[Authorize(Roles = "admin, Doctor")]
+        [Authorize(Roles = "admin,مستشفى,عيادة,دكتور")]
+
         public async Task<ActionResult<Doctor>> DeleteDoctor(int id)
         {
             var Doctor = await _context.Doctor.FirstOrDefaultAsync(x => x.id == id);

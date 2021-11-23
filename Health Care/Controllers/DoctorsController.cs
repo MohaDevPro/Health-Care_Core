@@ -9,6 +9,8 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.AspNetCore.Authorization;
 //using Health_Care.Migrations;
+using Microsoft.AspNetCore.Authorization;
+
 
 
 namespace Health_Care.Controllers
@@ -51,6 +53,7 @@ namespace Health_Care.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Doctor>>> GetDisabled()
         {
             return await (from doctor in _context.Doctor
@@ -62,6 +65,8 @@ namespace Health_Care.Controllers
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> RestoreService(List<Doctor> doctor)
         {
             if (doctor.Count == 0)
@@ -346,6 +351,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         public async Task<IActionResult> PutDoctor(int id, Doctor doctor)
         {
             if (id != doctor.id)
@@ -374,6 +380,7 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         [HttpPut("{id}/{status}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> PutDoctorStatus(int id, bool status)
         {
 
@@ -408,6 +415,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Doctor>> PostDoctor(Doctor doctor)
         {
             _context.Doctor.Add(doctor);
@@ -418,6 +426,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Doctors/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Doctor>> DeleteDoctor(int id)
         {
             var doctor = await _context.Doctor.FindAsync(id);

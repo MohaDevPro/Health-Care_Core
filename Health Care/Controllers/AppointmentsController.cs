@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles ="admin")]
     public class AppointmentsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -33,6 +35,8 @@ namespace Health_Care.Controllers
             return await _context.Appointment.Where(a=>a.active == false).ToListAsync();
         }
         [HttpGet]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
+
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAllPatintComeToAppointment(int doctorId,string dateFrom,string dateTo)
         {
 
@@ -47,7 +51,7 @@ namespace Health_Care.Controllers
                        select appointment;
             return data.ToList();
         }
-
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAllPatintComeToAppointmentForDoctorClinic(int doctorId,int clinicId, string dateFrom, string dateTo)
         {
@@ -67,6 +71,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
+
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Appointment> appointement)
         {
@@ -90,6 +95,7 @@ namespace Health_Care.Controllers
         }
         // GET: api/Appointments/5
         [HttpGet("{userId}/{isAccepted}/{cancelByUser}/{canceledBySecretary}/{isPaid}/{pageKey}/{pageSize}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnUserId(int userId, bool isAccepted, bool cancelByUser, bool canceledBySecretary,bool isPaid,int pageKey,int pageSize)
         {
             var appointment = await(from appointments in  _context.Appointment join
@@ -120,6 +126,7 @@ namespace Health_Care.Controllers
             //return appointment;
         }
         [HttpGet("{appointmentDoctorClinicid}")]
+
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
         {
             var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+ "" && x.active == true).ToListAsync();
@@ -129,6 +136,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Appointments/5
         [HttpGet("{userId}")]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnStatusByUserId(int userId)
         {
             List <List<Appointment>> li = new List <List<Appointment>>();
@@ -148,6 +156,8 @@ namespace Health_Care.Controllers
 
         // GET: api/Appointments/5
         [HttpGet("{clinicId}/{status}")]
+        [Authorize(Roles = "مستشفى,عيادة")]
+
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnClinicId(int clinicId,int status)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();
@@ -179,6 +189,7 @@ namespace Health_Care.Controllers
             return li;
         }
         [HttpGet("{doctorid}/{status}/{clinicID}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentBasedOnDoctorid(int doctorid, int status,int clinicID)
         {
             List<List<Appointment>> li = new List<List<Appointment>>();
@@ -225,6 +236,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}/{code}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         public async Task<ActionResult<Appointment>> getAppointmentBasedOnCode(string month, string day, string year, int clinicId, int doctorId,string code)
         {
             string searchDate = month + "/" + day + "/" + year;
@@ -240,6 +252,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{month}/{day}/{year}/{clinicId}/{doctorId}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         public async Task<ActionResult<List<Appointment>>> GetConfirmedAppointmentBasedOnDate(string month, string day, string year, int clinicId, int doctorId)
         {
             string searchDate = month + "/" + day + "/" + year;
@@ -256,6 +269,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{day}/{month}/{year}/{clinicId}/{doctorId}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
+
         public async Task<ActionResult<List<Appointment>>> GetAppointmentBasedOnDateToCancelbyClinic(string day, string month, string year, int clinicId, int doctorId)
         {
             string searchDate = day + "/" + month + "/" + year;
@@ -272,6 +287,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{Month}/{doctorid}")]
+        [Authorize(Roles = "دكتور,admin")]
+
         public async Task<ActionResult<object>> GetAppointmentMonthRecords(int Month,int doctorid)
         {
             var appointmentOfMonth = _context.Appointment.Where(x => x.appointmentDate.Contains("/" + Month + "/")).ToList();
@@ -336,6 +353,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult<Appointment>> PutAppointment(int id, Appointment appointment)
         {
             if (id != appointment.id)
@@ -367,6 +385,7 @@ namespace Health_Care.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
         public async Task<IActionResult> ConfirmByPatient(int id)
         {
             Appointment appointment = _context.Appointment.Where(x => x.id == id).FirstOrDefault();
@@ -401,6 +420,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "مريض,admin")]
         public async Task<ActionResult<Appointment>> PostAppointment(Appointment appointment)
         {
             Random random = new Random();
@@ -414,6 +434,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Appointments/5
         [HttpDelete("{id}")]
+
         public async Task<ActionResult<Appointment>> DeleteAppointment(int id)
         {
             var appointment = await _context.Appointment.FindAsync(id);
@@ -429,6 +450,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{day}/{month}/{year}/{clinicId}/{doctorId}")]
+        [Authorize(Roles = "دكتور,مستشفى,عيادة")]
+
         public async Task<ActionResult<List<Appointment>>> DeleteAppointmentBasedOnDate(string day, string month, string year, int clinicId, int doctorId)
         {
             string searchDate = day + "/" + month + "/" + year;

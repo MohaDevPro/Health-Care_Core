@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
@@ -74,6 +75,7 @@ namespace Health_Care.Controllers
 
         [HttpPut]
         //[Authorize(Roles = "admin, service")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RestoreService(List<DepartmentsOfHospital> halthcareWorker)
         {
             if (halthcareWorker.Count == 0)
@@ -99,6 +101,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> PutDepartmentsOfHospital(int id, DepartmentsOfHospital departmentsOfHospital)
         {
             if (id != departmentsOfHospital.id)
@@ -131,6 +134,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<DepartmentsOfHospital>> PostDepartmentsOfHospital(DepartmentsOfHospital departmentsOfHospital)
         {
             _context.departmentsOfHospitals.Add(departmentsOfHospital);
@@ -141,6 +145,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/DepartmentsOfHospitals/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<DepartmentsOfHospital>> DeleteDepartmentsOfHospital(int id)
         {
             var departmentsOfHospital = await _context.departmentsOfHospitals.FindAsync(id);

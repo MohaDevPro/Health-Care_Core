@@ -9,6 +9,7 @@ using Health_Care.Data;
 using Health_Care.Models;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
@@ -206,6 +207,7 @@ namespace Health_Care.Controllers
 
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<ExternalClinic>>> GetDisabled()
         {
             
@@ -216,6 +218,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "admin")]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<ExternalClinic> externalClinic)
         {
@@ -244,6 +247,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
+
         public async Task<IActionResult> PutExternalClinic(int id, ExternalClinic externalClinic)
         {
             if (id != externalClinic.id)
@@ -276,6 +281,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
         public async Task<ActionResult<ExternalClinic>> PostExternalClinic(ExternalClinic externalClinic)
         {
             _context.ExternalClinic.Add(externalClinic);
@@ -285,6 +291,8 @@ namespace Health_Care.Controllers
         }
         [HttpPost]
         //[Authorize(Roles = "admin, ExternalClinic")]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
+
         public async Task<ActionResult<ExternalClinic>> PostExternalClinicWithImages([FromForm] ExternalClinic externalClinic, IFormFile Picture, IFormFile bg)
         {
             if (ModelState.IsValid)
@@ -338,6 +346,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/ExternalClinics/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin,مستشفى,عيادة")]
+
         public async Task<ActionResult<ExternalClinic>> DeleteExternalClinic(int id)
         {
             var externalClinic = await _context.ExternalClinic.FindAsync(id);
