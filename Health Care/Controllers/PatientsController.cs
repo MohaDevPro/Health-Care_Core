@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "admin, مريض")]
+    [Authorize(Roles = "admin, مريض")]
     public class PatientsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -50,15 +50,15 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
-        public async Task<IActionResult> RestoreService(List<Patient> halthcareWorker)
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> RestoreService(List<Patient> patient)
         {
-            if (halthcareWorker.Count == 0)
+            if (patient.Count == 0)
                 return NoContent();
 
             try
             {
-                foreach (Patient item in halthcareWorker)
+                foreach (Patient item in patient)
                 {
                     Patient s = _context.Patient.Where(s => s.id == item.id).FirstOrDefault();
                     s.active = true;

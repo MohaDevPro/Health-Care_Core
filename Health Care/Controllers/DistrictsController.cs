@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class DistrictsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -23,6 +25,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Districts
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
         {
             return await _context.District.Where(a => a.active == true).ToListAsync();
@@ -30,6 +33,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Districts/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<District>> GetDistrict(int id)
         {
             var district = await _context.District.FindAsync(id);
@@ -47,7 +51,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<District> district)
         {
             if (district.Count == 0)
@@ -104,9 +107,10 @@ namespace Health_Care.Controllers
         // POST: api/Districts
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<District>> PostDistrict(District district)
+        [HttpPost("{GovernorateId}")]
+        public async Task<ActionResult<District>> PostDistrict(int GovernorateId, District district)
         {
+            district.GovernorateID = GovernorateId;
             _context.District.Add(district);
             await _context.SaveChangesAsync();
 

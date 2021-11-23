@@ -14,8 +14,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [AllowAnonymous]
-
+    [Authorize(Roles = "admin, عامل صحي")]
     public class HealthcareWorkersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -27,6 +26,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HealthcareWorkers
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorker()
         {
             return await (from HealthWorker in _context.HealthcareWorker
@@ -56,7 +56,7 @@ namespace Health_Care.Controllers
         }
         [Authorize(Roles = "admin")]
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RestoreService(List<HealthcareWorker> halthcareWorker)
         {
             if (halthcareWorker.Count == 0)
@@ -81,6 +81,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{pageKey}/{pageSize}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers(int pageKey, int pageSize)
         {
             var healthcares= await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
@@ -103,6 +104,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
@@ -131,6 +133,7 @@ namespace Health_Care.Controllers
             return healthcareWorker;
         }
         [HttpGet("{id}")]
+        //نظر تحتاج مستخدمة في صقحة ال ServicesSearch
         public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
@@ -156,6 +159,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
@@ -167,6 +172,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{serviceId}")]
+        //نظر تحتاج مستخدمة في صقحة ال ServicesSearch
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
         {
             //var healthcareWorkerServiceList = await _context.HealthcareWorkerService.Where(x => x.serviceId == serviceId).ToListAsync();
@@ -194,8 +200,6 @@ namespace Health_Care.Controllers
         // PUT: api/HealthcareWorkers/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [Authorize(Roles = "admin,عامل صحي")]
-
         [HttpPut("{id}")]
         public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareWorker healthcareWorker)
         {
@@ -233,8 +237,6 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
-        [Authorize(Roles = "admin,عامل صحي")]
-
         [HttpPut("{id}/{status}")]
         public async Task<IActionResult> PutWorkerStatus(int id, bool status)
         {
@@ -266,7 +268,7 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-
+        [AllowAnonymous]
         [HttpGet("{patientId}/{regionId}/{serviceId}/{pageKey}/{pageSize}/{byString}")]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize,int regionId,int serviceId,string Bystring)
         {
@@ -336,8 +338,6 @@ namespace Health_Care.Controllers
         // POST: api/HealthcareWorkers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [Authorize(Roles = "admin,عامل صحي")]
-
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
         {
@@ -346,46 +346,24 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
-
-        //[HttpPost("{id}")]
-        //public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(int id, HealthcareWorker healthcareWorker)
-        //{
-        //    _context.HealthcareWorker.Add(healthcareWorker);
-        //    await _context.SaveChangesAsync();
-        //    //var healthWorker = _context.HealthcareWorker.Include(h=>h.HealthcareWorkerRegions).Where(h => h.userId == id).FirstOrDefault();
-        //    //if (healthWorker == null)
-        //    //{
-        //    //    return NotFound("This is not exist");
-        //    //}
-        //    //healthWorker.specialityID = healthcareWorker.specialityID;
-        //    //healthWorker.WorkPlace = healthcareWorker.WorkPlace;
-        //    //healthWorker.ReagionID = healthcareWorker.ReagionID;
-        //    //healthWorker.Gender = healthcareWorker.Gender;
-        //    //healthWorker.Description = healthcareWorker.Description;
-        //    //foreach (var item in healthcareWorker.HealthcareWorkerRegions)
-        //    //{
-        //    //    healthWorker.HealthcareWorkerRegions.Add(item);
-        //    //}
-        //    //await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
-        //}
-        [Authorize(Roles = "admin,عامل صحي")]
-
+        
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
+            if (healthcareWorkerservices.Count > 0)
+            {
             var healthcareWorker = await _context.HealthcareWorker.Where(x => x.id == healthcareWorkerservices[0].HealthcareWorkerid).Include(x=>x.HealthcareWorkerServices)
-                .FirstOrDefaultAsync();
-            healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
-            await _context.SaveChangesAsync();
+                            .FirstOrDefaultAsync();
+                        healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
+                        await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+                        return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+            }
+            return BadRequest();
+            
         }
 
         // DELETE: api/HealthcareWorkers/5
-        [Authorize(Roles = "admin,عامل صحي")]
-
         [HttpDelete("{id}")]
         public async Task<ActionResult<HealthcareWorker>> DeleteHealthcareWorker(int id)
         {
