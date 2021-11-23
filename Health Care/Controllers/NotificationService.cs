@@ -66,13 +66,23 @@ namespace Mr.Delivery.Models
                     List<string> Token = _context.FCMTokens.Where(f=>f.UserID == item.userId).Select(f=>f.Token).ToList();
                     var AppointmentDate = item.appointmentDate.Split('/');
                     var time = item.appointmentStartFrom.Replace('A',' ').Replace('M',' ').Replace('P',' ').Split(':');
+                    if (item.appointmentStartFrom.Contains("PM") &&  Convert.ToInt32(time[0]) < 12)
+                    {
+                        time[0] = (Convert.ToInt32(time[0]) + 12).ToString();
+                    }
+                    else if (item.appointmentStartFrom.Contains("AM") && Convert.ToInt32(time[0]) == 12)
+                    {
+                        time[0] = (Convert.ToInt32(time[0]) - 12).ToString();
+                    }
                     _logger.LogInformation($"-------------time {time[0]} {time[1]}-------------");
+                    
                     var doctor = _context.Doctor.FirstOrDefault(d=>d.id == item.doctorId);
                     var clinic = _context.ExternalClinic.FirstOrDefault(d=>d.id == item.distnationClinicId);
-                    DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]), Convert.ToInt32(time[0])-2, Convert.ToInt32(time[1]), 00);
+                    DateTime date = new DateTime(Convert.ToInt32(AppointmentDate[2]), Convert.ToInt32(AppointmentDate[1]), Convert.ToInt32(AppointmentDate[0]), Convert.ToInt32(time[0]), Convert.ToInt32(time[1]), 00).Add(new TimeSpan(-2,0,0));
                     DateTime dateNow = DateTime.UtcNow.AddHours(3);
                     DateTime dateNowLocal = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 00);
-
+                    _logger.LogInformation($"-------------date {date.ToString("G")}-------------");
+                    _logger.LogInformation($"-------------dateNowLocal {dateNowLocal.ToString("G")}-------------");
                     if (date == dateNowLocal)
                     {
                         Patient patient = _context.Patient.FirstOrDefault(p => p.userId == item.userId);
