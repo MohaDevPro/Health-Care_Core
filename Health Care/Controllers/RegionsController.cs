@@ -140,7 +140,8 @@ namespace Health_Care.Controllers
             return CreatedAtAction("GetRegion", new { id = region.ID }, region);
         }
         [HttpPost("{regionID}/{WorkerID}")]
-        تحتاج نظر
+        // تحتاج نظر تبع صفحة AddHealthcareWorkerForHospital
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult> PostWorkerRegion(int regionID,int WorkerID)
         {
             var h1 = _context.HealthcareWorkerRegions.Where(x=>x.HealthcareWorkerid == WorkerID && x.RegionID == regionID).FirstOrDefault();
@@ -171,8 +172,9 @@ namespace Health_Care.Controllers
 
             return region;
         }
-        نظر تحتاج
+        // تحتاج نظر تبع صفحة AddHealthcareWorkerForHospital
         [HttpDelete("{id}/{workerID}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult> DeleteWorkerRegion(int id,int workerID)
         {
             var region =  _context.HealthcareWorkerRegions.Where(x=>x.RegionID == id && x.HealthcareWorkerid == workerID).FirstOrDefault();
