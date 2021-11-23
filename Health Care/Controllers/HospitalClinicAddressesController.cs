@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin,مستشفى,عيادة")]
     public class HospitalClinicAddressesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -30,6 +32,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HospitalClinicAddresses/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HospitalClinicAddress>> GetHospitalClinicAddress(int id)
         {
             var hospitalClinicAddress = await _context.HospitalClinicAddress.FindAsync(id);
@@ -43,6 +46,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{userId}")]
+        [AllowAnonymous]
         public async Task<ActionResult<HospitalClinicAddress>> GetHospitalClinicAddressBasedOnId(int userId)
         {
             var hospitalClinicAddress = await _context.HospitalClinicAddress.FirstOrDefaultAsync(x => x.hospitalOrClinicId == userId);

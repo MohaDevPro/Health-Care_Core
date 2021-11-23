@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
+
     public class FeedbacksController : ControllerBase
     {
         private readonly Health_CareContext _context;

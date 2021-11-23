@@ -8,11 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin,مستشفى,عيادة,دكتور,مريض")]
+
     public class AppointmentDoctorClinicsController : ControllerBase
     {
         //To Get 5 Days
@@ -96,6 +99,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{hospitalid}/{clinicid}/{doctorid}/{startdate}/{finishdate}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<object>>> GetOrderByQuery(int hospitalid, int clinicid, int doctorid, string startdate, string finishdate)
         {
             var allorders = _context.AppointmentDoctorClinic.AsQueryable();
@@ -131,12 +136,12 @@ namespace Health_Care.Controllers
                            ClinicName = clinic.Name,
                            DoctorName = doctor.name,
                            appointment.numberOfRealAppointment,
-                           totalProfitFromRealAppointment=appintments.Where(x=>x.appointmentDoctorClinicId==appointment.id+"").Select(x=>x.appointmentPrice*x.PercentageFromAppointmentPriceForApp/100).Sum(),
+                           totalProfitFromRealAppointment=appintments.Where(x=>x.appointmentDoctorClinicId==appointment.id+"" & x.PatientComeToAppointment).Select(x=>x.appointmentPrice*x.PercentageFromAppointmentPriceForApp/100).Sum(),
 
                        };
 
 
-            return test.ToList();
+            return test.OrderBy(x=>x.Date).ToList();
         }
         // GET: api/AppointmentDoctorClinics/5
         [HttpGet("{id}")]
@@ -188,6 +193,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "مريض")]
+
         public async Task<ActionResult<AppointmentDoctorClinic>> PostAppointmentDoctorClinic(AppointmentDoctorClinic appointmentDoctorClinic)
         {
             _context.AppointmentDoctorClinic.Add(appointmentDoctorClinic);
@@ -459,6 +466,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{hospitalId}/{clinicId}/{doctorId}")]
+        [Authorize(Roles = "admin,مستشفى,عامل صحي")]
+
         public async Task<ActionResult<object>> GetProfitforWorker(int hospitalId, int clinicId, int doctorId)
         {
             var appointmentDoctorClinicObjs = await _context.AppointmentDoctorClinic.ToListAsync();
