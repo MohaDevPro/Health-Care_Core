@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class RolesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -50,7 +50,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Role> role)
         {
             if (role.Count == 0)

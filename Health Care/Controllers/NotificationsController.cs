@@ -14,7 +14,8 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize(Roles = "admin")]
+
     public class NotificationsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -201,7 +202,7 @@ namespace Health_Care.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(Roles = "admin, مريض")]
         [HttpPost("{userIDTo}")]
         public async Task<ActionResult> SendNotificationsToUser( int userIDTo, Notifications notifications)
         {

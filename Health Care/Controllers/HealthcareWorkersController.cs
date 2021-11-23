@@ -8,11 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin, عامل صحي")]
     public class HealthcareWorkersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -24,6 +26,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HealthcareWorkers
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorker()
         {
             return await (from HealthWorker in _context.HealthcareWorker
@@ -53,7 +56,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RestoreService(List<HealthcareWorker> halthcareWorker)
         {
             if (halthcareWorker.Count == 0)
@@ -78,6 +81,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{pageKey}/{pageSize}")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkers(int pageKey, int pageSize)
         {
             var healthcares= await _context.HealthcareWorker.Include(x=>x.HealthcareWorkerRegions).Where(a => a.active == true).ToListAsync();
@@ -100,6 +104,7 @@ namespace Health_Care.Controllers
 
         // GET: api/HealthcareWorkers/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<object>> GetHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
@@ -128,6 +133,7 @@ namespace Health_Care.Controllers
             return healthcareWorker;
         }
         [HttpGet("{id}")]
+        نظر تحتاج
         public async Task<ActionResult<object>> GetHealthcareWorkerforWorkerDetailPage(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);
@@ -153,6 +159,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<HealthcareWorker>> GetHealthcareWorkerByUserId(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.Where(x=>x.userId == id).FirstOrDefaultAsync();
@@ -164,6 +172,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{serviceId}")]
+        نظر تحتاج
         public async Task<ActionResult<IEnumerable<HealthcareWorker>>> GetHealthcareWorkerBasedOnServiceId(int serviceId)
         {
             //var healthcareWorkerServiceList = await _context.HealthcareWorkerService.Where(x => x.serviceId == serviceId).ToListAsync();
@@ -259,7 +268,7 @@ namespace Health_Care.Controllers
             return NoContent();
         }
 
-
+        [AllowAnonymous]
         [HttpGet("{patientId}/{regionId}/{serviceId}/{pageKey}/{pageSize}/{byString}")]
         public async Task<ActionResult<IEnumerable<object>>> GetHealthcareWorkerWithFavorite(int patientId,int pageKey,int pageSize,int regionId,int serviceId,string Bystring)
         {
@@ -338,38 +347,20 @@ namespace Health_Care.Controllers
             return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
         }
         
-        //[HttpPost("{id}")]
-        //public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(int id, HealthcareWorker healthcareWorker)
-        //{
-        //    _context.HealthcareWorker.Add(healthcareWorker);
-        //    await _context.SaveChangesAsync();
-        //    //var healthWorker = _context.HealthcareWorker.Include(h=>h.HealthcareWorkerRegions).Where(h => h.userId == id).FirstOrDefault();
-        //    //if (healthWorker == null)
-        //    //{
-        //    //    return NotFound("This is not exist");
-        //    //}
-        //    //healthWorker.specialityID = healthcareWorker.specialityID;
-        //    //healthWorker.WorkPlace = healthcareWorker.WorkPlace;
-        //    //healthWorker.ReagionID = healthcareWorker.ReagionID;
-        //    //healthWorker.Gender = healthcareWorker.Gender;
-        //    //healthWorker.Description = healthcareWorker.Description;
-        //    //foreach (var item in healthcareWorker.HealthcareWorkerRegions)
-        //    //{
-        //    //    healthWorker.HealthcareWorkerRegions.Add(item);
-        //    //}
-        //    //await _context.SaveChangesAsync();
-
-        //    return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
-        //}
         [HttpPost]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
+            if (healthcareWorkerservices.Count > 0)
+            {
             var healthcareWorker = await _context.HealthcareWorker.Where(x => x.id == healthcareWorkerservices[0].HealthcareWorkerid).Include(x=>x.HealthcareWorkerServices)
-                .FirstOrDefaultAsync();
-            healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
-            await _context.SaveChangesAsync();
+                            .FirstOrDefaultAsync();
+                        healthcareWorker.HealthcareWorkerServices = healthcareWorkerservices;
+                        await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+                        return CreatedAtAction("GetHealthcareWorker", new { id = healthcareWorker.id }, healthcareWorker);
+            }
+            return BadRequest();
+            
         }
 
         // DELETE: api/HealthcareWorkers/5

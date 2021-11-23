@@ -13,7 +13,8 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize(Roles = "admin")]
+
     public class ContractsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -44,7 +45,7 @@ namespace Health_Care.Controllers
 
             return contract;
         }
-        [AllowAnonymous]
+        [Authorize(Roles = "admin,عامل صحي,عيادة,مستشفى,دكتور")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Contract>> GetContractBasedOnRole(int id)
         {
@@ -65,7 +66,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Contract> contract)
         {
             if (contract.Count == 0)
@@ -135,7 +135,6 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Contracts/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Contract>> DeleteContract(int id)
         {
             var contract = await _context.Contract.FindAsync(id);

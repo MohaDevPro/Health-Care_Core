@@ -9,11 +9,14 @@ using Health_Care.Data;
 using Health_Care.Models;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
+
     public class UserContractsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -126,6 +129,8 @@ namespace Health_Care.Controllers
                 return result;
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin,عامل صحي,عيادة,مستشفى,دكتور")]
+
         public async Task<ActionResult<bool>> GetIsUserAcceptContract(int id)
         {
             var userContract = await _context.UserContract.Where(u=>u.userId == id).FirstOrDefaultAsync();
@@ -188,6 +193,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin,عامل صحي,عيادة,مستشفى,دكتور")]
+
         public async Task<ActionResult<UserContract>> PostUserContract(UserContract userContract)
         {
             _context.UserContract.Add(userContract);

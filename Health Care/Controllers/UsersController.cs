@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class UsersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -103,8 +103,9 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
         }
+
         [HttpGet("{roleId}/{regionId}/{specialityId}/{pageKey}/{pageSize}/{byString}")]
-       
+        [Authorize(Roles = "admin,عيادة,مستشفى,دكتور")]
         public async Task<ActionResult<IEnumerable<object>>> GetAllUsersByRole( int roleId, int regionId,int specialityId,int pageKey,int pageSize,string byString)
         {
             var requests = _context.DoctorClinicReqeusts;
@@ -195,7 +196,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<User> users)
         {
             if (users.Count == 0)
@@ -250,6 +250,7 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin,مريض")]
         public async Task<ActionResult<User>> PutPatientDate(int id, User user)
         {
             if (id != user.id)
@@ -293,6 +294,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut("{result}/{id}")]
+        [Authorize]
         public async Task<IActionResult> PutUserCompleteData(bool reuslt,int id )
         {
 
@@ -457,6 +459,7 @@ namespace Health_Care.Controllers
             return user;
         }
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> ChangePass(CH_Password password)
         {
             User users = await _context.User.FindAsync(password.id);
