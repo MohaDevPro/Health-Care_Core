@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
+
     public class SpecialitiesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -22,6 +25,8 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Specialities
+        [AllowAnonymous]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpeciality()
         {
@@ -60,11 +65,15 @@ namespace Health_Care.Controllers
                 return BadRequest(e.Message);
             }
         }
+        [AllowAnonymous]
+
         [HttpGet("{isbasic}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByBasicType(bool isbasic)
         {
             return await _context.Speciality.Where(x=>x.isBasic==isbasic && x.active ==true).ToListAsync();
         }
+        [AllowAnonymous]
+
         [HttpGet("{UserID}/{RoleID}")]
         public async Task<ActionResult<IEnumerable<Speciality>>> GetSpecialityByUseridAndRoleID(int UserID,int RoleID)
         {
@@ -74,6 +83,8 @@ namespace Health_Care.Controllers
                           select speciality
                           ).ToListAsync();
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpPost("{UserID}/{SpecialityID}/{RoleID}")]
         public async Task<ActionResult<Speciality>> PostSpecialityForUser(int UserID,int SpecialityID,int RoleID)
         {
@@ -87,6 +98,8 @@ namespace Health_Care.Controllers
 
             return CreatedAtAction("GetSpeciality", new { id = specialitydoctor.id }, specialitydoctor);
         }
+        [Authorize(Roles = "admin,مستشفى,دكتور,عيادة")]
+
         [HttpDelete("{UserID}/{SpecialityID}/{RoleID}")]
         public async Task<ActionResult<SpeciallyDoctor>> DeleteSpecialityForUser(int UserID, int SpecialityID, int RoleID)
         {
@@ -102,6 +115,8 @@ namespace Health_Care.Controllers
             return speciality;
         }
         // GET: api/Specialities/5
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Speciality>> GetSpeciality(int id)
         {

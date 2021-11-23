@@ -269,7 +269,7 @@ namespace Health_Care.Controllers
 
         }
         [HttpPost("{id}")]
-        //[Authorize(Roles = "admin, doctor")]
+        [Authorize(Roles = "admin,دكتور")]
         public async Task<ActionResult<Doctor>> signUpDoctorDetails(int id, [FromForm] Doctor doctor, IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
 
@@ -345,7 +345,7 @@ namespace Health_Care.Controllers
             return CreatedAtAction("Getdoctor", new { id = doctor2.id }, doctor2);
         }
         [HttpPost("{id}/{edit}")]
-        //[Authorize(Roles = "admin, doctor")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<Doctor>> signUpHealthWorkerDetails(int id, bool edit, [FromForm] IFormFile Picture, IFormFile bg, IFormFile idImage, IFormFile certificateImage)
         {
             HealthcareWorker healthcareWorker = _context.HealthcareWorker.Where(d => d.userId == id).FirstOrDefault();
@@ -450,7 +450,7 @@ namespace Health_Care.Controllers
 
             return null;
         }
-
+        [NonAction]
         private bool ValidateRefreshToken(User user, string refreshToken)
         {
 
@@ -465,6 +465,7 @@ namespace Health_Care.Controllers
             return false;
         }
         [HttpGet("{id}/{passWord}")]
+        [Authorize]
         public async Task<ActionResult> CheckUserPassword(int id,string passWord)
         {
             var user = await _context.User.FindAsync(id);
@@ -477,6 +478,7 @@ namespace Health_Care.Controllers
                 return Ok();
             else return NotFound();
         }
+        [NonAction]
         private async Task<User> GetUserFromAccessToken(string accessToken)
         {
             try

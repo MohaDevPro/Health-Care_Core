@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
+
     public class ServicesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -20,6 +23,8 @@ namespace Health_Care.Controllers
         {
             _context = context;
         }
+        [AllowAnonymous]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Service>>> GetService()
         {
@@ -27,6 +32,8 @@ namespace Health_Care.Controllers
             return service;
         }
         // GET: api/Services
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<object>>> GetServiceByHealthWorkerID(int id)
         {
@@ -56,6 +63,8 @@ namespace Health_Care.Controllers
             }
             return listService;
         }
+        [AllowAnonymous]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetAllServiceByHealthWorker() { 
 
@@ -82,6 +91,8 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Services/5
+        [AllowAnonymous]
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Service>> GetService(int id)
         {

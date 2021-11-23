@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class GovernoratesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -23,6 +25,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Governorates
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
         {
             return await _context.Governorate.Where(x=> x.active == true).ToListAsync();
@@ -30,6 +33,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Governorates/5
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Governorate>> GetGovernorate(int id)
         {
             var governorate = await _context.Governorate.FindAsync(id);
@@ -47,7 +51,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Governorate> governorate)
         {
             if (governorate.Count == 0)
@@ -94,7 +97,6 @@ namespace Health_Care.Controllers
                 }
                 else
                 {
-                    throw;
                 }
             }
 

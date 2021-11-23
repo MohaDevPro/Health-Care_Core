@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Health_Care.Data;
 using Health_Care.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin, مريض ,عامل صحي")]
     public class WorkerAppointmentsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -61,17 +63,8 @@ namespace Health_Care.Controllers
             return workerAppointment;
         }
 
-        [HttpGet]
-        public string timee()
-        {
-            List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
-
-            string TodayDate = DateTime.Now.ToString("dd") + "/" + DateTime.Now.ToString("MM") + "/" + DateTime.Now.ToString("yyyy");
-
-            return TodayDate;
-        }
-
         [HttpGet("{workerId}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<IEnumerable<object>>> GetWorkerUncofirmedAppointmentBasedOnWorkerId(int workerId)
         {
             List<object> result = new List<object>();
@@ -130,6 +123,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{workerId}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<object>> GetWorkerCofirmedAppointmentBasedOnWorkerId(int workerId)
         {
             //List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
@@ -163,6 +157,7 @@ namespace Health_Care.Controllers
 
    
         [HttpGet("{workerId}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<object>> GetCofirmedAppointmentBasedOnWorkerId(int workerId)
         {
             //List<WorkerAppointmentViewModel> result = new List<WorkerAppointmentViewModel>();
@@ -195,6 +190,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{Month}/{HealthWorkerID}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
             var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/") && (x.ConfirmHealthWorkerCome_ByHimself || x.ConfirmHealthWorkerCome_ByPatient)).ToList();
@@ -295,23 +291,57 @@ namespace Health_Care.Controllers
             //return li;
         }
 
-        //[HttpGet("{userId}")]
-        //public async Task<ActionResult<WorkerAppointmentsCategories>> GetWorkerAppointmentsBasedOnStatusByUserId(int userId)
-        //{
-        //    WorkerAppointmentsCategories obj = new WorkerAppointmentsCategories();
 
-        //    var ConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == true && x.cancelledByUser == false).ToListAsync();
-        //    var unConfirmedAppointment = await _context.Appointment.Where(x => x.userId == userId && x.Accepted == false && x.cancelledByUser == false).ToListAsync();
-        //    var cancelledAppointment = await _context.Appointment.Where(x => x.userId == userId && x.cancelledByUser == true).ToListAsync();
+        [HttpGet("{workerId}")]
+        [Authorize(Roles = "admin,عامل صحي")]
+        public async Task<ActionResult<object>> GetProfitforWorker(int workerId)
+        {
+            var appointmentWorkerObjs = await _context.AppointmentWorker.Where(e => e.workerId == workerId).ToListAsync();
 
-        //    obj.
+            int servicePercentage = await _context.ProfitRatios.Select(e => e.servicePercentage).FirstOrDefaultAsync();
 
-        //    li.Add(unConfirmedAppointment);
-        //    li.Add(cancelledAppointment);
+            var userContractObj = await _context.UserContract.FirstOrDefaultAsync(x => x.userId == workerId);
+            DateTime contractstartdate = DateTime.ParseExact(userContractObj.contractStartDate, "d/M/yyyy", null);
 
-        //    if (li == null) { return NotFound(); }
-        //    return li;
-        //}
+            List<AppointmentWorker> newAppointmentWorkerObj = new List<AppointmentWorker>();
+            foreach (var item in appointmentWorkerObjs)
+            {
+                DateTime appointmentWorkerObjDate = DateTime.ParseExact(item.appointmentDate, "d/M/yyyy", null);
+                if (appointmentWorkerObjDate.CompareTo(contractstartdate) >= 0)
+                    newAppointmentWorkerObj.Add(item);
+            }
+
+            int profitSumforAppAdmin = 0;
+            foreach (var item in newAppointmentWorkerObj)
+            {
+                profitSumforAppAdmin += item.totalProfitFromRealAppointment;
+            };
+
+            int totalAmount = profitSumforAppAdmin * 100 / servicePercentage;
+            int profitSumforuser = totalAmount - profitSumforAppAdmin;
+
+
+            int appointmentSum = 0;
+            foreach (var item in newAppointmentWorkerObj)
+            {
+                appointmentSum += item.numberOfRealAppointment;
+            };
+
+            var appointmentWorker2 = new
+            {
+                contractDate = userContractObj.contractStartDate,
+                profitforAppUntilNow = profitSumforAppAdmin,
+                profitforUserUntilNow = profitSumforuser,
+                TotalAmountUntilNow = totalAmount,
+                numberOfRealAppointmentUntilNow = appointmentSum,
+                //contract = userContractObj,
+                //appointmentdoctorclinic = appointmentDoctorClinicObj
+            };
+
+            if (appointmentWorker2 == null) { return NotFound(); }
+            return appointmentWorker2;
+
+        }
 
         // PUT: api/WorkerAppointments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -371,8 +401,6 @@ namespace Health_Care.Controllers
             //}
 
             workerAppointment.reservedAmountUntilConfirm = true;
-            //Patient patient = _context.Patient.Where(x=>x.userId == workerAppointment.patientId).FirstOrDefault();
-            //patient.Balance -= workerAppointment.servicePrice;
             _context.Entry(workerAppointment).State = EntityState.Modified;
 
             try
@@ -433,6 +461,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, مريض")]
         public async Task<IActionResult> DoesNotCome(int id)
         {
             WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();

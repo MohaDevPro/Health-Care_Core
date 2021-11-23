@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public class RegionsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -31,19 +31,6 @@ namespace Health_Care.Controllers
             return await _context.Region.Where(a => a.active == true).ToListAsync();
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
-        //{
-        //    return await _context.Governorate.ToListAsync();
-        //}
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
-        //{
-        //    return await _context.District.ToListAsync();
-        //}
-
-
-
         // GET: api/Regions/5
 
         public async Task<ActionResult<IEnumerable<Region>>> GetDisabled()
@@ -52,7 +39,6 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-        //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Region> regions)
         {
             if (regions.Count == 0)
@@ -75,6 +61,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<IEnumerable<Region>>> GetHealthWorkerRegionsByWorkerID(int id)
         {
             var workerRegions = await _context.HealthcareWorkerRegions.Where(x => x.HealthcareWorkerid == id).Select(x => x.Region).ToListAsync();
@@ -87,16 +74,7 @@ namespace Health_Care.Controllers
         {
             return await _context.Region.Where(x => x.DistrictID == id && x.active==true).ToListAsync();
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Governorate>>> GetGovernorate()
-        {
-            return await _context.Governorate.ToListAsync();
-        }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<District>>> GetDistrict()
-        {
-            return await _context.District.ToListAsync();
-        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<District>>> GetDistrictBasedOnGovernorateId(int id)
         {
@@ -104,6 +82,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Region>> GetRegion(int id)
         {
             var region = await _context.Region.FindAsync(id);
@@ -148,65 +127,6 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGovernorate(int id,Governorate governorate)
-        {
-            if (id != governorate.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(governorate).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-
-                if (!GovernorateExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-
-            }
-
-            return NoContent();
-        }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutDistrict(int id,District district)
-        {
-            if (id != district.ID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(district).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-
-                if (!DistrictExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
 
         // POST: api/Regions
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
@@ -220,6 +140,8 @@ namespace Health_Care.Controllers
             return CreatedAtAction("GetRegion", new { id = region.ID }, region);
         }
         [HttpPost("{regionID}/{WorkerID}")]
+        // تحتاج نظر تبع صفحة AddHealthcareWorkerForHospital
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult> PostWorkerRegion(int regionID,int WorkerID)
         {
             var h1 = _context.HealthcareWorkerRegions.Where(x=>x.HealthcareWorkerid == WorkerID && x.RegionID == regionID).FirstOrDefault();
@@ -233,25 +155,6 @@ namespace Health_Care.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
-
-        [HttpPost]
-        public async Task<ActionResult<Governorate>> PostGovernorate(Governorate governorate)
-        {
-            _context.Governorate.Add(governorate);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetGovernorate", new { id = governorate.ID }, governorate);
-        }
-        [HttpPost("{GovernorateId}")]
-        public async Task<ActionResult<District>> PostDistrict(int GovernorateId, District district)
-        {
-            district.GovernorateID = GovernorateId;
-            _context.District.Add(district);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDistrict", new { id = district.ID }, district);
-        }
-
 
 
         // DELETE: api/Regions/5
@@ -269,35 +172,9 @@ namespace Health_Care.Controllers
 
             return region;
         }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Governorate>> DeleteGovernorate(int id)
-        {
-            var governorate = await _context.Governorate.FindAsync(id);
-            if (governorate == null)
-            {
-                return NotFound();
-            }
-
-            _context.Governorate.Remove(governorate);
-            await _context.SaveChangesAsync();
-
-            return governorate;
-        }
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<District>> DeleteDistrict(int id)
-        {
-            var district = await _context.District.FindAsync(id);
-            if (district == null)
-            {
-                return NotFound();
-            }
-
-            _context.District.Remove(district);
-            await _context.SaveChangesAsync();
-
-            return district;
-        }
+        // تحتاج نظر تبع صفحة AddHealthcareWorkerForHospital
         [HttpDelete("{id}/{workerID}")]
+        [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult> DeleteWorkerRegion(int id,int workerID)
         {
             var region =  _context.HealthcareWorkerRegions.Where(x=>x.RegionID == id && x.HealthcareWorkerid == workerID).FirstOrDefault();
@@ -315,14 +192,6 @@ namespace Health_Care.Controllers
         private bool RegionExists(int id)
         {
             return _context.Region.Any(e => e.ID == id);
-        }
-        private bool GovernorateExists(int id)
-        {
-            return _context.Governorate.Any(e => e.ID == id);
-        }
-        private bool DistrictExists(int id)
-        {
-            return _context.District.Any(e => e.ID == id);
         }
     }
 }
