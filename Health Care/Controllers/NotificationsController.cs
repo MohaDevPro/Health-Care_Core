@@ -14,7 +14,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin, مريض")]
 
     public class NotificationsController : ControllerBase
     {
@@ -51,6 +51,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutNotifications(int id, Notifications notifications)
         {
             if (id != notifications.ID)
@@ -83,6 +85,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Notifications>> PostNotifications(Notifications notifications)
         {
             _context.Notifications.Add(notifications);
@@ -92,6 +96,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult> SendNotifications(Notifications notifications)
         {
             //_context.Notifications.Add(notifications);
@@ -310,6 +316,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Notifications/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Notifications>> DeleteNotifications(int id)
         {
             var notifications = await _context.Notifications.FindAsync(id);

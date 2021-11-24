@@ -14,7 +14,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin,مستشفى,عيادة,دكتور,مريض")]
+    [Authorize(Roles = "admin,مستشفى,عيادة,دكتور,مريض,عامل صحي")]
 
     public class AppointmentDoctorClinicsController : ControllerBase
     {
