@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles ="admin")]
+    //[Authorize(Roles ="admin")]
     public class AppointmentsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -25,11 +25,13 @@ namespace Health_Care.Controllers
 
         // GET: api/Appointments
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointment()
         {
             return await _context.Appointment.Where(a => a.active == true).ToListAsync();
         }
         [HttpGet]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetDisabled()
         {
             return await _context.Appointment.Where(a=>a.active == false).ToListAsync();
@@ -71,7 +73,7 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
-
+        [Authorize(Roles = "admin")]
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Appointment> appointement)
         {
@@ -126,7 +128,7 @@ namespace Health_Care.Controllers
             //return appointment;
         }
         [HttpGet("{appointmentDoctorClinicid}")]
-
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentBasedOnappointmentDoctorClinicid(int appointmentDoctorClinicid)
         {
             var appointment = await _context.Appointment.Where(x => x.appointmentDoctorClinicId == appointmentDoctorClinicid+ "" && x.active == true).ToListAsync();
@@ -337,6 +339,7 @@ namespace Health_Care.Controllers
 
         // GET: api/Appointments/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Appointment>> GetAppointment(int id)
         {
             var appointment = await _context.Appointment.FindAsync(id);
@@ -434,7 +437,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Appointments/5
         [HttpDelete("{id}")]
-
+        [Authorize]
         public async Task<ActionResult<Appointment>> DeleteAppointment(int id)
         {
             var appointment = await _context.Appointment.FindAsync(id);
