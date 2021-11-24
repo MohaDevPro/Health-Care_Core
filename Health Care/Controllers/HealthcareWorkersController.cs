@@ -14,7 +14,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin, عامل صحي")]
+    [Authorize]
     public class HealthcareWorkersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -56,7 +56,6 @@ namespace Health_Care.Controllers
         }
         [Authorize(Roles = "admin")]
         [HttpPut]
-        [Authorize(Roles = "admin")]
         public async Task<IActionResult> RestoreService(List<HealthcareWorker> halthcareWorker)
         {
             if (halthcareWorker.Count == 0)
@@ -201,6 +200,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, عامل صحي")]
         public async Task<IActionResult> PutHealthcareWorker(int id, HealthcareWorker healthcareWorker)
         {
             if (id != healthcareWorker.id)
@@ -238,6 +238,7 @@ namespace Health_Care.Controllers
             return NoContent();
         }
         [HttpPut("{id}/{status}")]
+        [Authorize(Roles = "admin, عامل صحي")]
         public async Task<IActionResult> PutWorkerStatus(int id, bool status)
         {
 
@@ -339,6 +340,7 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin, عامل صحي")]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorker(HealthcareWorker healthcareWorker)
         {
             _context.HealthcareWorker.Add(healthcareWorker);
@@ -348,6 +350,7 @@ namespace Health_Care.Controllers
         }
         
         [HttpPost]
+        [Authorize(Roles = "admin, عامل صحي")]
         public async Task<ActionResult<HealthcareWorker>> PostHealthcareWorkerServices(List<HealthcareWorkerService> healthcareWorkerservices)
         {
             if (healthcareWorkerservices.Count > 0)
@@ -365,6 +368,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/HealthcareWorkers/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin, عامل صحي")]
         public async Task<ActionResult<HealthcareWorker>> DeleteHealthcareWorker(int id)
         {
             var healthcareWorker = await _context.HealthcareWorker.FindAsync(id);

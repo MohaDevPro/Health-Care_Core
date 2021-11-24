@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
     public class HealthCareWorkerAppWorkTimesController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -274,6 +273,8 @@ namespace Health_Care.Controllers
 
             return NoContent();
         }
+        [Authorize]
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Object>> GetAppWorktimeAsGroup(int id)
         {
@@ -319,6 +320,8 @@ namespace Health_Care.Controllers
             };
             return Result;
         }
+        [Authorize]
+
         [HttpGet("{id}/{AM_PM}")]
         public async Task<ActionResult<Object>> GetAppWorktimeByIdAndPeriod(int id, string AM_PM)
         {
@@ -945,7 +948,9 @@ namespace Health_Care.Controllers
 
         //    return healthCareWorkerAppWorkTime;
         //}
+        [Authorize(Roles ="admin,عامل صحي")]
         [HttpDelete("{id}")]
+
         public async Task<ActionResult<HealthCareWorkerAppWorkTime>> DeleteHealthCareWorkerAppWorkTime(int id)
         {
             var appWorktime = await _context.HealthCareWorkerAppWorkTime.FindAsync(id);

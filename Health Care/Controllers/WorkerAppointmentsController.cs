@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin, مريض ,عامل صحي")]
     public class WorkerAppointmentsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -44,6 +43,8 @@ namespace Health_Care.Controllers
 
         // GET: api/WorkerAppointments
         [HttpGet]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<ActionResult<IEnumerable<WorkerAppointment>>> GetWorkerAppointment()
         {
             return await _context.WorkerAppointment.ToListAsync();
@@ -51,6 +52,8 @@ namespace Health_Care.Controllers
 
         // GET: api/WorkerAppointments/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<ActionResult<WorkerAppointment>> GetWorkerAppointment(int id)
         {
             var workerAppointment = await _context.WorkerAppointment.FindAsync(id);
@@ -235,7 +238,7 @@ namespace Health_Care.Controllers
             return new List<object>();
 
         }
-
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
         [HttpGet("{userId}/{acceptedByWorker}/{confirmWorkerComeByPatient}/{cancelledByWorker}/{pageKey}/{pageSize}")]
         public async Task<ActionResult<IEnumerable<object>>> GetWorkerAppointmentBasedOnStatusByUserId(int userId,bool acceptedByWorker,bool confirmWorkerComeByPatient,bool cancelledByWorker,int pageKey,int pageSize)
         {
@@ -347,6 +350,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<IActionResult> PutWorkerAppointment(int id, WorkerAppointment workerAppointment)
         {
             if (id != workerAppointment.id)
@@ -383,6 +388,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<IActionResult> ConfirmByPatient(int id)
         {
             WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
@@ -423,6 +430,8 @@ namespace Health_Care.Controllers
         }
         
          [HttpPut("{id}")]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<IActionResult> ConfirmByWorker(int id)
         {
             WorkerAppointment workerAppointment = _context.WorkerAppointment.Where(x => x.id == id).FirstOrDefault();
@@ -515,6 +524,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin, مريض ,عامل صحي")]
+
         public async Task<ActionResult<WorkerAppointment>> PostWorkerAppointment(WorkerAppointment workerAppointment)
         {
             Random random = new Random();

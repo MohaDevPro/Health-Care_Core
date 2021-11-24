@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
     public class UsersController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -61,12 +60,15 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<User>>> GetDisabled()
         {
             return await _context.User.Where(a => a.active == false).ToListAsync();
         }
         
         [HttpGet("{pageKey}/{pageSize}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<User>>> GetNotActive(int pageKey, int pageSize)
         {
             
@@ -83,22 +85,30 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<int>> GetNumberOfUsersByRegion(int regionId)
         {
             return await _context.User.CountAsync(x => x.regionId==regionId);
         }
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<int>> GetNumberOfUsersByRegionAndRole(int regionId,int roleId)
         {
             return await _context.User.CountAsync(x => x.regionId == regionId && x.Roleid==roleId);
         }
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRegion(int regionId)
         {
 
             return await _context.User.Where(a => a.regionId==regionId).ToListAsync();
         }
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsersByRegionAndRole(int regionId,int roleId)
         {
             return await _context.User.Where(a => a.regionId == regionId && a.Roleid==roleId).ToListAsync();
@@ -196,6 +206,8 @@ namespace Health_Care.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> RestoreService(List<User> users)
         {
             if (users.Count == 0)
@@ -222,6 +234,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutUser(int id, User user)
         {
             if (id != user.id)
@@ -327,6 +341,8 @@ namespace Health_Care.Controllers
         }
         
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> ActiveUser(int id )
         {
 
@@ -380,6 +396,8 @@ namespace Health_Care.Controllers
 
         
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> InactiveUser(int id )
         {
 
@@ -435,6 +453,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<User>> PostUser(User user)
         {
             _context.User.Add(user);

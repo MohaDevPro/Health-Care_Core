@@ -16,7 +16,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public class ChargeOrRechargeRequestsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -65,7 +65,7 @@ namespace Health_Care.Controllers
             }
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
-        [Authorize(Roles = "مريض,admin")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequestByUserID(int id, int pageKey, int pageSize)
         {
             var recharge= await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).OrderByDescending(x=>x.id).ToListAsync();

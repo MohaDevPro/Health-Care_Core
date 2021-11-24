@@ -15,7 +15,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
 
     public class UserContractsController : ControllerBase
     {
@@ -28,6 +27,8 @@ namespace Health_Care.Controllers
 
         // GET: api/UserContracts
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<UserContract>>> GetUserContract()
         {
             return await _context.UserContract.ToListAsync();
@@ -35,6 +36,8 @@ namespace Health_Care.Controllers
 
         // GET: api/UserContracts/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<UserContract>> GetUserContract(int id)
         {
             var userContract = await _context.UserContract.FindAsync(id);
@@ -47,6 +50,8 @@ namespace Health_Care.Controllers
             return userContract;
         }
         [HttpGet("{roleID}/{statusId}/{pageKey}/{pageSize}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<object>>> GetAllUserContracts(int roleID ,int statusId,int pageKey, int pageSize)
         {
             var contracts = await (from user in _context.User
@@ -161,6 +166,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutUserContract(int id, UserContract userContract)
         {
             if (id != userContract.id)
@@ -205,6 +212,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/UserContracts/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<UserContract>> DeleteUserContract(int id)
         {
             var userContract = await _context.UserContract.FindAsync(id);

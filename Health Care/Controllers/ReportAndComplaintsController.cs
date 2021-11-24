@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
     public class ReportAndComplaintsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -25,12 +24,16 @@ namespace Health_Care.Controllers
 
         // GET: api/ReportAndComplaints
         [HttpGet]
+        [Authorize]
+
         public async Task<ActionResult<IEnumerable<ReportAndComplaint>>> GetReportAndComplaint()
         {
             return await _context.ReportAndComplaint.ToListAsync();
         }
 
         [HttpGet("{userId}")] //for patient , clinic ......
+        [Authorize]
+
         public async Task<ActionResult<ReportAndComplaintViewModel>> GetReportAndComplaintByUserId(int userId)
         {
             List<ReportAndComplaint> answeredReportAndComplaints = await _context.ReportAndComplaint.Where(x => x.userId == userId && x.isAnswered ).OrderByDescending(x=>x.ReportAndComplaintDate).ToListAsync();
@@ -62,6 +65,8 @@ namespace Health_Care.Controllers
 
         // GET: api/ReportAndComplaints/5
         [HttpGet("{id}")]
+        [Authorize]
+
         public async Task<ActionResult<ReportAndComplaint>> GetReportAndComplaint(int id)
         {
             var reportAndComplaint = await _context.ReportAndComplaint.FindAsync(id);
@@ -111,6 +116,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
+
         public async Task<ActionResult<ReportAndComplaint>> PostReportAndComplaint(ReportAndComplaint reportAndComplaint)
         {
             _context.ReportAndComplaint.Add(reportAndComplaint);
@@ -121,6 +128,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/ReportAndComplaints/5
         [HttpDelete("{id}")]
+        [Authorize]
+
         public async Task<ActionResult<ReportAndComplaint>> DeleteReportAndComplaint(int id)
         {
             var reportAndComplaint = await _context.ReportAndComplaint.FindAsync(id);
