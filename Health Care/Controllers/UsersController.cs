@@ -45,7 +45,7 @@ namespace Health_Care.Controllers
         {
             return await _context.User.Where(s => s.active == true & s.Roleid == id).ToListAsync();
         }
-
+        [AllowAnonymous]
         // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
