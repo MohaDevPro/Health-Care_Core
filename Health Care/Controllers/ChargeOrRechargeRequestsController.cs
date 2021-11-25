@@ -16,7 +16,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public class ChargeOrRechargeRequestsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -31,6 +31,8 @@ namespace Health_Care.Controllers
 
         // GET: api/ChargeOrRechargeRequests
         [HttpGet("{pageKey}/{pageSize}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<object>>> GetChargeOrRechargeRequest(int pageKey, int pageSize)
         {
             var recharges=await(from recharge in _context.ChargeOrRechargeRequest.OrderByDescending(x=>x.id)
@@ -65,7 +67,7 @@ namespace Health_Care.Controllers
             }
         }
         [HttpGet("{id}/{pageKey}/{pageSize}")]
-        [Authorize(Roles = "مريض,admin")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ChargeOrRechargeRequest>>> GetChargeOrRechargeRequestByUserID(int id, int pageKey, int pageSize)
         {
             var recharge= await _context.ChargeOrRechargeRequest.Where(x=>x.userId==id).OrderByDescending(x=>x.id).ToListAsync();
@@ -271,6 +273,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/ChargeOrRechargeRequests/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<ChargeOrRechargeRequest>> DeleteChargeOrRechargeRequest(int id)
         {
             var chargeOrRechargeRequest = await _context.ChargeOrRechargeRequest.FindAsync(id);

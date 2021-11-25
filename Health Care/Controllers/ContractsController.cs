@@ -13,7 +13,7 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
 
     public class ContractsController : ControllerBase
     {
@@ -34,6 +34,8 @@ namespace Health_Care.Controllers
 
         // GET: api/Contracts/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Contract>> GetContract(int id)
         {
             var contract = await _context.Contract.FindAsync(id);
@@ -60,12 +62,16 @@ namespace Health_Care.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<Contract>>> GetDisabled()
         {
             return await _context.Contract.Where(a => a.active == false).ToListAsync();
         }
 
         [HttpPut]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> RestoreService(List<Contract> contract)
         {
             if (contract.Count == 0)
@@ -91,6 +97,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutContract(int id, Contract contract)
         {
             if (id != contract.id)
@@ -124,6 +132,7 @@ namespace Health_Care.Controllers
         // POST: api/Contracts
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+    [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<ActionResult<Contract>> PostContract(Contract contract)
         {
@@ -135,6 +144,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Contracts/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Contract>> DeleteContract(int id)
         {
             var contract = await _context.Contract.FindAsync(id);

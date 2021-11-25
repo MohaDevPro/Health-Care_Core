@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
 
     public class SpecialitiesController : ControllerBase
     {
@@ -38,12 +37,16 @@ namespace Health_Care.Controllers
         //    return await _context.SpecialityHealthWorker.ToListAsync();
         //}
         [HttpGet]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<Speciality>>> GetDisabled()
         {
             return await _context.Speciality.Where(a => a.active == false).ToListAsync();
         }
 
         [HttpPut]
+        [Authorize(Roles = "admin")]
+
         //[Authorize(Roles = "admin, service")]
         public async Task<IActionResult> RestoreService(List<Speciality> Speciality)
         {
@@ -134,6 +137,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutSpeciality(int id, Speciality speciality)
         {
             if (id != speciality.id)
@@ -166,6 +171,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Speciality>> PostSpeciality(Speciality speciality)
         {
             _context.Speciality.Add(speciality);
@@ -176,6 +183,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Specialities/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Speciality>> DeleteSpeciality(int id)
         {
             var speciality = await _context.Speciality.FindAsync(id);

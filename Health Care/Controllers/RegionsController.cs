@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
     public class RegionsController : ControllerBase
     {
         private readonly Health_CareContext _context;
@@ -32,12 +31,14 @@ namespace Health_Care.Controllers
         }
 
         // GET: api/Regions/5
+        [Authorize(Roles = "admin")]
+        [HttpGet]
 
         public async Task<ActionResult<IEnumerable<Region>>> GetDisabled()
         {
             return await _context.Region.Where(a => a.active == false).ToListAsync();
         }
-
+        [Authorize(Roles = "admin")]
         [HttpPut]
         public async Task<IActionResult> RestoreService(List<Region> regions)
         {
@@ -70,12 +71,16 @@ namespace Health_Care.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<Region>>> GetRegionBasedOnDistrictId(int id)
         {
             return await _context.Region.Where(x => x.DistrictID == id && x.active==true).ToListAsync();
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<IEnumerable<District>>> GetDistrictBasedOnGovernorateId(int id)
         {
             return await _context.District.Where(x => x.GovernorateID == id && x.active==true).ToListAsync();
@@ -99,6 +104,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutRegion(int id, Region region)
         {
             if (id != region.ID)
@@ -132,6 +139,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<Region>> PostRegion(Region region)
         {
             _context.Region.Add(region);
@@ -159,6 +168,7 @@ namespace Health_Care.Controllers
 
         // DELETE: api/Regions/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<Region>> DeleteRegion(int id)
         {
             var region = await _context.Region.FindAsync(id);

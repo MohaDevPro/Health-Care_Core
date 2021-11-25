@@ -13,7 +13,6 @@ namespace Health_Care.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize(Roles = "admin")]
 
     public class ProfitRatiosController : ControllerBase
     {
@@ -34,6 +33,8 @@ namespace Health_Care.Controllers
 
         // GET: api/ProfitRatios/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<ProfitRatios>> GetProfitRatios(int id)
         {
             var profitRatios = await _context.ProfitRatios.FindAsync(id);
@@ -50,6 +51,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<IActionResult> PutProfitRatios(int id, ProfitRatios profitRatios)
         {
             if (id != profitRatios.id)
@@ -82,6 +85,8 @@ namespace Health_Care.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<ProfitRatios>> PostProfitRatios(ProfitRatios profitRatios)
         {
             _context.ProfitRatios.Add(profitRatios);
@@ -92,6 +97,8 @@ namespace Health_Care.Controllers
 
         // DELETE: api/ProfitRatios/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "admin")]
+
         public async Task<ActionResult<ProfitRatios>> DeleteProfitRatios(int id)
         {
             var profitRatios = await _context.ProfitRatios.FindAsync(id);
