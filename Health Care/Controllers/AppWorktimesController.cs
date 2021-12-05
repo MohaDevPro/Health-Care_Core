@@ -988,10 +988,13 @@ namespace Health_Care.Controllers
         }
         public void addAppWorktime()
         {
-
-            _context.AppWorktime.Add(availableWork);
+            var check = _context.AppWorktime.Where(x => x.ExternalClinicId == availableWork.ExternalClinicId && x.userId == availableWork.userId && x.day == availableWork.day && x.shiftAM_PM == availableWork.shiftAM_PM).ToList();
+            if (check.Count == 0) {
+             _context.AppWorktime.Add(availableWork);
             _context.SaveChanges();
             availableWork.id = 0;
+            }
+            
         }
         public  void DeleteAppWorktimeByDayAndPeriod(int userId,string AM_PM,int day,int clinicid)
         {
