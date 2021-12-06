@@ -265,7 +265,7 @@ namespace Health_Care.Controllers
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "admin,مريض")]
-        public async Task<ActionResult<User>> PutPatientDate(int id, User user)
+        public async Task<ActionResult<User>> PutPatientData(int id, User user)
         {
             if (id != user.id)
             {
