@@ -196,7 +196,7 @@ namespace Health_Care.Controllers
         [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<object>> GetServiceMonthRecords(int Month,int HealthWorkerID)
         {
-            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/") && (x.ConfirmHealthWorkerCome_ByHimself || x.ConfirmHealthWorkerCome_ByPatient)).ToList();
+            var appointmentOfMonth = _context.WorkerAppointment.Where(x => x.appointmentDate.Contains("/" + Month + "/") && (x.ConfirmHealthWorkerCome_ByPatient)).ToList();
             var NoRepittedPatientAppointment = new List<WorkerAppointment>();
             foreach (var i in appointmentOfMonth)
             {
@@ -299,14 +299,14 @@ namespace Health_Care.Controllers
         [Authorize(Roles = "admin,عامل صحي")]
         public async Task<ActionResult<object>> GetProfitforWorker(int workerId)
         {
-            var appointmentWorkerObjs = await _context.AppointmentWorker.Where(e => e.workerId == workerId).ToListAsync();
+            var appointmentWorkerObjs = await _context.WorkerAppointment.Where(e => e.workerId == workerId&&e.ConfirmHealthWorkerCome_ByPatient).ToListAsync();
 
             int servicePercentage = await _context.ProfitRatios.Select(e => e.servicePercentage).FirstOrDefaultAsync();
 
             var userContractObj = await _context.UserContract.FirstOrDefaultAsync(x => x.userId == workerId);
             DateTime contractstartdate = DateTime.ParseExact(userContractObj.contractStartDate, "d/M/yyyy", null);
 
-            List<AppointmentWorker> newAppointmentWorkerObj = new List<AppointmentWorker>();
+            List<WorkerAppointment> newAppointmentWorkerObj = new List<WorkerAppointment>();
             foreach (var item in appointmentWorkerObjs)
             {
                 DateTime appointmentWorkerObjDate = DateTime.ParseExact(item.appointmentDate, "d/M/yyyy", null);
@@ -314,21 +314,25 @@ namespace Health_Care.Controllers
                     newAppointmentWorkerObj.Add(item);
             }
 
-            int profitSumforAppAdmin = 0;
+            double profitSumforAppAdmin = 0;
+            double profitSumforuser = 0;
+            double totalAmount = profitSumforuser;
+
             foreach (var item in newAppointmentWorkerObj)
             {
-                profitSumforAppAdmin += item.totalProfitFromRealAppointment;
+                profitSumforAppAdmin += item.servicePrice*item.PercentageFromAppointmentPriceForApp/100;
+                totalAmount += item.servicePrice;
+                
             };
 
-            int totalAmount = profitSumforAppAdmin * 100 / servicePercentage;
-            int profitSumforuser = totalAmount - profitSumforAppAdmin;
+            profitSumforuser = totalAmount - profitSumforAppAdmin;
+            
 
-
-            int appointmentSum = 0;
-            foreach (var item in newAppointmentWorkerObj)
-            {
-                appointmentSum += item.numberOfRealAppointment;
-            };
+            //int appointmentSum = 0;
+            //foreach (var item in newAppointmentWorkerObj)
+            //{
+            //    appointmentSum += item.numberOfRealAppointment;
+            //};
 
             var appointmentWorker2 = new
             {
@@ -336,7 +340,7 @@ namespace Health_Care.Controllers
                 profitforAppUntilNow = profitSumforAppAdmin,
                 profitforUserUntilNow = profitSumforuser,
                 TotalAmountUntilNow = totalAmount,
-                numberOfRealAppointmentUntilNow = appointmentSum,
+                numberOfRealAppointmentUntilNow = newAppointmentWorkerObj.Count,
                 //contract = userContractObj,
                 //appointmentdoctorclinic = appointmentDoctorClinicObj
             };
