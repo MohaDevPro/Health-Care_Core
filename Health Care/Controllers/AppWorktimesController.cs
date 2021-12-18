@@ -586,6 +586,7 @@ namespace Health_Care.Controllers
                 appworktime.RealOpenTime = availableWorkTimeVM.RealOpenTime;
                 appworktime.RealClossTime = availableWorkTimeVM.RealClossTime;
                 appworktime.ExternalClinicId = availableWorkTimeVM.clinicid;
+                appworktime.numberofAvailableAppointment = availableWorkTimeVM.numberofAvailableAppointment;
 
                 try
                 {

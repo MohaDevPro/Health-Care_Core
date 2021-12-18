@@ -22,6 +22,7 @@ namespace Health_Care.Models
         public string RealClossTime { get; set; }
         public bool AM { get; set; }
         public bool PM { get; set; }
+        public int numberofAvailableAppointment { get; set; }
         public int clinicid { get; set; }
         public int userId { get; set; }
     }
