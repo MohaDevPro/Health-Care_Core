@@ -81,7 +81,8 @@ namespace Health_Care.Controllers
                     Data = new Dictionary<string, string>() {
                     { "id", conversation.id.ToString() },
                     { "FromUser", FromUser.nameAR },
-                    { "message", conversation.message }
+                    { "message", conversation.message },
+                    { "appointmentId", conversation.appointmentId.ToString() }
                 },
                     Android = new AndroidConfig()
                     {
@@ -91,7 +92,6 @@ namespace Health_Care.Controllers
                         Notification = new AndroidNotification()
                         {
                             Icon = "ic_launcher",
-                            Color = "#f45342",
                         },
                     },
                     Apns = new ApnsConfig()
