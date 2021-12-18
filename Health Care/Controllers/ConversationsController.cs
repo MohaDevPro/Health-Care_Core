@@ -49,6 +49,17 @@ namespace Health_Care.Controllers
 
             return conversation;
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<string>> GetName(int id)
+        {
+            var user = _context.User.FirstOrDefault(x=>x.id == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return user.nameAR;
+        }
         [HttpPost]
         public async Task<ActionResult<Conversation>> SendMessage(Conversation conversation)
         {
