@@ -104,7 +104,7 @@ namespace Health_Care.Controllers
             // Create a list containing up to 500 registration tokens.
             // These registration tokens come from the client FCM SDKs.
 
-            List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).ToList();
+            List<string> registrationTokens = _context.FCMTokens.Select(t => t.Token).Distinct().ToList();
             var y = registrationTokens.GetRange(0, 0 + 500 < registrationTokens.Count ? 0 + 500 : registrationTokens.Count);
             for (int i = 0; i < registrationTokens.Count; i += 500)
             {
@@ -130,7 +130,7 @@ namespace Health_Care.Controllers
                         Aps = new Aps()
                         {
                             Alert = new ApsAlert() { Body = notifications.body, Title = notifications.title, },
-                          CriticalSound =new CriticalSound(){ Critical = true,Volume=1.0},
+                          //CriticalSound =new CriticalSound(){ Critical = true,Volume=1.0,},
                             ContentAvailable = true,
                             Badge = 42,
                         },
@@ -159,7 +159,7 @@ namespace Health_Care.Controllers
             // Create a list containing up to 500 registration tokens.
             // These registration tokens come from the client FCM SDKs.
 
-            List<string> registrationTokens = _context.FCMTokens.Where(f=> usersIDs.Contains(f.UserID)).Select(t => t.Token).ToList();
+            List<string> registrationTokens = _context.FCMTokens.Where(f=> usersIDs.Contains(f.UserID)).Select(t => t.Token).Distinct().ToList();
             var y = registrationTokens.GetRange(0, 0 + 500 < registrationTokens.Count ? 0 + 500 : registrationTokens.Count);
             for (int i = 0; i < registrationTokens.Count; i += 500)
             {
@@ -185,7 +185,7 @@ namespace Health_Care.Controllers
                         Aps = new Aps()
                         {
                             Alert = new ApsAlert() { Body = notifications.body, Title = notifications.title, },
-                          CriticalSound =new CriticalSound(){ Critical = true,Volume=1.0},
+                          //CriticalSound =new CriticalSound(){ Critical = true,Volume=1.0},
                             ContentAvailable = true,
                             Badge = 42,
                         },

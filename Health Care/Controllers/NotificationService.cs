@@ -82,6 +82,7 @@ namespace Mr.Delivery.Models
                     DateTime dateNow = DateTime.UtcNow.AddHours(3);
                     DateTime dateNowLocal = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 00);
                     _logger.LogInformation($"-------------date {date.ToString("G")}-------------");
+                    _logger.LogInformation($"-------------Token {Token.Count()}-------------");
                     _logger.LogInformation($"-------------dateNowLocal {dateNowLocal.ToString("G")}-------------");
                     if (date == dateNowLocal)
                     {
