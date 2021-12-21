@@ -44,6 +44,9 @@ namespace Health_Care.Migrations
                     b.Property<int>("endTime")
                         .HasColumnType("int");
 
+                    b.Property<int>("numberofAvailableAppointment")
+                        .HasColumnType("int");
+
                     b.Property<string>("shiftAM_PM")
                         .HasColumnType("nvarchar(max)");
 
@@ -242,6 +245,9 @@ namespace Health_Care.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsRestore")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRestored")
                         .HasColumnType("bit");
 
                     b.Property<string>("NumberOfReceipt")
@@ -1042,33 +1048,6 @@ namespace Health_Care.Migrations
                     b.ToTable("Patient");
                 });
 
-            modelBuilder.Entity("Health_Care.Models.ProfitFromTheApp", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("clinicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("doctorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("hospitalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("profit")
-                        .HasColumnType("int");
-
-                    b.Property<int>("sumOfAppointment")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("ProfitFromTheApp");
-                });
-
             modelBuilder.Entity("Health_Care.Models.ProfitRatios", b =>
                 {
                     b.Property<int>("id")
@@ -1422,27 +1401,6 @@ namespace Health_Care.Migrations
                     b.HasKey("id");
 
                     b.ToTable("WorkerAppointment");
-                });
-
-            modelBuilder.Entity("Health_Care.Models.WorkerSalary", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("isPaid")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("salary")
-                        .HasColumnType("int");
-
-                    b.Property<int>("workerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("id");
-
-                    b.ToTable("WorkerSalary");
                 });
 
             modelBuilder.Entity("Health_Care.Models.AppWorktime", b =>
