@@ -17,6 +17,7 @@ namespace Health_Care.Models
         public bool IsAdditional { get; set; }
         public string RealOpenTime { get; set; }
         public string RealClossTime { get; set; }
+        public int numberofAvailableAppointment { get; set; }
 
         public virtual ExternalClinic ExternalClinic { get; set; }
     }
